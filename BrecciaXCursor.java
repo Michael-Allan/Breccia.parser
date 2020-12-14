@@ -1,26 +1,45 @@
 package Breccia.parser;
 
+import java.io.Reader;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamReader;
 
 
-public class BrecciaXTranslator implements AutoCloseable, XMLStreamReader {
+/** A reusable translator of Breccia to X-Breccia.
+  */
+public class BrecciaXCursor implements ReusableCursor, XMLStreamReader {
 
 
-    public BrecciaXTranslator( final BreccianReader source ) { this.source = source; }
+    public <S extends BreccianCursor & ReusableCursor> BrecciaXCursor( final S sourceCursor ) {
+        this.sourceCursor = sourceCursor;   //* Store `sourceCursor` across two fields in order to retain
+        this.sourceCursorR = sourceCursor; } /* its dual type.  The alternative of elevating the type
+          parameter to the class definition would burden the user with supplying its actual value. */
 
 
 
-   // ━━━  X M L   S t r e a m   R e a d e r  ━━━  A u t o   C l o s e a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override void close() {}
+    /** {@inheritDoc}  Sets the parse state to `{@linkplain #START_DOCUMENT START_DOCUMENT}`.
+      *
+      *     @param r The source of markup.  It need not be buffered if the source cursor (given during
+      *       construction) is buffered; in that case, all reads by this cursor will be bulk transfers.
+      */
+    public void setMarkupSource( final Reader r ) {
+        sourceCursorR.setMarkupSource( r );
+        eventType = START_DOCUMENT; }
 
 
 
    // ━━━  X M L   S t r e a m   R e a d e r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    /** Does nothing, this cursor contains no resource that needs freeing.
+      */
+    public @Override void close() {}
+
 
 
     public @Override int getAttributeCount() { throw new UnsupportedOperationException(); }
@@ -71,7 +90,7 @@ public class BrecciaXTranslator implements AutoCloseable, XMLStreamReader {
 
 
 
-    public @Override int getEventType() { throw new UnsupportedOperationException(); }
+    public @Override int getEventType() { return eventType; }
 
 
 
@@ -161,7 +180,7 @@ public class BrecciaXTranslator implements AutoCloseable, XMLStreamReader {
 
 
 
-    public @Override boolean hasNext() { return source.hasNext(); }
+    public @Override boolean hasNext() { return sourceCursor.hasNext(); }
 
 
 
@@ -170,7 +189,7 @@ public class BrecciaXTranslator implements AutoCloseable, XMLStreamReader {
 
 
     public @Override int next() {
-        source.next();
+        sourceCursor.next();
         throw new UnsupportedOperationException(); }
 
 
@@ -217,7 +236,15 @@ public class BrecciaXTranslator implements AutoCloseable, XMLStreamReader {
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 
-    private final BreccianReader source; }
+    private int eventType;
+
+
+
+    private final BreccianCursor sourceCursor;
+
+
+
+    private final ReusableCursor sourceCursorR; }
 
 
 
