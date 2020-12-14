@@ -13,9 +13,9 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader {
 
 
     public <S extends BreccianCursor & ReusableCursor> BrecciaXCursor( final S sourceCursor ) {
-        this.sourceCursor = sourceCursor;   //* Store `sourceCursor` across two fields in order to retain
-        this.sourceCursorR = sourceCursor; } /* its dual type.  The alternative of elevating the type
-          parameter to the class definition would burden the user with supplying its actual value. */
+        this.sourceCursor = sourceCursor; } /* Here losing the `ReusableCursor` aspect of its type, now
+          accessible only by cast.  The alternative of dual typing the field would require elevating the
+          type parameter to the class definition, burdening the user with supplying its actual value. */
 
 
 
@@ -28,7 +28,7 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader {
       *       construction) is buffered; in that case, all reads by this cursor will be bulk transfers.
       */
     public void setMarkupSource( final Reader r ) {
-        sourceCursorR.setMarkupSource( r );
+        ((ReusableCursor)sourceCursor).setMarkupSource( r );
         eventType = START_DOCUMENT; }
 
 
@@ -240,11 +240,7 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader {
 
 
 
-    private final BreccianCursor sourceCursor;
-
-
-
-    private final ReusableCursor sourceCursorR; }
+    private final BreccianCursor sourceCursor; }
 
 
 
