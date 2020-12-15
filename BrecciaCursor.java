@@ -1,6 +1,8 @@
 package Breccia.parser;
 
+import java.io.IOException;
 import java.io.Reader;
+import java.nio.CharBuffer;
 
 
 /** A reusable, buffered cursor over plain Breccia.
@@ -26,18 +28,30 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
    // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** {@inheritDoc}  Sets the parse state to `{@linkplain ParseState#document document}`.
+    /** {@inheritDoc}  Sets the parse state either to `{@linkplain ParseState#document empty}`
+      * or to `{@linkplain ParseState#document document}`.
       *
       *     @param r The source of markup.  It need not be buffered,
       *       all reads by this cursor are bulk transfers.
       */
-    public void setMarkupSource( final Reader r ) {
+    public void markupSource( final Reader r ) throws IOException {
         sourceReader = r;
-        state = ParseState.document; }
+        final int count = sourceReader.read( sourceBuffer.clear().array() );
+        if( count < 0 ) {
+            sourceBuffer.limit( 0 );
+            state = ParseState.empty; }
+        else if( count == 0 ) throw new IllegalStateException(); // Forbidden in `Reader` array reads.
+        else {
+            sourceBuffer.limit( count );
+            state = ParseState.document; }}
 
 
 
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
+
+
+    private CharBuffer sourceBuffer = CharBuffer.allocate( 90_000 );
+
 
 
     private Reader sourceReader;

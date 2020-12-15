@@ -1,5 +1,6 @@
 package Breccia.parser;
 
+import java.io.IOException;
 import java.io.Reader;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
@@ -9,7 +10,7 @@ import javax.xml.stream.XMLStreamReader;
 
 /** A reusable translator of Breccia to X-Breccia.
   */
-public class BrecciaXCursor implements ReusableCursor, XMLStreamReader {
+public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamContants {
 
 
     public <S extends BreccianCursor & ReusableCursor> BrecciaXCursor( final S sourceCursor ) {
@@ -22,14 +23,19 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader {
    // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** {@inheritDoc}  Sets the parse state to `{@linkplain #START_DOCUMENT START_DOCUMENT}`.
+    /** {@inheritDoc}  Sets the parse state either to `{@linkplain #START_DOCUMENT START_DOCUMENT}`
+      * or to `{@linkplain #EMPTY EMPTY}`.
       *
       *     @param r The source of markup.  It need not be buffered if the source cursor (given during
       *       construction) is buffered; in that case, all reads by this cursor will be bulk transfers.
       */
-    public void setMarkupSource( final Reader r ) {
-        ((ReusableCursor)sourceCursor).setMarkupSource( r );
-        eventType = START_DOCUMENT; }
+    public void markupSource( final Reader r ) throws IOException {
+        ((ReusableCursor)sourceCursor).markupSource( r );
+        final ParseState s = sourceCursor.state();
+        if( s == ParseState.empty ) eventType = EMPTY;
+        else {
+            assert s == ParseState.document;
+            eventType = START_DOCUMENT; }}
 
 
 
