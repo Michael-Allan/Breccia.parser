@@ -28,7 +28,7 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
    // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** {@inheritDoc}  Sets the parse state either to `{@linkplain ParseState#document empty}`
+    /** {@inheritDoc}  Sets the parse state either to `{@linkplain ParseState#empty empty}`
       * or to `{@linkplain ParseState#document document}`.
       *
       *     @param r The source of markup.  It need not be buffered,
