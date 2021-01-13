@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.*;
 
 
 /** A reusable translator of Breccia to X-Breccia.
@@ -29,7 +28,7 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
       *     @param r The source of markup.  It need not be buffered if the source cursor (given during
       *       construction) is buffered; in that case, all reads by this cursor will be bulk transfers.
       */
-    public void markupSource( final Reader r ) throws IOException {
+    public @Override void markupSource( final Reader r ) throws ParseError {
         ((ReusableCursor)sourceCursor).markupSource( r );
         final ParseState s = sourceCursor.state();
         if( s == ParseState.empty ) eventType = EMPTY;
@@ -194,8 +193,12 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
 
 
 
-    public @Override int next() {
-        sourceCursor.next();
+    /** @throws XMLStreamException With a {@linkplain XMLStreamException#getCause() cause}
+      *   of type {@linkplain ParseError ParseError} against the Breccian source.
+      */
+    public @Override int next() throws XMLStreamException {
+        try { sourceCursor.next(); }
+        catch( ParseError x ) { throw new XMLStreamException( x ); }
         throw new UnsupportedOperationException(); }
 
 
@@ -250,4 +253,4 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
 
 
 
-                                                        // Copyright © 2020  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2020-2021  Michael Allan.  Licence MIT.

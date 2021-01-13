@@ -22,8 +22,9 @@ public interface BreccianCursor { // Cf. `javax.xml.stream.XMLStreamReader`.
       *     @see hasNext()
       *     @see state()
       *     @return The new parse state.
+      *     @throws java.util.NoSuchElementException If `hasNext` is false.
       */
-    public ParseState next();
+    public ParseState next() throws ParseError;
 
 
 
@@ -34,4 +35,4 @@ public interface BreccianCursor { // Cf. `javax.xml.stream.XMLStreamReader`.
     public ParseState state(); }
 
 
-                                                        // Copyright © 2020  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2020-2021  Michael Allan.  Licence MIT.
