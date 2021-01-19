@@ -85,15 +85,13 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 
-    /** Reads through any segment located at `segmentStart`, beginning at the present
+    /** Reads through any fractal segment located at `segmentStart`, beginning at the present
       * buffer position, and sets its remaining bounds by initializing the following.
       *
       * <ul><li>`{@linkplain #segmentEnd segmentEnd}`</li>
       *     <li>`{@linkplain #segmentEndIndicator segmentEndIndicator}`</li>
       *     <li>`{@linkplain #segmentEndIndicatorChar segmentEndIndicatorChar}`</li>
       *     <li>`{@linkplain #newlines newlines}`</li></ul>
-      *
-      * <p>A segment is defined as one of a fractal head or divider segment.</p>
       *
       * <p>Ensure before calling this method that `fractumStart`, `fractumLineCounter`, `segmentStart`,
       * `segmentLineCounter` and `state` are initialized; the buffer is positioned within the segment
@@ -234,16 +232,16 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
 
 
-    /** The end boundary in the buffer of the present segment, which is the position
+    /** The end boundary in the buffer of the present fractal segment, which is the position
       * after its final character.  This is zero in case of an empty markup source
-      * or headless document fractum, the only cases of a zero length segment.
+      * or headless document fractum, the only cases of a zero length fractal segment.
       * If the value here is the buffer limit, then no segment remains in the markup source.
       */
     private int segmentEnd; // [SBV]
 
 
 
-    /** The buffer position of the first non-space character of the present segment’s
+    /** The buffer position of the first non-space character of the present fractal segment’s
       * linear-order successor, or the buffer limit if there is none.
       */
     private int segmentEndIndicator; // [SBV]
@@ -256,7 +254,7 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
 
 
-    /** The number of newline characters before the present segment.
+    /** The number of newline characters before the present fractal segment.
       *
       *     @see #segmentStart
       */
@@ -264,7 +262,7 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
 
 
-    /** The ordinal number of the first line of the present segment.
+    /** The ordinal number of the first line of the present fractal segment.
       * Lines are numbered beginning at one.
       *
       *     @see #segmentStart
@@ -273,7 +271,7 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
 
 
-    /** The start position of the present segment in the buffer,
+    /** The start position of the present fractal segment in the buffer,
       * which is the position of its first character.
       */
     private int segmentStart; // [SBV]

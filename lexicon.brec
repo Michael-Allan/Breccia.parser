@@ -2,9 +2,15 @@ Definition of terms for project Breccia Parser
 
     : see also http://reluk.ca/project/wayic/refractory/index.brec
 
+    body segment
+        ─ noun
+            - One of a point head or divider segment.
+    fractal segment
+        ─ noun
+            - One of a document head, point head or divider segment.
     X-Breccia
         : mass noun
             - An XML homologue of Breccia.
 
 
-                                                         \ Copyright © 2020  Michael Allan.  Licence MIT.
+                                                    \ Copyright © 2020-2021  Michael Allan.  Licence MIT.
