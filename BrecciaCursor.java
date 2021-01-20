@@ -102,8 +102,8 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
         int lineStart = segmentStart; // [SBV]
         assert lineStart == 0 || buffer.get(lineStart-1) == '\n'; /* Either the preceding character is
           inaccessible (it does not exist, or lies outside the buffer) or that character is a newline. */
-        boolean indenting = state == ParseState.document;
-          // Telling whether the next `buffer.get` might yield an indentational space character.
+        boolean inMargin = state == ParseState.document; // Scanning in the left margin where the next
+          // `buffer.get` might yield either an indentational space or the indented initial character.
         int indentationWidth = 0; // What determines `segmentEnd`.
         boolean inPotentialBackslashBullet = false; // Scanning a perfectly indented backslash sequence.
         for( ;; ) {
@@ -149,29 +149,28 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
                 final int p = buffer.position();
                 newlines.add( p - 1 );
                 lineStart = p;
-                indentationWidth = 0;
-                indenting = true;
+                inMargin = true;
+                indentationWidth = 0; // Thus far.
                 inPotentialBackslashBullet = false; }
-            else if( indenting ) { // Then detect any perfect indentation that marks the end boundary:
+            else if( inMargin ) { // Then detect any perfect indentation that marks the end boundary:
                 if( ch == ' ' ) {
                     ++indentationWidth;
                     continue; }
                 if( ch != /*no-break space*/'\u00A0' && indentationWidth % 4 == 0 ) { // Perfect
-                    segmentEnd = lineStart;                                              // indentation.
+                    segmentEnd = lineStart; // Assumption, yet unproven.                 indentation.
                     segmentEndIndicator = buffer.position() - 1;
                     segmentEndIndicatorChar = ch;
                     if( ch != '\\' ) break; // Typical case: divider or non-backslash bullet.
-                    inPotentialBackslashBullet = true; } /* In anticipation of which, the present
-                      segment’s would-be `segmentEnd` variables are set just above. */
-                indenting = false; }
+                    inPotentialBackslashBullet = true; } // Either that or a comment delimiter.
+                inMargin = false; }
             else if( inPotentialBackslashBullet && ch != '\\' ) {
                 if( ch == ' ' ) {
-                    inPotentialBackslashBullet = false;
+                    inPotentialBackslashBullet = false; // Rather it was a comment delimiter.
                     continue; }
                 if( ch == /*no-break space*/'\u00A0' ) {
                     throw new MalformedMarkup( segmentLineNumber() + newlines.size(),
                       "Misplaced no-break space" ); }
-                break; }}} // Atypical case: backslash bullet.
+                break; }}} // Indeed it is a backslash bullet.
 
 
 
