@@ -164,13 +164,8 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
                     inPotentialBackslashBullet = true; } // Either that or a comment delimiter.
                 inMargin = false; }
             else if( inPotentialBackslashBullet && ch != '\\' ) {
-                if( ch == ' ' ) {
-                    inPotentialBackslashBullet = false; // Rather it was a comment delimiter.
-                    continue; }
-                if( ch == /*no-break space*/'\u00A0' ) {
-                    throw new MalformedMarkup( segmentLineNumber() + newlines.size(),
-                      "Misplaced no-break space" ); }
-                break; }}} // Indeed it is a backslash bullet.
+                if( ch != ' ' ) break; // Indeed it is a backslash bullet.
+                inPotentialBackslashBullet = false; }}} // Rather it is a comment delimiter.
 
 
 
