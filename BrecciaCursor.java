@@ -103,8 +103,8 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
         assert lineStart == 0 || buffer.get(lineStart-1) == '\n'; /* Either the preceding character is
           inaccessible (it does not exist, or lies outside the buffer) or that character is a newline. */
         boolean inMargin = state == ParseState.document; // Scanning in the left margin where the next
-          // `buffer.get` might yield either an indentational space or the indented initial character.
-        int indentationWidth = 0; // What determines `segmentEnd`.
+          // `buffer.get` might yield either an indent space or the indented initial character.
+        int indentWidth = 0; // What determines `segmentEnd`.
         boolean inPotentialBackslashBullet = false; // Scanning a perfectly indented backslash sequence.
         for( ;; ) {
             if( !buffer.hasRemaining() ) { // Redundant only on the first pass with a new `markupSource`.
@@ -150,14 +150,14 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
                 newlines.add( p - 1 );
                 lineStart = p;
                 inMargin = true;
-                indentationWidth = 0; // Thus far.
+                indentWidth = 0; // Thus far.
                 inPotentialBackslashBullet = false; }
-            else if( inMargin ) { // Then detect any perfect indentation that marks the end boundary:
+            else if( inMargin ) { // Then detect any perfect indent that marks the end boundary:
                 if( ch == ' ' ) {
-                    ++indentationWidth;
+                    ++indentWidth;
                     continue; }
-                if( ch != /*no-break space*/'\u00A0' && indentationWidth % 4 == 0 ) { // Perfect
-                    segmentEnd = lineStart; // Assumption, yet unproven.                 indentation.
+                if( ch != /*no-break space*/'\u00A0' && indentWidth % 4 == 0 ) { // Perfect indent.
+                    segmentEnd = lineStart; // Assumption, yet unproven.
                     segmentEndIndicator = buffer.position() - 1;
                     segmentEndIndicatorChar = ch;
                     if( ch != '\\' ) break; // Typical case: divider or non-backslash bullet.
