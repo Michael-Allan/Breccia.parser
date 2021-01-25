@@ -18,21 +18,35 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
    // ━━━  B r e c c i a n   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override boolean hasNext() {
-        return state != ParseState.documentEnd && state != ParseState.empty; }
+    public @Override boolean hasNext() { return !state.isFinal; }
 
 
 
     /** @throws NoSuchElementException If `hasNext` is false.
       */
     public @Override ParseState next() throws ParseError {
-        if( !hasNext() ) throw new NoSuchElementException();
-        if( segmentEnd == buffer.limit() ) return state = ParseState.documentEnd;
+        if( state.isFinal ) throw new NoSuchElementException();
+        if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
+            while( fractumIndentWidth >= 0 ) { // Unwind any past body fracta, ending each.
+                fractumIndentWidth -= 4;
+                final ParseState past = hierarchy.remove( hierarchy.size() - 1 );
+                if( past != null ) return state = past.opposite(); } // Namely its end.
+            return state = ParseState.documentEnd; }
+        final int nextIndentWidth = segmentEndIndicator - segmentEnd; /* The offset from the start of
+          the next fractum (`segmentEnd`) to its first non-space character (`segmentEndIndicator`). */
+        assert nextIndentWidth % 4 == 0;
+        if( !state.isInitial ) { // Then unwind any past siblings of `hierarchy`, leaving only ancestors.
+            while( fractumIndentWidth >= nextIndentWidth ) { /* For its own purposes, this loop maintains
+                  the records of `fractumIndentWidth` and `hierarchy` even through the ending states
+                  of past siblings, during which they are undefined for their intended purposes. */
+                fractumIndentWidth -= 4;
+                final ParseState pastSibling = hierarchy.remove( hierarchy.size() - 1 );
+                if( pastSibling != null ) return state = pastSibling.opposite(); }} // Namely its end.
 
         // Changing what follows?  Sync → `markupSource`.
-        fractumStart = segmentEnd; // It starts at the end boundary of the previous segment.
-        fractumLineCounter = segmentLineCounter + newlines.size(); // Its line number is
-          // the line number of the previous segment, plus the line count of that segment.
+        fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
+        fractumLineCounter = segmentLineCounter + newlines.size(); // Its line number is the line number
+          // of the present segment, plus the line count of the present segment.
         if( isDividerDrawing( segmentEndIndicatorChar )) { // A divider segment is next.
             state = ParseState.division; // It marks the start of a division.  Its head comprises
               // all contiguous divider segments, so scan through each of them:
@@ -40,6 +54,10 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
         else {
             state = ParseState.point;
             nextSegment(); }
+        fractumIndentWidth = nextIndentWidth;
+        final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
+        while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
+        hierarchy.add( state );
         return state; }
 
 
@@ -73,6 +91,8 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
         fractumStart = 0;
         fractumLineCounter = 0;
         state = ParseState.document;
+        fractumIndentWidth = 0;
+        hierarchy.clear();
 
         // Changing what follows?  Sync → `nextSegment`.
         segmentLineCounter = 0;
@@ -184,6 +204,15 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
 
 
+    /** The offset from the start of the present fractum to its first non-space character.
+      * This is either zero or a multiple of four.
+      *
+      *     @see #fractumStart
+      */
+    private int fractumIndentWidth;
+
+
+
     /** The number of newline characters before the present fractum.
       *
       *     @see #fractumStart
@@ -201,10 +230,24 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
 
 
-    /** The start position of the present fractum in the buffer,
-      * which is the position of its first character.
+    /** The start position in the buffer of the present fractum, if any, which is the
+      * position of its first character.  It is defined only for substansive parse states.
+      * Likewise for any member whose API refers to it.
       */
     private int fractumStart; // [SBV]
+
+
+
+    /** A record of the present fractum’s indent and ancestry in list form.  It records indent
+      * in perfect units by its adjusted size: ``fractumIndentWidth / 4 == hierarchy.size() - 1`.
+      * It records ancestry by ancestral parse states each at an index equal to its indent in perfect
+      * units, ending with the parse state of the present fractum itself at index `hierarchy.size() - 1`.
+      * It records unoccupied indents by padding their corresponding indeces with null parse states.
+      *
+      *     @see #fractumIndentWidth
+      *     @see #fractumStart
+      */
+    private final ArrayList<ParseState> hierarchy = new ArrayList<>();
 
 
 
@@ -230,6 +273,8 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
       * after its final character.  This is zero in case of an empty markup source
       * or headless document fractum, the only cases of a zero length fractal segment.
       * If the value here is the buffer limit, then no segment remains in the markup source.
+      *
+      *     @see #segmentStart
       */
     private int segmentEnd; // [SBV]
 
@@ -237,6 +282,8 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
     /** The buffer position of the first non-space character of the present fractal segment’s
       * linear-order successor, or the buffer limit if there is none.
+      *
+      *     @see #segmentStart
       */
     private int segmentEndIndicator; // [SBV]
 
@@ -265,8 +312,9 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
 
 
-    /** The start position of the present fractal segment in the buffer,
-      * which is the position of its first character.
+    /** The start position in the buffer of the present fractal segment, if any, which is
+      * the position of its first character.  It is defined only for substansive parse states.
+      * Likewise for any member whose API refers to it.
       */
     private int segmentStart; // [SBV]
 
