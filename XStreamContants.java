@@ -2,7 +2,7 @@ package Breccia.parser;
 
 
 /** Extended XML ‘stream constants’ for parsing.  This extension reserves constants in the range
-  * 174,358,467 to 174,350,000, user defined constants should be outside that range.
+  * 174,350,000 to 174,358,467, user defined constants should be outside that range.
   *
   *     @see javax.xml.stream.XMLStreamConstants
   */
