@@ -9,7 +9,7 @@ import java.io.IOException;
 public interface BreccianCursor { // Cf. `javax.xml.stream.XMLStreamReader`.
 
 
-    /** Tells whether this cursor can advance to the next parse state.
+    /** Whether this cursor can advance to the next parse state.
       *
       *     @see #next()
       */
