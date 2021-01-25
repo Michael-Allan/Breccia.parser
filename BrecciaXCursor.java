@@ -8,6 +8,9 @@ import javax.xml.stream.*;
 
 
 /** A reusable translator of Breccia to X-Breccia.
+  *
+  *     @see <a href='http://reluk.ca/project/Breccia/XML/language_definition.brec'>
+  *       X-Breccia language definition</a>
   */
 public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamContants {
 
@@ -41,7 +44,7 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
    // ━━━  X M L   S t r e a m   R e a d e r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** Does nothing, this cursor contains no resource that needs freeing.
+    /** Does nothing, this cursor maintains no resource that needs freeing.
       */
     public @Override void close() {}
 
@@ -185,7 +188,7 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
 
 
 
-    public @Override boolean hasNext() { return sourceCursor.hasNext(); }
+    public @Override boolean hasNext() { return eventType != END_DOCUMENT; }
 
 
 
@@ -197,9 +200,19 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
       *   of type {@linkplain ParseError ParseError} against the Breccian source.
       */
     public @Override int next() throws XMLStreamException {
-        try { sourceCursor.next(); }
+        if( !hasNext() ) throw new java.util.NoSuchElementException();
+        if( !sourceCursor.hasNext() ) return eventType = END_DOCUMENT;
+        final ParseState next;
+        try { next = sourceCursor.next(); }
         catch( ParseError x ) { throw new XMLStreamException( x ); }
-        throw new UnsupportedOperationException(); }
+        return eventType = switch( next ) {
+            case division    -> START_ELEMENT;
+            case divisionEnd ->   END_ELEMENT;
+            case document    -> START_ELEMENT;
+            case documentEnd ->   END_ELEMENT;
+            case point       -> START_ELEMENT;
+            case pointEnd    ->   END_ELEMENT;
+            case empty       -> throw new IllegalStateException(); };}
 
 
 
