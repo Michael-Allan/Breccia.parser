@@ -17,7 +17,7 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
 
     public <S extends BreccianCursor & ReusableCursor> BrecciaXCursor( final S sourceCursor ) {
         this.sourceCursor = sourceCursor; } /* Here losing the `ReusableCursor` aspect of its type, now
-          accessible only by cast.  The alternative of dual typing the field would require elevating the
+          recoverable only by cast.  The alternative of dual typing the field would require elevating the
           type parameter to the class definition, burdening the user with supplying its actual value. */
 
 

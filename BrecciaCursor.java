@@ -121,7 +121,7 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
         assert newlines.isEmpty();
         int lineStart = segmentStart; // [SBV]
         assert lineStart == 0 || buffer.get(lineStart-1) == '\n'; /* Either the preceding character is
-          inaccessible (it does not exist, or lies outside the buffer) or that character is a newline. */
+          unreachable (it does not exist, or lies outside the buffer) or that character is a newline. */
         boolean inMargin = state == ParseState.document; // Scanning in the left margin where the next
           // `buffer.get` might yield either an indent space or the indented initial character.
         int indentWidth = 0; // What determines `segmentEnd`.
