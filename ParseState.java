@@ -1,14 +1,14 @@
 package Breccia.parser;
 
 
-/** A parse state of a {@linkplain BreccianCursor Breccian cursor}.
-  * A parse state is either substansive, ending or {@linkplain #empty empty}.
+/** A discrete state of a Breccian pull parser.
+  * Each state is categorized as either substansive, ending or {@linkplain #empty empty}.
   * Ending states are named by appending ‘End’ to their corresponding substansive states.
   *
-  * <p>A parse state may be initial, final or both.  The initial state for each markup
-  * source is either `{@linkplain #document document}`, in which case the final state
-  * is `{@linkplain #documentEnd documentEnd}`; or it is `{@linkplain #empty empty}`
-  * which is also the final state.</p>
+  * <p>Certain parse states are further characterized as initial, final or both.  The initial state
+  * for each markup source is either `{@linkplain #document document}`, in which case the final state
+  * is `{@linkplain #documentEnd documentEnd}`; or it is `{@linkplain #empty empty}`, which is also
+  * the final state.</p>
   */
 public enum ParseState {
 

@@ -2,9 +2,15 @@ package Breccia.parser;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Path;
+import Java.Unhandled;
+import java.util.function.IntConsumer;
+import java.util.function.IntPredicate;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
+
+import static Breccia.parser.Project.newSourceReader;
 
 
 /** A reusable translator of Breccia to X-Breccia.
@@ -15,24 +21,59 @@ import javax.xml.stream.*;
 public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamContants {
 
 
-    public <S extends BreccianCursor & ReusableCursor> BrecciaXCursor( final S sourceCursor ) {
-        this.sourceCursor = sourceCursor; } /* Here losing the `ReusableCursor` aspect of its type, now
-          recoverable only by cast.  The alternative of dual typing the field would require elevating the
-          type parameter to the class definition, burdening the user with supplying its actual value. */
+    /** @see #sourceCursor()
+      */
+    public BrecciaXCursor( BrecciaCursor sourceCursor ) { this.sourceCursor = sourceCursor; }
+
+
+
+    /** Translates the given source file, feeding each state of the translation to `sink` till all
+      * are exhausted.  Calling this method will abort any translation already in progress.
+      */
+    public void perState( final Path sourceFile, final IntConsumer sink ) throws ParseError {
+        try( final Reader source = newSourceReader​( sourceFile )) {
+            markupSource( source );
+            for( ;; ) {
+                sink.accept( eventType );
+                if( !hasNext() ) break;
+                try { next(); }
+                catch( final XMLStreamException x ) { throw (ParseError)(x.getCause()); }}}
+        catch( IOException x ) { throw new Unhandled( x ); }}
+
+
+
+    /** Translates the given source file, feeding each state of the translation to `sink` till either
+      * all are exhausted or `sink` returns false.  Calling this method will abort any translation
+      * already in progress.
+      */
+    public void perStateConditionally( final Path sourceFile, final IntPredicate sink )
+          throws ParseError {
+        try( final Reader source = newSourceReader​( sourceFile )) {
+            markupSource( source );
+            while( sink.test(eventType) && hasNext() ) {
+                try { next(); }
+                catch( final XMLStreamException x ) { throw (ParseError)(x.getCause()); }}}
+        catch( IOException x ) { throw new Unhandled( x ); }}
+
+
+
+    /** The source cursor to use during translations.
+      * Between translations, it may be used for other purposes.
+      */
+    public BrecciaCursor sourceCursor() { return sourceCursor; }
 
 
 
    // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** {@inheritDoc}  Sets the parse state either to `{@linkplain #START_DOCUMENT START_DOCUMENT}`
+    /** {@inheritDoc}  Sets the translation state either to `{@linkplain #START_DOCUMENT START_DOCUMENT}`
       * or to `{@linkplain #EMPTY EMPTY}`.
       *
-      *     @param r The source of markup.  It need not be buffered if the source cursor (given during
-      *       construction) is buffered; in that case, all reads by this cursor will be bulk transfers.
+      *     @param r {@inheritDoc}  It is taken to comprise a single document at most.
       */
     public @Override void markupSource( final Reader r ) throws ParseError {
-        ((ReusableCursor)sourceCursor).markupSource( r );
+        sourceCursor.markupSource( r );
         final ParseState s = sourceCursor.state();
         if( s == ParseState.empty ) eventType = EMPTY;
         else {
@@ -98,6 +139,8 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
 
 
 
+    /** The present translation state, aka ‘event type’.  {@inheritDoc}
+      */
     public @Override int getEventType() { return eventType; }
 
 
@@ -188,7 +231,7 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
 
 
 
-    public @Override boolean hasNext() { return eventType != END_DOCUMENT; }
+    public @Override boolean hasNext() { return eventType != END_DOCUMENT && eventType != EMPTY; }
 
 
 
@@ -196,23 +239,25 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
 
 
 
-    /** @throws XMLStreamException With a {@linkplain XMLStreamException#getCause() cause}
+    /** @throws XMLStreamException Always with a {@linkplain XMLStreamException#getCause() cause}
       *   of type {@linkplain ParseError ParseError} against the Breccian source.
       */
     public @Override int next() throws XMLStreamException {
         if( !hasNext() ) throw new java.util.NoSuchElementException();
-        if( !sourceCursor.hasNext() ) return eventType = END_DOCUMENT;
+        if( sourceCursor.state() == ParseState.documentEnd ) return eventType = END_DOCUMENT;
         final ParseState next;
+        assert !sourceCursor.state().isFinal;
         try { next = sourceCursor.next(); }
         catch( ParseError x ) { throw new XMLStreamException( x ); }
         return eventType = switch( next ) {
             case division    -> START_ELEMENT;
             case divisionEnd ->   END_ELEMENT;
             case document    -> START_ELEMENT;
-            case documentEnd ->   END_ELEMENT;
+            case documentEnd ->   END_ELEMENT; // End of document element; next call ends document.
             case point       -> START_ELEMENT;
             case pointEnd    ->   END_ELEMENT;
-            case empty       -> throw new IllegalStateException(); };}
+            case empty       -> throw new IllegalStateException(); };} /* Illegal except as initial
+              state, which it cannot be owing to `markupSource` and the `!hasNext()` guard above. */
 
 
 
@@ -258,12 +303,11 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 
-    private int eventType;
+    private final BrecciaCursor sourceCursor;
 
 
 
-    private final BreccianCursor sourceCursor; }
-
+    private int eventType; }
 
 
                                                    // Copyright © 2020-2021  Michael Allan.  Licence MIT.

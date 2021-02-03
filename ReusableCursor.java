@@ -5,6 +5,8 @@ public interface ReusableCursor {
 
 
     /** Positions the cursor on a new source of markup.
+      *
+      *     @param r The source of markup.
       */
     public void markupSource( java.io.Reader r ) throws ParseError; }
 

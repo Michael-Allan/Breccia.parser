@@ -1,13 +1,7 @@
 package Breccia.parser;
 
 
-public class ParseError extends Java.UserError {
-
-
-    /** @see #lineNumber
-      */
-    public ParseError( int lineNumber ) { this.lineNumber = lineNumber; }
-
+public class ParseError extends Exception {
 
 
     /** @see #lineNumber
@@ -19,9 +13,10 @@ public class ParseError extends Java.UserError {
 
 
 
-    /** The ordinal number of line containing the error.  Lines are numbered beginning at one.
+    /** The ordinal number of the line containing the error.  Lines are numbered beginning at one.
       */
     public final int lineNumber; }
+
 
 
                                                         // Copyright © 2021  Michael Allan.  Licence MIT.

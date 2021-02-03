@@ -3,28 +3,41 @@ package Breccia.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.CharBuffer;
+import java.nio.file.Path;
 import Java.Unhandled;
 import java.util.ArrayList;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.NoSuchElementException;
 
 import static Breccia.parser.Breccia.isDividerDrawing;
+import static Breccia.parser.Project.newSourceReader;
 
 
-/** A reusable, buffered cursor over plain Breccia.
+/** A pull parser of Breccian markup that operates as a unidirectional cursor over a series
+  * of discrete parse states.
   */
-public class BrecciaCursor implements BreccianCursor, ReusableCursor {
+public class BrecciaCursor implements ReusableCursor {
 
 
-   // ━━━  B r e c c i a n   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    public @Override boolean hasNext() { return !state.isFinal; }
-
-
-
-    /** @throws NoSuchElementException If `hasNext` is false.
+    /** The capacity of the read buffer in 16-bit code units.  Parsing markup with a fractal head large
+      * enough to overflow the buffer will cause an `{@linkplain OverlargeHead OverlargeHead}` exception.
       */
-    public @Override ParseState next() throws ParseError {
+    static final int bufferCapacity; static {
+        int n = 0x1_0000; // 65536, minimizing the likelihood of having to throw `OverlargeHead`.
+        // Now assume the IO system will transfer so much on each refill request by `boundSegment`.
+        // Let it do so even while the buffer holds the already-read portion of the present segment:
+        n += 0x1000; // 4096, more than ample for that segment.
+        bufferCapacity = n; }
+
+
+
+    /** Advances this cursor to the next parse state.
+      *
+      *     @return The new parse state.
+      *     @throws NoSuchElementException If the present state {@linkplain ParseState#isFinal is final}.
+      */
+    public ParseState next() throws ParseError {
         if( state.isFinal ) throw new NoSuchElementException();
         if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
             while( fractumIndentWidth >= 0 ) { // Unwind any past body fracta, ending each.
@@ -62,7 +75,35 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
 
 
 
-    public @Override ParseState state() { return state; }
+    /** Parses the given source file, feeding each parse state to `sink` till all are exhausted.
+      * Calling this method will abort any parse already in progress.
+      */
+    public void perState( final Path sourceFile, final Consumer<ParseState> sink ) throws ParseError {
+        try( final Reader source = newSourceReader​( sourceFile )) {
+            markupSource( source );
+            for( ;; ) {
+                sink.accept( state );
+                if( state.isFinal ) break;
+                next(); }}
+        catch( IOException x ) { throw new Unhandled( x ); }}
+
+
+
+    /** Parses the given source file, feeding each parse state to `sink` till either all are exhausted
+      * or `sink` returns false.  Calling this method will abort any parse already in progress.
+      */
+    public void perStateConditionally( final Path sourceFile, final Predicate<ParseState> sink )
+          throws ParseError {
+        try( final Reader source = newSourceReader​( sourceFile )) {
+            markupSource( source );
+            while( sink.test(state) && !state.isFinal ) next(); }
+        catch( IOException x ) { throw new Unhandled( x ); }}
+
+
+
+    /** The present parse state.
+      */
+    public ParseState state() { return state; }
 
 
 
@@ -72,8 +113,7 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
     /** {@inheritDoc}  Sets the parse state either to `{@linkplain ParseState#empty empty}`
       * or to `{@linkplain ParseState#document document}`.
       *
-      *     @param r The source of markup.  It is taken to comprise a single document at most.
-      *       It need not be buffered, all reads by this cursor are bulk transfers.
+      *     @param r {@inheritDoc}  It is taken to comprise a single document at most.
       */
     public @Override void markupSource( final Reader r ) throws ParseError {
         sourceReader = r;
@@ -192,15 +232,6 @@ public class BrecciaCursor implements BreccianCursor, ReusableCursor {
     /** The source buffer.
       */
     private CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
-
-
-
-    private static final int bufferCapacity; static {
-        int n = 0x1_0000; // 65536, minimizing the likelihood of having to throw `OverlargeHead`.
-        // Now assume the IO system will transfer so much on each refill request by `boundSegment`.
-        // Let it do so even while the buffer holds the already-read portion of the present segment:
-        n += 0x1000; // 4096, more than ample for that segment.
-        bufferCapacity = n; }
 
 
 
