@@ -1,10 +1,12 @@
 package Breccia.parser;
 
 
-public interface Markup {
+/** A point fractum.
+  */
+public abstract class Point extends BodyFractum {
 
 
-    public int lineNumber(); }
+    protected Point() {}}
 
 
                                                         // Copyright © 2021  Michael Allan.  Licence MIT.

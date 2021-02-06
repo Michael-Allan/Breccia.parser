@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 
 import static Breccia.parser.Project.newSourceReader;
+import static Breccia.parser.Typestamp.*;
 
 
 /** A reusable translator of Breccia to X-Breccia.
@@ -74,11 +75,11 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
       */
     public @Override void markupSource( final Reader r ) throws ParseError {
         sourceCursor.markupSource( r );
-        final ParseState s = sourceCursor.state();
-        if( s == ParseState.empty ) eventType = EMPTY;
-        else {
-            assert s == ParseState.document;
-            eventType = START_DOCUMENT; }}
+        var d = sourceCursor.asDocument();
+        if( d == null ) {
+            assert sourceCursor.asEmpty() != null;
+            eventType = EMPTY; }
+        else eventType = START_DOCUMENT; }
 
 
 
@@ -244,20 +245,22 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
       */
     public @Override int next() throws XMLStreamException {
         if( !hasNext() ) throw new java.util.NoSuchElementException();
-        if( sourceCursor.state() == ParseState.documentEnd ) return eventType = END_DOCUMENT;
-        final ParseState next;
-        assert !sourceCursor.state().isFinal;
-        try { next = sourceCursor.next(); }
-        catch( ParseError x ) { throw new XMLStreamException( x ); }
-        return eventType = switch( next ) {
-            case division    -> START_ELEMENT;
-            case divisionEnd ->   END_ELEMENT;
-            case document    -> START_ELEMENT;
-            case documentEnd ->   END_ELEMENT; // End of document element; next call ends document.
-            case point       -> START_ELEMENT;
-            case pointEnd    ->   END_ELEMENT;
-            case empty       -> throw new IllegalStateException(); };} /* Illegal except as initial
-              state, which it cannot be owing to `markupSource` and the `!hasNext()` guard above. */
+        final ParseState next; {
+            final ParseState present = sourceCursor.state();
+            if( present.typestamp() == documentEnd ) return eventType = END_DOCUMENT;
+            assert !present.isFinal();
+            try { next = sourceCursor.next(); }
+            catch( ParseError x ) { throw new XMLStreamException( x ); }}
+        return eventType = switch( next.typestamp() ) {
+            case division        -> START_ELEMENT;
+            case divisionEnd     ->   END_ELEMENT;
+            case document        -> START_ELEMENT;
+            case documentEnd     ->   END_ELEMENT; // End of document element; next call ends document.
+            case genericPoint    -> START_ELEMENT;
+            case genericPointEnd ->   END_ELEMENT;
+            case empty -> throw new IllegalStateException(); /* Illegal except as an initial state,
+              that is, which it cannot be owing to `markupSource` and the `!hasNext()` guard above. */
+            default -> throw new IllegalStateException(); };}
 
 
 

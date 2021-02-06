@@ -1,10 +1,12 @@
 package Breccia.parser;
 
 
-public interface Markup {
+/** The end of a point fractum.
+  */
+public abstract class PointEnd extends BodyFractumEnd {
 
 
-    public int lineNumber(); }
+    protected PointEnd() {}}
 
 
                                                         // Copyright © 2021  Michael Allan.  Licence MIT.

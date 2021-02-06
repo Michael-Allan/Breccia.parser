@@ -1,10 +1,7 @@
 package Breccia.parser;
 
 
-public interface Markup {
-
-
-    public int lineNumber(); }
+public class SerialStamped {}
 
 
                                                         // Copyright © 2021  Michael Allan.  Licence MIT.

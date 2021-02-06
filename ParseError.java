@@ -1,13 +1,13 @@
 package Breccia.parser;
 
 
-public class ParseError extends Exception {
+public abstract class ParseError extends Exception {
 
 
     /** @see #lineNumber
       * @see #getMessage()
       */
-    public ParseError( int lineNumber, String message ) {
+    protected ParseError( int lineNumber, String message ) {
         super( message );
         this.lineNumber = lineNumber; }
 

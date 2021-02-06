@@ -35,42 +35,44 @@ public class BrecciaCursor implements ReusableCursor {
     /** Advances this cursor to the next parse state.
       *
       *     @return The new parse state.
-      *     @throws NoSuchElementException If the present state {@linkplain ParseState#isFinal is final}.
+      *     @throws NoSuchElementException If the present state
+      *       {@linkplain ParseState#isFinal() is final}.
       */
     public ParseState next() throws ParseError {
-        if( state.isFinal ) throw new NoSuchElementException();
+        if( state.isFinal() ) throw new NoSuchElementException();
         if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
             while( fractumIndentWidth >= 0 ) { // Unwind any past body fracta, ending each.
                 fractumIndentWidth -= 4;
-                final ParseState past = hierarchy.remove( hierarchy.size() - 1 );
-                if( past != null ) return state = past.opposite(); } // Namely its end.
-            return state = ParseState.documentEnd; }
+                final BodyFractum past = hierarchy.remove( hierarchy.size() - 1 );
+                if( past != null ) return state = past.commitEnd(); }
+            return state = commitDocumentEnd(); }
         final int nextIndentWidth = segmentEndIndicator - segmentEnd; /* The offset from the start of
           the next fractum (`segmentEnd`) to its first non-space character (`segmentEndIndicator`). */
         assert nextIndentWidth % 4 == 0;
-        if( !state.isInitial ) { // Then unwind any past siblings of `hierarchy`, leaving only ancestors.
+        if( !state.isInitial() ) { // Then unwind any past siblings from `hierarchy`, ending each.
             while( fractumIndentWidth >= nextIndentWidth ) { /* For its own purposes, this loop maintains
                   the records of `fractumIndentWidth` and `hierarchy` even through the ending states
                   of past siblings, during which they are undefined for their intended purposes. */
                 fractumIndentWidth -= 4;
-                final ParseState pastSibling = hierarchy.remove( hierarchy.size() - 1 );
-                if( pastSibling != null ) return state = pastSibling.opposite(); }} // Namely its end.
+                final BodyFractum pastSibling = hierarchy.remove( hierarchy.size() - 1 );
+                if( pastSibling != null ) return state = pastSibling.commitEnd(); }}
 
         // Changing what follows?  Sync → `markupSource`.
         fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
         fractumLineCounter = segmentLineCounter + newlines.size(); // Its line number is the line number
           // of the present segment, plus the line count of the present segment.
         if( isDividerDrawing( segmentEndIndicatorChar )) { // A divider segment is next.
-            state = ParseState.division; // It marks the start of a division.  Its head comprises
+            state = commitDivision(); // It marks the start of a division.  Its head comprises
               // all contiguous divider segments, so scan through each of them:
             do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); }
         else {
-            state = ParseState.point;
+            state = commitGenericPoint();
             nextSegment(); }
         fractumIndentWidth = nextIndentWidth;
         final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
         while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
-        hierarchy.add( state );
+        assert state == bodyFractum;
+        hierarchy.add( bodyFractum );
         return state; }
 
 
@@ -83,7 +85,7 @@ public class BrecciaCursor implements ReusableCursor {
             markupSource( source );
             for( ;; ) {
                 sink.accept( state );
-                if( state.isFinal ) break;
+                if( state.isFinal() ) break;
                 next(); }}
         catch( IOException x ) { throw new Unhandled( x ); }}
 
@@ -96,22 +98,176 @@ public class BrecciaCursor implements ReusableCursor {
           throws ParseError {
         try( final Reader source = newSourceReader​( sourceFile )) {
             markupSource( source );
-            while( sink.test(state) && !state.isFinal ) next(); }
+            while( sink.test(state) && !state.isFinal() ) next(); }
         catch( IOException x ) { throw new Unhandled( x ); }}
 
 
 
-    /** The present parse state.
+    /** The parse state at the current position in the markup.
       */
-    public ParseState state() { return state; }
+    public final ParseState state() { return state; }
+
+
+
+   // ┈┈┈  s t a t e   t y p i n g  ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+
+
+    /** Returns the present parse state as a `BodyFractum`,
+      * or null if the cursor is not positioned at a body fractum.
+      */
+    public final BodyFractum asBodyFractum() { return state == bodyFractum? bodyFractum : null; }
+
+
+        protected final void commitBodyFractum( final BodyFractum f ) {
+            bodyFractum = f;
+            commitFractum( f ); }
+
+
+
+    /** Returns the present parse state as a `BodyFractumEnd`,
+      * or null if the cursor is not positioned at the end of a body fractum.
+      */
+    public final BodyFractumEnd asBodyFractumEnd() {
+        return state == bodyFractumEnd? bodyFractumEnd : null; }
+
+
+        protected final void commitBodyFractumEnd( final BodyFractumEnd e ) {
+            bodyFractumEnd = e;
+            commitFractumEnd( e ); }
+
+
+
+    /** Returns the present parse state as a `Division`,
+      * or null if the cursor is not positioned at a division.
+      */
+    public final Division asDivision() { return state == division? division : null; }
+
+
+        protected final void commitDivision( final Division d ) {
+            division = d;
+            commitBodyFractum( d ); }
+
+
+
+    /** Returns the present parse state as a `DivisionEnd`,
+      * or null if the cursor is not positioned at the end of a division.
+      */
+    public final DivisionEnd asDivisionEnd() { return state == divisionEnd? divisionEnd : null; }
+
+
+        protected final void commitDivisionEnd( final DivisionEnd e ) {
+            divisionEnd = e;
+            commitBodyFractumEnd( e ); }
+
+
+
+    /** Returns the present parse state as a `Document`,
+      * or null if the cursor is not positioned at a document fractum.
+      */
+    public final Document asDocument() { return state == document? document : null; }
+
+
+        protected final void commitDocument( final Document d ) {
+            document = d;
+            commitFractum( d ); }
+
+
+
+    /** Returns the present parse state as a `DocumentEnd`,
+      * or null if the cursor is not positioned at the end of a document fractum.
+      */
+    public final DocumentEnd asDocumentEnd() { return state == documentEnd? documentEnd : null; }
+
+
+        protected final void commitDocumentEnd( final DocumentEnd e ) {
+            documentEnd = e;
+            commitFractumEnd( e ); }
+
+
+
+    /** Returns the present parse state as `Empty`, or null if the markup source is not empty.
+      */
+    public final Empty asEmpty() { return state == empty? empty : null; }
+
+
+        protected final void commitEmpty( final Empty e ) { state = empty = e; }
+
+
+
+    /** Returns the present parse state as a `Fractum`,
+      * or null if the cursor is not positioned at a fractum.
+      */
+    public final Fractum asFractum() { return state == fractum? fractum : null; }
+
+
+        protected final void commitFractum( final Fractum f ) { state = fractum = f; }
+
+
+
+    /** Returns the present parse state as a `FractumEnd`,
+      * or null if the cursor is not positioned at the end of a fractum.
+      */
+    public final FractumEnd asFractumEnd() { return state == fractumEnd? fractumEnd : null; }
+
+
+        protected final void commitFractumEnd( final FractumEnd e ) { state = fractumEnd = e; }
+
+
+
+    /** Returns the present parse state as a `GenericPoint`,
+      * or null if the cursor is not positioned at a generic point.
+      */
+    public final GenericPoint asGenericPoint() { return state == genericPoint? genericPoint : null; }
+
+
+        protected final void commitGenericPoint( final GenericPoint p ) {
+            genericPoint = p;
+            commitPoint( p ); }
+
+
+
+    /** Returns the present parse state as a `GenericPointEnd`,
+      * or null if the cursor is not positioned at the end of a generic point.
+      */
+    public final GenericPointEnd asGenericPointEnd() {
+        return state == genericPointEnd? genericPointEnd : null; }
+
+
+        protected final void commitGenericPointEnd( final GenericPointEnd e ) {
+            genericPointEnd = e;
+            commitPointEnd( e ); }
+
+
+
+    /** Returns the present parse state as a `Point`,
+      * or null if the cursor is not positioned at a point.
+      */
+    public final Point asPoint() { return state == point? point : null; }
+
+
+        protected final void commitPoint( final Point p ) {
+            point = p;
+            commitBodyFractum( p ); }
+
+
+
+    /** Returns the present parse state as a `PointEnd`,
+      * or null if the cursor is not positioned at the end of a point.
+      */
+    public final PointEnd asPointEnd() { return state == pointEnd? pointEnd : null; }
+
+
+        protected final void commitPointEnd( final PointEnd e ) {
+            pointEnd = e;
+            commitBodyFractumEnd( e ); }
 
 
 
    // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** {@inheritDoc}  Sets the parse state either to `{@linkplain ParseState#empty empty}`
-      * or to `{@linkplain ParseState#document document}`.
+    /** {@inheritDoc}  Sets the parse state either to `{@linkplain Empty Empty}`
+      * or to `{@linkplain Document Document}`.
       *
       *     @param r {@inheritDoc}  It is taken to comprise a single document at most.
       */
@@ -122,7 +278,7 @@ public class BrecciaCursor implements ReusableCursor {
             catch( IOException x ) { throw new Unhandled( x ); }}
         if( count < 0 ) {
             buffer.limit( 0 );
-            state = ParseState.empty;
+            state = commitEmpty();
             return; }
         if( count == 0 ) throw new IllegalStateException(); // Forbidden by `Reader` for array reads.
         buffer.limit( count );
@@ -130,7 +286,7 @@ public class BrecciaCursor implements ReusableCursor {
         // Changing what follows?  Sync → `next`.
         fractumStart = 0;
         fractumLineCounter = 0;
-        state = ParseState.document;
+        state = commitDocument();
         fractumIndentWidth = 0;
         hierarchy.clear();
 
@@ -162,7 +318,7 @@ public class BrecciaCursor implements ReusableCursor {
         int lineStart = segmentStart; // [SBV]
         assert lineStart == 0 || buffer.get(lineStart-1) == '\n'; /* Either the preceding character is
           unreachable (it does not exist, or lies outside the buffer) or that character is a newline. */
-        boolean inMargin = state == ParseState.document; // Scanning in the left margin where the next
+        boolean inMargin = state == document; // Scanning in the left margin where the next
           // `buffer.get` might yield either an indent space or the indented initial character.
         int indentWidth = 0; // What determines `segmentEnd`.
         boolean inPotentialBackslashBullet = false; // Scanning a perfectly indented backslash sequence.
@@ -269,16 +425,21 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** A record of the present fractum’s indent and ancestry in list form.  It records indent
-      * in perfect units by its adjusted size: ``fractumIndentWidth / 4 == hierarchy.size() - 1`.
-      * It records ancestry by ancestral parse states each at an index equal to its indent in perfect
-      * units, ending with the parse state of the present fractum itself at index `hierarchy.size() - 1`.
-      * It records unoccupied indents by padding their corresponding indeces with null parse states.
+    /** A record of the present parse state’s indent and fractal ancestry in list form.  It records
+      * indent in perfect units by its adjusted size: ``fractumIndentWidth / 4 == hierarchy.size - 1`.
+      * It records fractal ancestry by ancestral parse states each at an index equal to its indent in
+      * perfect units, beginning with the parse state of the top-level body fractum and ending with
+      * that of the present body fractum itself at index `hierarchy.size - 1`.  It records unoccupied
+      * indents by padding their corresponding indeces with null parse states.  For parse states other
+      * than body fracta, the hierarchy list is always empty.
+      *
+      * <p>Be careful with the ancestral parse states — all but the final element of the list —
+      * as their content is no longer valid at the present cursor position.</p>.
       *
       *     @see #fractumIndentWidth
       *     @see #fractumStart
       */
-    private final ArrayList<ParseState> hierarchy = new ArrayList<>();
+    private final ArrayList<BodyFractum> hierarchy = new ArrayList<>();
 
 
 
@@ -296,7 +457,6 @@ public class BrecciaCursor implements ReusableCursor {
         newlines.clear();
         segmentStart = segmentEnd;
         boundSegment(); }
-
 
 
 
@@ -355,13 +515,130 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    protected ParseState state; }
+    protected ParseState state;
+
+
+
+   // ┈┈┈  s t a t e   t y p i n g  ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+
+
+    private BodyFractum bodyFractum;
+
+
+
+    private BodyFractumEnd bodyFractumEnd;
+
+
+
+    private Division division;
+
+
+        private final Division basicDivision = new Division() { // [CIC]
+
+            @Override protected DivisionEnd commitEnd() {
+                commitDivisionEnd( basicDivisionEnd );
+                return basicDivisionEnd; }};
+
+
+        private Division commitDivision() {
+            commitDivision( basicDivision );
+            return basicDivision; }
+
+
+
+    private DivisionEnd divisionEnd;
+
+
+        private final DivisionEnd basicDivisionEnd = new DivisionEnd(); // [CIC]
+
+
+
+    private Document document;
+
+
+        private final Document basicDocument = new Document(); // [CIC]
+
+
+        private Document commitDocument() {
+            commitDocument( basicDocument );
+            return basicDocument; }
+
+
+
+    private DocumentEnd documentEnd;
+
+
+        private final DocumentEnd basicDocumentEnd = new DocumentEnd(); // [CIC]
+
+
+        private DocumentEnd commitDocumentEnd() {
+            commitDocumentEnd( basicDocumentEnd );
+            return basicDocumentEnd; }
+
+
+
+    private Empty empty;
+
+
+        private final Empty basicEmpty = new Empty(); // [CIC]
+
+
+        private Empty commitEmpty() {
+            commitEmpty( basicEmpty );
+            return basicEmpty; }
+
+
+
+    private Fractum fractum;
+
+
+
+    private FractumEnd fractumEnd;
+
+
+
+    private GenericPoint genericPoint;
+
+
+        private final GenericPoint basicGenericPoint = new GenericPoint() { // [CIC]
+
+            @Override protected GenericPointEnd commitEnd() {
+                commitGenericPointEnd( basicGenericPointEnd );
+                return basicGenericPointEnd; }};
+
+
+        private GenericPoint commitGenericPoint() {
+            commitGenericPoint( basicGenericPoint );
+            return basicGenericPoint; }
+
+
+
+    private GenericPointEnd genericPointEnd;
+
+
+        private final GenericPointEnd basicGenericPointEnd = new GenericPointEnd(); // [CIC]
+
+
+
+    private Point point;
+
+
+
+    private PointEnd pointEnd; }
 
 
 
 // NOTES
 // ─────
 //   B ·· Breccia language definition.  http://reluk.ca/project/Breccia/language_definition.brec
+//
+//   CIC  Cached instance of a concrete parse state.  Each instance is held in a constant field named
+//        e.g. `basicFoo`, basic meaning not a subtype.  It could instead be held in field `foo`, except
+//        that field might be overwritten with a subtype of `Foo`.  No subtype is defined by this parser
+//        for any concrete parse state, but an extended parser might define one.  Therefore each concrete
+//        state field, e.g. `foo`, must be declared variable in order that an extended parser might
+//        overwrite it by committing instances of a `Foo` subtype.  In that event, the separate field
+//        `basicFoo` still holds an instance of the base type for later reuse.
 //
 //   SBV  Segment boundary variable.  This note serves as a reminder to adjust the value of the variable
 //        in `boundSegment` after each call to `buffer.compact`.
