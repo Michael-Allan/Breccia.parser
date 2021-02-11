@@ -10,10 +10,10 @@ public class Document extends Fractum implements Markup {
 
 
 
-   // ━━━  O b j e c t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override String toString() { return "Document"; }
+    public @Override String tagName() { return "Document"; }
 
 
 
@@ -32,7 +32,7 @@ public class Document extends Fractum implements Markup {
 
 
 
-    public int typestamp() { return Typestamp.document; }}
+    public @Override int typestamp() { return Typestamp.document; }}
 
 
 

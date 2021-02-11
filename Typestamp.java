@@ -3,12 +3,15 @@ package Breccia.parser;
 
 /** A typestamp is an ordinal number that uniquely identifies a type of parse state.  Its main purpose
   * is to support efficient conditional branching in comprehensive switch statements, those which cover
-  * more-or-less all possible cases.  This class defines one typestamp for each of the concrete types
-  * of state.  Parser extensions may define their own typestamps outside the range of 0 to 65,535. *//*
+  * more-or-less all possible cases.  This class defines one typestamp for each of a) the fractal types
+  * defined as concrete by Breccia, b) their corresponding end states, and c) the empty state.
+  * Parser extensions may define their own typestamps outside the range of 0 to 65,535.
   *
-  * Switch statements that combine basic and extended typestamps may be less efficient, however,
-  * owing to the numeric gap between the two.  Therefore this class supports a scheme to allow
-  * for a limited set of optimized parser extensions.  [ISS, OPE]
+  *     @see ParseState#typestamp() *//*
+  *
+  * Re parser extensions: Switch statements that combine basic and extended typestamps may be less
+  * efficient owing to the numeric gap between the two.  Therefore this class supports a scheme
+  * to allow for a limited set of optimized extensions.  [ISS, OPE]
   */
 public class Typestamp {
 
@@ -19,55 +22,67 @@ public class Typestamp {
 
     /** The lowest of the typestamps defined here.
       */
-    protected static final int minimum      = 0x00;
+    protected static final int minimum              = 0x00;
+
+
+
+    /** The typestamp of `AssociativeReference`.
+      */
+    public static final int associativeReference    = 0x00;
+
+
+
+    /** The typestamp of `AssociativeReferenceEnd`.
+      */
+    public static final int associativeReferenceEnd = 0x01;
 
 
 
     /** The typestamp of `Division`.
       */
-    public static final int division        = 0x00;
+    public static final int division                = 0x02;
 
 
 
     /** The typestamp of `DivisionEnd`.
       */
-    public static final int divisionEnd     = 0x01;
+    public static final int divisionEnd             = 0x03;
 
 
 
     /** The typestamp of `Document`.
       */
-    public static final int document        = 0x02;
+    public static final int document                = 0x04;
 
 
 
     /** The typestamp of `DocumentEnd`.
       */
-    public static final int documentEnd     = 0x03;
+    public static final int documentEnd             = 0x05;
 
 
 
     /** The typestamp of `Empty`.
       */
-    public static final int empty           = 0x04;
+    public static final int empty                   = 0x06;
 
 
 
     /** The typestamp of `GenericPoint`.
       */
-    public static final int genericPoint    = 0x05;
+    public static final int genericPoint            = 0x07;
 
 
 
     /** The typestamp of `GenericPointEnd`.
       */
-    public static final int genericPointEnd = 0x06;
+    public static final int genericPointEnd         = 0x08;
 
 
 
     /** The highest of the typestamps defined here.
       */
-    protected static final int maximum      = 0x06; }
+    protected static final int maximum              = 0x08; }
 
 
 

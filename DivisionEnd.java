@@ -10,17 +10,10 @@ public class DivisionEnd extends BodyFractumEnd {
 
 
 
-   // ━━━  O b j e c t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    public @Override String toString() { return "DivisionEnd"; }
-
-
-
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public int typestamp() { return Typestamp.divisionEnd; }}
+    public @Override int typestamp() { return Typestamp.divisionEnd; }}
 
 
 

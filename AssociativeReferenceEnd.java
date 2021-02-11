@@ -1,19 +1,19 @@
 package Breccia.parser;
 
 
-public abstract class FractumEnd implements ParseState {
+/** The end of an associative reference.
+  */
+public class AssociativeReferenceEnd extends CommandPointEnd {
 
 
-    protected FractumEnd() {}
+    public AssociativeReferenceEnd() {}
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** @return False.
-      */
-    public final @Override boolean isInitial() { return false; }}
+    public @Override int typestamp() { return Typestamp.associativeReferenceEnd; }}
 
 
 

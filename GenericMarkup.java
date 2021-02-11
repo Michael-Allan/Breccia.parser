@@ -3,13 +3,11 @@ package Breccia.parser;
 import java.util.Iterator;
 
 
-/** A fractum modelled as a parse state.  It covers the markup of the fractal head alone,
-  * leaving the body (if any) to be covered by future states.
-  */
-public abstract class Fractum implements Markup, ParseState {
+public abstract class GenericMarkup implements Markup { /* Modeling what is optional and compound,
+  and also anonymous in the Breccia language definition. */
 
 
-    protected Fractum() {}
+    protected GenericMarkup() {}
 
 
 
@@ -27,8 +25,11 @@ public abstract class Fractum implements Markup, ParseState {
 
 
 
-    public CharSequence text() { throw new UnsupportedOperationException(); }}
+    public @Override String tagName() { return "Markup"; }
 
+
+
+    public CharSequence text() { throw new UnsupportedOperationException(); }}
 
 
 

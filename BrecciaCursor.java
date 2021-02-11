@@ -112,6 +112,32 @@ public class BrecciaCursor implements ReusableCursor {
    // ┈┈┈  s t a t e   t y p i n g  ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 
 
+    /** Returns the present parse state as an `AssociativeReference`,
+      * or null if the cursor is not positioned at an associative reference.
+      */
+    public final AssociativeReference asAssociativeReference() {
+        return state == associativeReference? associativeReference : null; }
+
+
+        protected final void commitAssociativeReference( final AssociativeReference r ) {
+            associativeReference = r;
+            commitCommandPoint( r ); }
+
+
+
+    /** Returns the present parse state as an `AssociativeReferenceEnd`,
+      * or null if the cursor is not positioned at the end of an associative reference.
+      */
+    public final AssociativeReferenceEnd asAssociativeReferenceEnd() {
+        return state == associativeReferenceEnd? associativeReferenceEnd : null; }
+
+
+        protected final void commitAssociativeReferenceEnd( final AssociativeReferenceEnd e ) {
+            associativeReferenceEnd = e;
+            commitCommandPointEnd( e ); }
+
+
+
     /** Returns the present parse state as a `BodyFractum`,
       * or null if the cursor is not positioned at a body fractum.
       */
@@ -134,6 +160,31 @@ public class BrecciaCursor implements ReusableCursor {
         protected final void commitBodyFractumEnd( final BodyFractumEnd e ) {
             bodyFractumEnd = e;
             commitFractumEnd( e ); }
+
+
+
+    /** Returns the present parse state as a `CommandPoint`,
+      * or null if the cursor is not positioned at a command point.
+      */
+    public final CommandPoint asCommandPoint() { return state == commandPoint? commandPoint : null; }
+
+
+        protected final void commitCommandPoint( final CommandPoint p ) {
+            commandPoint = p;
+            commitPoint( p ); }
+
+
+
+    /** Returns the present parse state as a `CommandPointEnd`,
+      * or null if the cursor is not positioned at the end of a command point.
+      */
+    public final CommandPointEnd asCommandPointEnd() {
+        return state == commandPointEnd? commandPointEnd : null; }
+
+
+        protected final void commitCommandPointEnd( final CommandPointEnd e ) {
+            commandPointEnd = e;
+            commitPointEnd( e ); }
 
 
 
@@ -522,6 +573,32 @@ public class BrecciaCursor implements ReusableCursor {
    // ┈┈┈  s t a t e   t y p i n g  ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 
 
+    private AssociativeReference associativeReference;
+
+
+        private final AssociativeReference basicAssociativeReference // [CIC]
+          = new AssociativeReference() {
+
+            protected @Override AssociativeReferenceEnd commitEnd() {
+                commitAssociativeReferenceEnd( basicAssociativeReferenceEnd );
+                return basicAssociativeReferenceEnd; }
+            public @Override String toString() { return tagName(); }}; // [SR]
+
+
+        private AssociativeReference commitAssociativeReference() {
+            commitAssociativeReference( basicAssociativeReference );
+            return basicAssociativeReference; }
+
+
+
+    private AssociativeReferenceEnd associativeReferenceEnd;
+
+
+        private final AssociativeReferenceEnd basicAssociativeReferenceEnd // [CIC]
+          = new AssociativeReferenceEnd();
+
+
+
     private BodyFractum bodyFractum;
 
 
@@ -530,14 +607,23 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    private CommandPoint commandPoint;
+
+
+
+    private CommandPointEnd commandPointEnd;
+
+
+
     private Division division;
 
 
         private final Division basicDivision = new Division() { // [CIC]
 
-            @Override protected DivisionEnd commitEnd() {
+            protected @Override DivisionEnd commitEnd() {
                 commitDivisionEnd( basicDivisionEnd );
-                return basicDivisionEnd; }};
+                return basicDivisionEnd; }
+            public @Override String toString() { return tagName(); }}; // [SR]
 
 
         private Division commitDivision() {
@@ -602,9 +688,10 @@ public class BrecciaCursor implements ReusableCursor {
 
         private final GenericPoint basicGenericPoint = new GenericPoint() { // [CIC]
 
-            @Override protected GenericPointEnd commitEnd() {
+            protected @Override GenericPointEnd commitEnd() {
                 commitGenericPointEnd( basicGenericPointEnd );
-                return basicGenericPointEnd; }};
+                return basicGenericPointEnd; }
+            public @Override String toString() { return tagName(); }}; // [SR]
 
 
         private GenericPoint commitGenericPoint() {
@@ -633,15 +720,15 @@ public class BrecciaCursor implements ReusableCursor {
 //   B ·· Breccia language definition.  http://reluk.ca/project/Breccia/language_definition.brec
 //
 //   CIC  Cached instance of a concrete parse state.  Each instance is held in a constant field named
-//        e.g. `basicFoo`, basic meaning not a subtype.  It could instead be held in field `foo`, except
-//        that field might be overwritten with a subtype of `Foo`.  No subtype is defined by this parser
-//        for any concrete parse state, but an extended parser might define one.  Therefore each concrete
-//        state field, e.g. `foo`, must be declared variable in order that an extended parser might
-//        overwrite it by committing instances of a `Foo` subtype.  In that event, the separate field
-//        `basicFoo` still holds an instance of the base type for later reuse.
+//        e.g. `basicFoo`, basic meaning not a subtype.  It could instead be held in `foo`, except
+//        that field might be overwritten with a `Foo` subtype defined by an extended parser,
+//        leaving the base instance unavailable for future resuse.
 //
 //   SBV  Segment boundary variable.  This note serves as a reminder to adjust the value of the variable
 //        in `boundSegment` after each call to `buffer.compact`.
+//
+//   SR · String representation.  Implemented for this class only because it is an anonymous class,
+//        which makes the default implementation less informative.
 
 
 

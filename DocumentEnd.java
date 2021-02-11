@@ -10,13 +10,6 @@ public class DocumentEnd extends FractumEnd {
 
 
 
-   // ━━━  O b j e c t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    public @Override String toString() { return "DocumentEnd"; }
-
-
-
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -26,7 +19,7 @@ public class DocumentEnd extends FractumEnd {
 
 
 
-    public int typestamp() { return Typestamp.documentEnd; }}
+    public @Override int typestamp() { return Typestamp.documentEnd; }}
 
 
 

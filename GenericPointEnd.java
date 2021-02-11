@@ -10,17 +10,10 @@ public class GenericPointEnd extends PointEnd {
 
 
 
-   // ━━━  O b j e c t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    public @Override String toString() { return "GenericPointEnd"; }
-
-
-
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public int typestamp() { return Typestamp.genericPointEnd; }}
+    public @Override int typestamp() { return Typestamp.genericPointEnd; }}
 
 
 

@@ -252,12 +252,24 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
             try { next = sourceCursor.next(); }
             catch( ParseError x ) { throw new XMLStreamException( x ); }}
         return eventType = switch( next.typestamp() ) {
-            case division        -> START_ELEMENT;
-            case divisionEnd     ->   END_ELEMENT;
-            case document        -> START_ELEMENT;
-            case documentEnd     ->   END_ELEMENT; // End of document element; next call ends document.
-            case genericPoint    -> START_ELEMENT;
-            case genericPointEnd ->   END_ELEMENT;
+            // (TODO) For any fractum `f` that has a head, translate it as follows.
+            // A) Emit a `Head` start tag.
+            // B) Use `f.iterator` to recursively translate each parsed head component `c`, as follows.
+            //    1) Emit a start tag of `c.tagName`.
+            //    2) Translate `c` as follows.
+            //       b) If `c.isComposite`, then use `c.iterator` to recursively translate
+            //          each parsed component of `c`.
+            //       a) Else emit `c.text`.
+            //    3) Emit the corresponding end tag.
+            // C) Emit a `Head` end tag.
+            case document -> START_ELEMENT;
+            case associativeReference    -> START_ELEMENT;
+            case associativeReferenceEnd ->   END_ELEMENT;
+            case division                -> START_ELEMENT;
+            case divisionEnd             ->   END_ELEMENT;
+            case genericPoint            -> START_ELEMENT;
+            case genericPointEnd         ->   END_ELEMENT;
+            case documentEnd -> END_ELEMENT; // End of document element; next call ends document.
             case empty -> throw new IllegalStateException(); /* Illegal except as an initial state,
               that is, which it cannot be owing to `markupSource` and the `!hasNext()` guard above. */
             default -> throw new IllegalStateException(); };}

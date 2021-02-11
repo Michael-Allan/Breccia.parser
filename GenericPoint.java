@@ -16,19 +16,17 @@ public abstract class GenericPoint extends Point {
     protected abstract @Override GenericPointEnd commitEnd();
 
 
+   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-   // ━━━  O b j e c t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-
-    public @Override String toString() { return "GenericPoint"; }
+    public @Override String tagName() { return "GenericPoint"; }
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public int typestamp() { return Typestamp.genericPoint; }}
-
+    public @Override int typestamp() { return Typestamp.genericPoint; }}
 
 
 

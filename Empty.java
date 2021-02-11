@@ -4,17 +4,10 @@ package Breccia.parser;
 /** Nothing, no markup to parse.  Occurs on attempting to parse an empty source of markup.
   * This is both an initial and final state.
   */
-public class Empty extends ParseState {
+public class Empty implements ParseState {
 
 
     public Empty() {}
-
-
-
-   // ━━━  O b j e c t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    public @Override String toString() { return "Empty"; }
 
 
 
@@ -33,7 +26,7 @@ public class Empty extends ParseState {
 
 
 
-    public int typestamp() { return Typestamp.empty; }}
+    public @Override int typestamp() { return Typestamp.empty; }}
 
 
 

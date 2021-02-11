@@ -6,28 +6,24 @@ package Breccia.parser;
   * in which case the final state is `{@linkplain DocumentEnd DocumentEnd}`;
   * or it is `{@linkplain Empty Empty}`, which is also the final state.
   */
-public abstract class ParseState extends SerialStamped {
-
-
-    protected ParseState() {}
-
+public interface ParseState {
 
 
     /** Whether this is the last state for the markup source, to be succeeded by no other.
       */
-    public abstract boolean isFinal();
+    public boolean isFinal();
 
 
 
     /** Whether this is the first state for the markup source, preceded by no other.
       */
-    public abstract boolean isInitial();
+    public boolean isInitial();
 
 
 
     /** @see Typestamp
       */
-    public abstract int typestamp(); }
+    public int typestamp(); }
 
 
 
