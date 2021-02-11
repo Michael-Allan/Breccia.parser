@@ -2,21 +2,12 @@ Definition of terms for project Breccia Parser
 
     : see also http://reluk.ca/project/wayic/refractory/index.brec
 
-    abstract
-        ─ adjective
-            - (of a type) Instantiable only as a subtype.
     body segment
         ─ noun
             - One of a point head or divider segment.
-    concrete
-        ─ adjective
-            - (of a type) Instantiable as itself, not only as a subtype..
     fractal segment
         ─ noun
             - One of a document head, point head or divider segment.
-    X-Breccia
-        : mass noun
-            - An XML homologue of Breccia.
 
 
-                                                    \ Copyright © 2020-2021  Michael Allan.  Licence MIT.
+                                                         \ Copyright © 2021  Michael Allan.  Licence MIT.
