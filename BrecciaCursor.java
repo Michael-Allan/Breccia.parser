@@ -10,7 +10,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.NoSuchElementException;
 
-import static Breccia.parser.Breccia.isDividerDrawing;
+import static java.lang.Character.charCount;
+import static java.lang.Character.codePointAt;
+import static java.lang.Character.isAlphabetic;
+import static java.lang.Character.isDigit;
+import static Breccia.parser.Breccia.*;
 import static Breccia.parser.Project.newSourceReader;
 
 
@@ -59,15 +63,16 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `markupSource`.
         fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
-        fractumLineCounter = segmentLineCounter + newlines.size(); // Its line number is the line number
-          // of the present segment, plus the line count of the present segment.
-        if( isDividerDrawing( segmentEndIndicatorChar )) { // A divider segment is next.
-            state = commitDivision(); // It marks the start of a division.  Its head comprises
-              // all contiguous divider segments, so scan through each of them:
-            do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); }
-        else {
-            state = commitGenericPoint();
-            nextSegment(); }
+        fractumLineCounter = segmentLineCounter + newlines.size(); /* Its line number is the line number
+          of the present segment, plus the line count of the present segment. */
+        if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
+              starting a division whose head comprises all contiguous divider segments. */
+            do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); // Scan through each.
+            state = commitDivision(); }
+        else { // Next is a point.
+            final int indent = segmentEndIndicator - segmentEnd;
+            nextSegment(); // Scan through to the end boundary of its head.
+            state = commitAsPoint( /*bullet position*/fractumStart + indent ); }
         fractumIndentWidth = nextIndentWidth;
         final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
         while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
@@ -345,7 +350,7 @@ public class BrecciaCursor implements ReusableCursor {
         segmentLineCounter = 0;
         newlines.clear();
         segmentStart = segmentEnd = segmentEndIndicator = 0;
-        boundSegment(); }
+        boundSegment( true ); }
 
 
 
@@ -363,14 +368,16 @@ public class BrecciaCursor implements ReusableCursor {
       * <p>Ensure before calling this method that `fractumStart`, `fractumLineCounter`, `segmentStart`,
       * `segmentLineCounter` and `state` are initialized; the buffer is positioned within the segment
       * at or before any initial newline; and the `newlines` list is empty.</p>
+      *
+      *     @param isNewSource Whether this the first call for a new source of markup.
       */
-    private void boundSegment() throws ParseError {
+    private void boundSegment( final boolean isNewSource ) throws ParseError {
         assert newlines.isEmpty();
         int lineStart = segmentStart; // [SBV]
         assert lineStart == 0 || buffer.get(lineStart-1) == '\n'; /* Either the preceding character is
           unreachable (it does not exist, or lies outside the buffer) or that character is a newline. */
-        boolean inMargin = state == document; // Scanning in the left margin where the next
-          // `buffer.get` might yield either an indent space or the indented initial character.
+        boolean inMargin = isNewSource; /* Tracking whether `buffer.position` is in the left margin,
+          where the next `get` might yield either an indent space or the indented initial character. */
         int indentWidth = 0; // What determines `segmentEnd`.
         boolean inPotentialBackslashBullet = false; // Scanning a perfectly indented backslash sequence.
         for( ;; ) {
@@ -442,6 +449,49 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    private final CommentAppenderSeeker commentAppenderSeeker = new CommentAppenderSeeker();
+
+
+
+    /** @param bullet The buffer position of the bullet.
+      */
+    private ParseState commitAsPoint( final int bullet ) {
+        buffer.rewind();
+        final int bulletEnd; {
+            int c = bullet;
+            int chLast = codePointAt( buffer, c );
+              // Reading by full code point in order accurately to recognize alphanumeric characters.
+              // Invariant: always `chLast` holds a non-whitespace character internal to the bullet.
+            for( final int cEnd = segmentEnd;; ) {
+                c += charCount( chLast );
+                if( c >= cEnd ) {
+                    assert c == cEnd: "No character can straddle the boundary of a fractal segment";
+                    break; } // Ends at end of document.
+                int ch = codePointAt( buffer, c );
+                if( isNewline( ch )) break; // Ends at end of line.
+                if( isAlphabetic(chLast) || isDigit(chLast) ) { // Then `chLast` is alphanumeric.
+                    if( ch == ' ' ) {
+                        final var sCA = commentAppenderSeeker;
+                        sCA.seekFromSpace( c, cEnd );
+                        if( sCA.appenderFound ) break; // Ends at comment appender.
+                        if( sCA.endFound ) break; // Ends at end of line or document.
+                        chLast = codePointAt( buffer, c = sCA.cNext );
+                        continue; }}
+                else { // `chLast` is non-alphanumeric and (by contract) non-whitespace.
+                    if( ch == ' ' ) break; // Ends at space.
+                    if( ch == '\u00A0'/*no-break space*/ ) {
+                        final var sCA = commentAppenderSeeker;
+                        sCA.seekFromNoBreakSpace( c, cEnd );
+                        if( sCA.appenderFound ) break; // Ends at comment appender.
+                        if( sCA.endFound ) break; // Ends at end of line or document.
+                        chLast = codePointAt( buffer, c = sCA.cNext );
+                        continue; }}
+                chLast = ch; }
+            bulletEnd = c; }
+        return commitGenericPoint(); } // TEST
+
+
+
     /** The offset from the start of the present fractum to its first non-space character.
       * This is either zero or a multiple of four.
       *
@@ -464,7 +514,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @see #fractumStart
       */
-    private int fractumLineNumber() { return fractumLineCounter + 1;}
+    private int fractumLineNumber() { return fractumLineCounter + 1; }
 
 
 
@@ -507,7 +557,7 @@ public class BrecciaCursor implements ReusableCursor {
         segmentLineCounter += newlines.size();
         newlines.clear();
         segmentStart = segmentEnd;
-        boundSegment(); }
+        boundSegment( false ); }
 
 
 
@@ -711,7 +761,103 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    private PointEnd pointEnd; }
+    private PointEnd pointEnd;
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    /** A device to detect a comment appender where it forms the end boundary of a bullet.
+      */
+    private final class CommentAppenderSeeker {
+
+
+
+        /** Whether a comment appender was found.
+          *
+          *     @see #endFound
+          */
+        boolean appenderFound;
+
+
+
+        /** Offset from `buffer.position` of the next non-space character.
+          * Updated together with `chNext` only when both `appenderFound` and `endFound` are false.
+          */
+        int cNext;
+
+
+
+        /** Whether a line or document end was encountered instead of a comment appender.
+          * Updated only when `appenderFound` is false.
+          *
+          *     @see #cNext
+          */
+        boolean endFound;
+
+
+
+        /** Tells whether the slash at `c` delimits a comment appender.
+          *
+          *     @param c Offset from `buffer.position` of a (known) slash character ‘\’.
+          *     @param cEnd End boundary of the point head.
+          */
+        private boolean isDelimiterSlashAt( int c, final int cEnd ) {
+            for( ;; ) {
+                if( ++c == cEnd ) return false;
+                final char ch = buffer.charAt( c );
+                if( ch != '\\' ) return ch == ' '; }}
+
+
+
+        /** Detects whether `c` is followed by a plain space that delimits a comment appender,
+          * recording the result in one or more fields of this seeker.
+          *
+          *     @param c Offset from `buffer.position` of a (known) no-break space character.
+          *     @param cEnd End boundary of the point head.
+          *     @see #appenderFound
+          */
+        void seekFromNoBreakSpace( int c, final int cEnd ) {
+            assert c < cEnd;
+            if( ++c == cEnd ) {
+                appenderFound = false;
+                endFound = true;
+                return; }
+            final char ch = buffer.charAt( c );
+            if( ch == ' ' ) seekFromSpace( c, cEnd );
+            else {
+                appenderFound = false;
+                endFound = false;
+                cNext = c; }}
+
+
+
+        /** Detects whether the plain space beginning at `c` delimits a comment appender,
+          * recording the result in one or more fields of this seeker.
+          *
+          *     @param c Offset from `buffer.position` of a (known) plain space character.
+          *     @param cEnd End boundary of the point head.
+          *     @see #appenderFound
+          */
+        void seekFromSpace( int c, final int cEnd ) {
+            assert c < cEnd;
+            for( ;; ) {
+                if( ++c == cEnd ) {
+                    appenderFound = false;
+                    endFound = true;
+                    break; }
+                final char ch = buffer.charAt( c );
+                if( ch != ' ' ) {
+                    if( ch == '\\' && isDelimiterSlashAt(c,cEnd) ) appenderFound = true;
+                    else if( isNewline( ch )) {
+                        appenderFound = false;
+                        endFound = true; }
+                    else {
+                        appenderFound = false;
+                        endFound = false;
+                        cNext = c; }
+                    break; }}}}}
 
 
 
