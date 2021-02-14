@@ -9,13 +9,13 @@ package Breccia.parser;
 public interface ParseState {
 
 
-    /** Whether this is the last state for the markup source, to be succeeded by no other.
+    /** Whether this state occurs only as the last for a markup source, to be succeeded by no other.
       */
     public boolean isFinal();
 
 
 
-    /** Whether this is the first state for the markup source, preceded by no other.
+    /** Whether this state occurs only as the first for a markup source, preceded by no other.
       */
     public boolean isInitial();
 

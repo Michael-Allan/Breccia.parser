@@ -44,40 +44,10 @@ public class BrecciaCursor implements ReusableCursor {
       */
     public ParseState next() throws ParseError {
         if( state.isFinal() ) throw new NoSuchElementException();
-        if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
-            while( fractumIndentWidth >= 0 ) { // Unwind any past body fracta, ending each.
-                fractumIndentWidth -= 4;
-                final BodyFractum past = hierarchy.remove( hierarchy.size() - 1 );
-                if( past != null ) return state = past.commitEnd(); }
-            return state = commitDocumentEnd(); }
-        final int nextIndentWidth = segmentEndIndicator - segmentEnd; /* The offset from the start of
-          the next fractum (`segmentEnd`) to its first non-space character (`segmentEndIndicator`). */
-        assert nextIndentWidth % 4 == 0;
-        if( !state.isInitial() ) { // Then unwind any past siblings from `hierarchy`, ending each.
-            while( fractumIndentWidth >= nextIndentWidth ) { /* For its own purposes, this loop maintains
-                  the records of `fractumIndentWidth` and `hierarchy` even through the ending states
-                  of past siblings, during which they are undefined for their intended purposes. */
-                fractumIndentWidth -= 4;
-                final BodyFractum pastSibling = hierarchy.remove( hierarchy.size() - 1 );
-                if( pastSibling != null ) return state = pastSibling.commitEnd(); }}
-
-        // Changing what follows?  Sync → `markupSource`.
-        fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
-        fractumLineCounter = segmentLineCounter + newlines.size(); /* Its line number is the line number
-          of the present segment, plus the line count of the present segment. */
-        fractumIndentWidth = nextIndentWidth;
-        if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
-              starting a division whose head comprises all contiguous divider segments. */
-            do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); // Scan through each.
-            state = commitDivision(); }
-        else { // Next is a point.
-            nextSegment(); // Scan through to the end boundary of its head.
-            state = commitAsPoint( /*bullet position*/fractumStart + fractumIndentWidth ); }
-        final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
-        while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
-        assert state == bodyFractum;
-        hierarchy.add( bodyFractum );
-        return state; }
+        try { return _next(); }
+        catch( ParseError x ) {
+            disable();
+            throw x; }}
 
 
 
@@ -90,8 +60,11 @@ public class BrecciaCursor implements ReusableCursor {
             for( ;; ) {
                 sink.accept( state );
                 if( state.isFinal() ) break;
-                next(); }}
-        catch( IOException x ) { throw new Unhandled( x ); }}
+                _next(); }}
+        catch( IOException x ) { throw new Unhandled( x ); }
+        catch( ParseError x ) {
+            disable();
+            throw x; }}
 
 
 
@@ -102,8 +75,11 @@ public class BrecciaCursor implements ReusableCursor {
           throws ParseError {
         try( final Reader source = newSourceReader​( sourceFile )) {
             markupSource( source );
-            while( sink.test(state) && !state.isFinal() ) next(); }
-        catch( IOException x ) { throw new Unhandled( x ); }}
+            while( sink.test(state) && !state.isFinal() ) _next(); }
+        catch( IOException x ) { throw new Unhandled( x ); }
+        catch( ParseError x ) {
+            disable();
+            throw x; }}
 
 
 
@@ -249,6 +225,16 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    /** Returns the present parse state as `Error`,
+      * or null if this cursor is not in a formal state of error.
+      */
+    public final Error asError() { return state == error? error : null; }
+
+
+        protected final void commitError( final Error e ) { state = error = e; }
+
+
+
     /** Returns the present parse state as a `Fractum`,
       * or null if the cursor is not positioned at a fractum.
       */
@@ -327,29 +313,10 @@ public class BrecciaCursor implements ReusableCursor {
       *     @param r {@inheritDoc}  It is taken to comprise a single document at most.
       */
     public @Override void markupSource( final Reader r ) throws ParseError {
-        sourceReader = r;
-        final int count; {
-            try { count = sourceReader.read( buffer.clear().array() ); }
-            catch( IOException x ) { throw new Unhandled( x ); }}
-        if( count < 0 ) {
-            buffer.limit( 0 );
-            state = commitEmpty();
-            return; }
-        if( count == 0 ) throw new IllegalStateException(); // Forbidden by `Reader` for array reads.
-        buffer.limit( count );
-
-        // Changing what follows?  Sync → `next`.
-        fractumStart = 0;
-        fractumLineCounter = 0;
-        fractumIndentWidth = 0;
-        state = commitDocument();
-        hierarchy.clear();
-
-        // Changing what follows?  Sync → `nextSegment`.
-        segmentLineCounter = 0;
-        newlines.clear();
-        segmentStart = segmentEnd = segmentEndIndicator = 0;
-        boundSegment( true ); }
+        try { _markupSource( r ); }
+        catch( ParseError x ) {
+            disable();
+            throw x; }}
 
 
 
@@ -498,6 +465,15 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    /** Ensures this cursor is rendered unusable for the present markup source,
+      * e.g. owing to an irrecoverable parse error.
+      */
+    private void disable() {
+        if( state != null && state.isFinal() ) return; // Already this cursor is effectively unusable.
+        commitError(); }
+
+
+
     /** The offset from the start of the present fractum to its first non-space character.
       * This is either zero or a multiple of four.
       *
@@ -550,7 +526,73 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    private void _markupSource( final Reader r ) throws ParseError {
+        sourceReader = r;
+        final int count; {
+            try { count = sourceReader.read( buffer.clear().array() ); }
+            catch( IOException x ) { throw new Unhandled( x ); }}
+        if( count < 0 ) {
+            buffer.limit( 0 );
+            state = commitEmpty();
+            return; }
+        if( count == 0 ) throw new IllegalStateException(); // Forbidden by `Reader` for array reads.
+        buffer.limit( count );
+
+        // Changing what follows?  Sync → `_next`.
+        fractumStart = 0;
+        fractumLineCounter = 0;
+        fractumIndentWidth = 0;
+        state = commitDocument();
+        hierarchy.clear();
+
+        // Changing what follows?  Sync → `nextSegment`.
+        segmentLineCounter = 0;
+        newlines.clear();
+        segmentStart = segmentEnd = segmentEndIndicator = 0;
+        boundSegment( true ); }
+
+
+
     private final ArrayList<Integer> newlines = new ArrayList<>(); // Each a boundary variable. [SBV]
+
+
+
+    private ParseState _next() throws ParseError {
+        assert !state.isFinal();
+        if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
+            while( fractumIndentWidth >= 0 ) { // Unwind any past body fracta, ending each.
+                fractumIndentWidth -= 4;
+                final BodyFractum past = hierarchy.remove( hierarchy.size() - 1 );
+                if( past != null ) return state = past.commitEnd(); }
+            return state = commitDocumentEnd(); }
+        final int nextIndentWidth = segmentEndIndicator - segmentEnd; /* The offset from the start of
+          the next fractum (`segmentEnd`) to its first non-space character (`segmentEndIndicator`). */
+        assert nextIndentWidth % 4 == 0;
+        if( !state.isInitial() ) { // Then unwind any past siblings from `hierarchy`, ending each.
+            while( fractumIndentWidth >= nextIndentWidth ) { /* For its own purposes, this loop maintains
+                  the records of `fractumIndentWidth` and `hierarchy` even through the ending states
+                  of past siblings, during which they are undefined for their intended purposes. */
+                fractumIndentWidth -= 4;
+                final BodyFractum pastSibling = hierarchy.remove( hierarchy.size() - 1 );
+                if( pastSibling != null ) return state = pastSibling.commitEnd(); }}
+
+        // Changing what follows?  Sync → `markupSource`.
+        fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
+        fractumLineCounter = segmentLineCounter + newlines.size(); /* Its line number is the line number
+          of the present segment, plus the line count of the present segment. */
+        fractumIndentWidth = nextIndentWidth;
+        if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
+              starting a division whose head comprises all contiguous divider segments. */
+            do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); // Scan through each.
+            state = commitDivision(); }
+        else { // Next is a point.
+            nextSegment(); // Scan through to the end boundary of its head.
+            state = commitAsPoint( /*bullet position*/fractumStart + fractumIndentWidth ); }
+        final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
+        while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
+        assert state == bodyFractum;
+        hierarchy.add( bodyFractum );
+        return state; }
 
 
 
@@ -728,6 +770,18 @@ public class BrecciaCursor implements ReusableCursor {
         private Empty commitEmpty() {
             commitEmpty( basicEmpty );
             return basicEmpty; }
+
+
+
+    private Error error;
+
+
+        private final Error basicError = new Error(); // [CIC]
+
+
+        private Error commitError() {
+            commitError( basicError );
+            return basicError; }
 
 
 
