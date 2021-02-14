@@ -65,15 +65,14 @@ public class BrecciaCursor implements ReusableCursor {
         fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
         fractumLineCounter = segmentLineCounter + newlines.size(); /* Its line number is the line number
           of the present segment, plus the line count of the present segment. */
+        fractumIndentWidth = nextIndentWidth;
         if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
               starting a division whose head comprises all contiguous divider segments. */
             do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); // Scan through each.
             state = commitDivision(); }
         else { // Next is a point.
-            final int indent = segmentEndIndicator - segmentEnd;
             nextSegment(); // Scan through to the end boundary of its head.
-            state = commitAsPoint( /*bullet position*/fractumStart + indent ); }
-        fractumIndentWidth = nextIndentWidth;
+            state = commitAsPoint( /*bullet position*/fractumStart + fractumIndentWidth ); }
         final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
         while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
         assert state == bodyFractum;
@@ -342,8 +341,8 @@ public class BrecciaCursor implements ReusableCursor {
         // Changing what follows?  Sync → `next`.
         fractumStart = 0;
         fractumLineCounter = 0;
-        state = commitDocument();
         fractumIndentWidth = 0;
+        state = commitDocument();
         hierarchy.clear();
 
         // Changing what follows?  Sync → `nextSegment`.
@@ -365,9 +364,12 @@ public class BrecciaCursor implements ReusableCursor {
       *     <li>`{@linkplain #segmentEndIndicatorChar segmentEndIndicatorChar}`</li>
       *     <li>`{@linkplain #newlines newlines}`</li></ul>
       *
-      * <p>Ensure before calling this method that `fractumStart`, `fractumLineCounter`, `segmentStart`,
-      * `segmentLineCounter` and `state` are initialized; the buffer is positioned within the segment
+      * <p>Ensure before calling this method that `fractumStart`, `fractumLineCounter`, `segmentStart`
+      * and `segmentLineCounter` are initialized; the buffer is positioned within the segment
       * at or before any initial newline; and the `newlines` list is empty.</p>
+      *
+      * <p>This method may shift the contents of the buffer, rendering invalid all buffer offsets
+      * save those recorded in the top-level fields of this cursor.</p>
       *
       *     @param isNewSource Whether this the first call for a new source of markup.
       */
@@ -453,7 +455,11 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** @param bullet The buffer position of the bullet.
+    /** Parses a bullet to learn the concrete type of its point, then sets the state-typing fields
+      * to the corresponding parse state.  Ensure before calling this method that all other fields
+      * are initialized save for `hierarchy`.
+      *
+      *     @param bullet The buffer position of the bullet.
       */
     private ParseState commitAsPoint( final int bullet ) {
         buffer.rewind();
