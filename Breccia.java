@@ -8,21 +8,37 @@ public final class Breccia {
 
 
 
+    /** Whether character `ch` is one that formally ends a newline.
+      * Returns true if `ch` is a line feed (A).
+      */
+    public static boolean completesNewline( final char ch ) { return ch == '\n'; }
+
+
+
+    /** Whether code point `ch` is one that formally ends a newline.
+      * Returns true if `ch` is a line feed (A).
+      */
+    public static boolean completesNewline( final int ch ) { return ch == '\n'; }
+
+
+
+    /** Whether character `ch` is proper to a newline.
+      * Returns true if `ch` is a line feed (A) or carriage return (D).
+      */
+    public static boolean impliesNewline( final char ch ) { return ch == '\n' || ch == '\r'; }
+
+
+
+    /** Whether code point `ch` is proper to a newline.
+      * Returns true if `ch` is a line feed (A) or carriage return (D).
+      */
+    public static boolean impliesNewline( final int ch ) { return ch == '\n' || ch == '\r'; }
+
+
+
     /** Whether `ch` is a divider drawing character, a character in the range 2500-259F.
       */
     public static boolean isDividerDrawing( final char ch ) { return '\u2500' <= ch && ch <= '\u259F'; }
-
-
-
-    /** Whether character `ch` is a linefeed (A) or carriage return (D), aka '\n' or '\r'.
-      */
-    public static boolean isNewline( final char ch ) { return ch == '\n' || ch == '\r'; }
-
-
-
-    /** Whether code point `ch` is a linefeed (A) or carriage return (D), aka '\n' or '\r'.
-      */
-    public static boolean isNewline( final int ch ) { return ch == '\n' || ch == '\r'; }
 
 
 
