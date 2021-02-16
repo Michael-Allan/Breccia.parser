@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
+import Java.IntArrayExtensor;
 import Java.Unhandled;
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -334,7 +335,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       * <p>Also ensure that:</p>
       *
-      * <ul><li>the `{@linkplain #segmentLineEnds segmentLineEnds}` list is empty, and</li>
+      * <ul><li>`{@linkplain #segmentLineEnds segmentLineEnds}` is empty, and</li>
       *     <li>the buffer is positioned within the segment at or before any initial newline.</li></ul>
       *
       * <p>This method sets the following.</p>
@@ -372,7 +373,8 @@ public class BrecciaCursor implements ReusableCursor {
                     buffer.position( shift ).compact(); // Shifted and limit extended, ready to refill.
                     fractumStart = 0; // Or `fractumStart -= shift`, so adjust the other variables:
                     segmentStart -= shift;
-                    segmentLineEnds.replaceAll( p -> p - shift );
+                    final int[] ends = segmentLineEnds.array;
+                    for( int e = segmentLineEnds.length - 1; e >= 0; --e ) { ends[e] -= shift; }
                     lineStart -= shift;
                     if( inPotentialBackslashBullet ) {
                         segmentEnd -= shift;
@@ -585,7 +587,7 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `markupSource`.
         fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
-        fractumLineCounter = segmentLineCounter + segmentLineEnds.size(); /* Its line number is
+        fractumLineCounter = segmentLineCounter + segmentLineEnds.length; /* Its line number is
           the line number of the present segment, plus the line count of the present segment. */
         fractumIndentWidth = nextIndentWidth;
         if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
@@ -609,7 +611,7 @@ public class BrecciaCursor implements ReusableCursor {
           which being perfectly indented, cannot itself be a newline or other whitespace. [B] */
 
         // Changing what follows?  Sync → `markupSource`.
-        segmentLineCounter += segmentLineEnds.size();
+        segmentLineCounter += segmentLineEnds.length;
         segmentLineEnds.clear();
         segmentStart = segmentEnd;
         boundSegment( false ); }
@@ -655,7 +657,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @see #segmentStart
       */
-    private final ArrayList<Integer> segmentLineEnds = new ArrayList<>(); // [ABO]
+    private final IntArrayExtensor segmentLineEnds = new IntArrayExtensor( new int[0x100] ); // [ABO]
 
 
 
