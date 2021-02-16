@@ -29,7 +29,7 @@ public class BrecciaCursor implements ReusableCursor {
       */
     static final int bufferCapacity; static {
         int n = 0x1_0000; // 65536, minimizing the likelihood of having to throw `OverlargeHead`.
-        // Now assume the IO system will transfer so much on each refill request by `boundSegment`.
+        // Now assume the IO system will transfer that much on each refill request by `boundSegment`.
         // Let it do so even while the buffer holds the already-read portion of the present segment:
         n += 0x1000; // 4096, more than ample for that segment.
         bufferCapacity = n; }
