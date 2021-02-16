@@ -323,26 +323,35 @@ public class BrecciaCursor implements ReusableCursor {
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 
-    /** Reads through any fractal segment located at `segmentStart`, beginning at the present
-      * buffer position, and sets its remaining bounds by initializing the following.
+    /** Reads through any fractal segment located at `segmentStart`, beginning at the present buffer
+      * position, and sets the remainder of its determining bounds.  Ensure before calling this method
+      * that the following are initialized.
       *
-      * <ul><li>`{@linkplain #segmentEnd segmentEnd}`</li>
-      *     <li>`{@linkplain #segmentEndIndicator segmentEndIndicator}`</li>
+      * <ul><li>`{@linkplain #fractumStart       fractumStart}`</li>
+      *     <li>`{@linkplain #fractumLineCounter fractumLineCounter}`</li>
+      *     <li>`{@linkplain #segmentStart       segmentStart}`</li>
+      *     <li>`{@linkplain #segmentLineCounter segmentLineCounter}`</li></ul>
+      *
+      * <p>Also ensure that:</p>
+      *
+      * <ul><li>the `{@linkplain #segmentLineEnds segmentLineEnds}` list is empty, and</li>
+      *     <li>the buffer is positioned within the segment at or before any initial newline.</li></ul>
+      *
+      * <p>This method sets the following.</p>
+      *
+      * <ul><li>`{@linkplain #segmentEnd              segmentEnd}`</li>
+      *     <li>`{@linkplain #segmentEndIndicator     segmentEndIndicator}`</li>
       *     <li>`{@linkplain #segmentEndIndicatorChar segmentEndIndicatorChar}`</li>
-      *     <li>`{@linkplain #segmentLineEnds segmentLineEnds}`</li></ul>
-      *
-      * <p>Ensure before calling this method that `fractumStart`, `fractumLineCounter`, `segmentStart`
-      * and `segmentLineCounter` are initialized; the buffer is positioned within the segment
-      * at or before any initial newline; and the `segmentLineEnds` list is empty.</p>
+      *     <li>`{@linkplain #segmentLineEnds         segmentLineEnds}`</li></ul>
       *
       * <p>This method may shift the contents of the buffer, rendering invalid all buffer offsets
-      * save those recorded in the top-level fields of this cursor.</p>
+      * save those recorded in the fields named above.</p>
       *
       *     @param isNewSource Whether this the first call for a new source of markup.
       */
     private void boundSegment( final boolean isNewSource ) throws ParseError {
         assert segmentLineEnds.isEmpty();
-        int lineStart = segmentStart; // [SBV]
+        int lineStart = segmentStart; // [ABO]
         assert lineStart == 0 || completesNewline(buffer.get(lineStart-1)); /* Either the preceding text
           is unreachable (does not exist, or lies outside the buffer) or it comprises a newline. */
         boolean inMargin = isNewSource; /* Tracking whether `buffer.position` is in the left margin,
@@ -506,7 +515,7 @@ public class BrecciaCursor implements ReusableCursor {
       * position of its first character.  It is defined only for substansive parse states.
       * Likewise for any member whose API refers to it.
       */
-    private int fractumStart; // [SBV]
+    private int fractumStart; // [ABO]
 
 
 
@@ -614,7 +623,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @see #segmentStart
       */
-    private int segmentEnd; // [SBV]
+    private int segmentEnd; // [ABO]
 
 
 
@@ -623,7 +632,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @see #segmentStart
       */
-    private int segmentEndIndicator; // [SBV]
+    private int segmentEndIndicator; // [ABO]
 
 
 
@@ -646,8 +655,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @see #segmentStart
       */
-    private final ArrayList<Integer> segmentLineEnds = new ArrayList<>();
-      // Each a boundary variable. [SBV]
+    private final ArrayList<Integer> segmentLineEnds = new ArrayList<>(); // [ABO]
 
 
 
@@ -664,7 +672,7 @@ public class BrecciaCursor implements ReusableCursor {
       * the position of its first character.  It is defined only for substansive parse states.
       * Likewise for any member whose API refers to it.
       */
-    private int segmentStart; // [SBV]
+    private int segmentStart; // [ABO]
 
 
 
@@ -931,15 +939,15 @@ public class BrecciaCursor implements ReusableCursor {
 
 // NOTES
 // ─────
+//   ABO  Adjustable buffer offset.  This note serves as a reminder to adjust the value of the variable
+//        in `boundSegment` after each call to `buffer.compact`.
+//
 //   B ·· Breccia language definition.  http://reluk.ca/project/Breccia/language_definition.brec
 //
 //   CIC  Cached instance of a concrete parse state.  Each instance is held in a constant field named
 //        e.g. `basicFoo`, basic meaning not a subtype.  It could instead be held in `foo`, except
 //        that field might be overwritten with a `Foo` subtype defined by an extended parser,
 //        leaving the base instance unavailable for future resuse.
-//
-//   SBV  Segment boundary variable.  This note serves as a reminder to adjust the value of the variable
-//        in `boundSegment` after each call to `buffer.compact`.
 //
 //   SR · String representation.  Implemented for this class only because it is an anonymous class,
 //        which makes the default implementation less informative.
