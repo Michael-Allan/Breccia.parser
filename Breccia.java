@@ -36,6 +36,20 @@ public final class Breccia {
 
 
 
+    /** Whether character `ch` is proper to a newline, yet does not formally complete it.
+      * Returns true if `ch` is a carriage return (D).
+      */
+    public static boolean impliesWithoutCompletingNewline( final char ch ) { return ch == '\r'; }
+
+
+
+    /** Whether code point `ch` is proper to a newline, yet does not formally complete it.
+      * Returns true if `ch` is a carriage return (D).
+      */
+    public static boolean impliesWithoutCompletingNewline( final int ch ) { return ch == '\r'; }
+
+
+
     /** Whether `ch` is a divider drawing character, a character in the range 2500-259F.
       */
     public static boolean isDividerDrawing( final char ch ) { return '\u2500' <= ch && ch <= '\u259F'; }

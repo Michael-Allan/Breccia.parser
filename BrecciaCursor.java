@@ -336,7 +336,8 @@ public class BrecciaCursor implements ReusableCursor {
       * <p>Also ensure that:</p>
       *
       * <ul><li>`{@linkplain #segmentLineEnds segmentLineEnds}` is empty, and</li>
-      *     <li>the buffer is positioned within the segment at or before any initial newline.</li></ul>
+      *     <li>the buffer is positioned at the `{@linkplain #segmentEndIndicator segmentEndIndicator}`
+      *         of the preceding segment, or at zero in case of a new markup source.</li></ul>
       *
       * <p>This method sets the following.</p>
       *
@@ -349,17 +350,20 @@ public class BrecciaCursor implements ReusableCursor {
       * save those recorded in the fields named above.</p>
       *
       *     @param isNewSource Whether this the first call for a new source of markup.
+      *     @throws MalformedLineBreak For any malformed line break that occurs from the initial
+      *       buffer position through the newly determined `segmentEndIndicator`.
       */
     private void boundSegment( final boolean isNewSource ) throws ParseError {
         assert segmentLineEnds.isEmpty();
+        assert buffer.position() == (isNewSource? 0 : segmentEndIndicator);
         int lineStart = segmentStart; // [ABO]
         assert lineStart == 0 || completesNewline(buffer.get(lineStart-1)); /* Either the preceding text
           is unreachable (does not exist, or lies outside the buffer) or it comprises a newline. */
         boolean inMargin = isNewSource; /* Tracking whether `buffer.position` is in the left margin,
           where the next `get` might yield either an indent space or the indented initial character. */
-        int indentWidth = 0; // What determines `segmentEnd`.
+        int indentAccumulator = 0; // What reveals the end boundary of the segment.
         boolean inPotentialBackslashBullet = false; // Scanning a perfectly indented backslash sequence.
-        for( ;; ) {
+        for( char ch = '\u0000', chLast = '\u0000';; chLast = ch ) {
             if( !buffer.hasRemaining() ) { // Redundant only on the first pass with a new `markupSource`.
 
               // Prepare buffer for refill
@@ -390,6 +394,8 @@ public class BrecciaCursor implements ReusableCursor {
                 final int p = buffer.position();
                 buffer.limit( p ).reset(); // Whether to resume scanning, or regardless for consistency.
                 if( count < 0 ) { // Then the markup source is exhausted.
+                    if( impliesWithoutCompletingNewline( ch )) { // So ends with e.g. a carriage return.
+                        throw truncatedNewlineError( segmentLineNumber(buffer.position()), ch ); }
                     segmentEnd = segmentEndIndicator = p;
                     segmentEndIndicatorChar = '\u0000';
                     segmentLineEnds.add( segmentEnd ); /* The end of the final line.  All lines end with
@@ -400,19 +406,23 @@ public class BrecciaCursor implements ReusableCursor {
 
           // Scan forward seeking the end boundary
           // ────────────
-            final char ch = buffer.get();
+            ch = buffer.get();
             if( completesNewline( ch )) { // Then record the fact and clear the indentation record:
                 final int p = buffer.position();
                 lineStart = p;
                 segmentLineEnds.add( lineStart );
                 inMargin = true;
-                indentWidth = 0; // Thus far.
-                inPotentialBackslashBullet = false; }
-            else if( inMargin ) { // Then detect any perfect indent that marks the end boundary:
+                indentAccumulator = 0; // Thus far.
+                inPotentialBackslashBullet = false;
+                continue; }
+            if( impliesWithoutCompletingNewline( ch )) continue; // To its completion.
+            if( impliesWithoutCompletingNewline( chLast )) {
+                throw truncatedNewlineError( segmentLineNumber(buffer.position()), chLast ); }
+            if( inMargin ) { // Then detect any perfect indent that marks the end boundary:
                 if( ch == ' ' ) {
-                    ++indentWidth;
+                    ++indentAccumulator;
                     continue; }
-                if( ch != /*no-break space*/'\u00A0' && indentWidth % 4 == 0 ) { // Perfect indent.
+                if( ch != /*no-break space*/'\u00A0' && indentAccumulator % 4 == /*perfect*/0 ) {
                     segmentEnd = lineStart; // Assumption, yet unproven.
                     segmentEndIndicator = buffer.position() - 1;
                     segmentEndIndicatorChar = ch;
@@ -606,9 +616,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
     private void nextSegment() throws ParseError {
-        buffer.position( segmentEndIndicator + 1 ); /* For the upcoming call to `boundSegment`,
-          no character matters before a newline, which would have to come after `segmentEndIndicator`,
-          which being perfectly indented, cannot itself be a newline or other whitespace. [B] */
+        buffer.position( segmentEndIndicator );
 
         // Changing what follows?  Sync → `markupSource`.
         segmentLineCounter += segmentLineEnds.length;
@@ -670,6 +678,18 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    /** The line number at the given offset within the present fractal segment.
+      *
+      *     @see #segmentStart
+      */
+    private int segmentLineNumber( final int offset ) {
+        int n = segmentLineNumber();
+        final int[] ends = segmentLineEnds.array;
+        for( int e = 0, eN = segmentLineEnds.length;  e < eN && ends[e] <= offset;  ++e, ++n );
+        return n; }
+
+
+
     /** The start position in the buffer of the present fractal segment, if any, which is
       * the position of its first character.  It is defined only for substansive parse states.
       * Likewise for any member whose API refers to it.
@@ -683,6 +703,15 @@ public class BrecciaCursor implements ReusableCursor {
 
 
     protected ParseState state;
+
+
+
+    /** @param ch The character that implies the newline that never gets completed.
+      */
+    private static MalformedLineBreak truncatedNewlineError( final int lineNumber, final char ch ) {
+        assert ch == '\r'; // For sake of an intelligible error message.
+        return new MalformedLineBreak( lineNumber,
+          "Carriage return (Unicode D) without line feed successor (A)" ); }
 
 
 
@@ -943,8 +972,6 @@ public class BrecciaCursor implements ReusableCursor {
 // ─────
 //   ABO  Adjustable buffer offset.  This note serves as a reminder to adjust the value of the variable
 //        in `boundSegment` after each call to `buffer.compact`.
-//
-//   B ·· Breccia language definition.  http://reluk.ca/project/Breccia/language_definition.brec
 //
 //   CIC  Cached instance of a concrete parse state.  Each instance is held in a constant field named
 //        e.g. `basicFoo`, basic meaning not a subtype.  It could instead be held in `foo`, except
