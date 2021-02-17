@@ -65,7 +65,26 @@ public final class Breccia {
 
     /** Whether code point `ch` is a plain (20) or no-break space (A0).
       */
-    public static boolean isSpace( final  int ch ) { return ch == ' ' || ch == '\u00A0'; }}
+    public static boolean isSpace( final  int ch ) { return ch == ' ' || ch == '\u00A0'; }
+
+
+
+    /** Whether character  `ch` is a whitespace character.
+      */
+    public static boolean isWhitespace( final char ch ) { return isWhitespace( (int)ch ); }
+
+
+    /** Whether code point `ch` is a whitespace character.
+      */
+    public static boolean isWhitespace( final  int ch ) {
+        return Character.isWhitespace/*[TL]*/( ch ) // Which excludes the following no-break spaces,
+          || ch == '\u00A0' || ch == '\u2007' || ch == '\u202F'; }} // wherefore include them.
+
+
+
+// NOTE
+// ────
+//   TL · Apparently implemented as a tabular lookup, at least in the JDK.  Very fast.
 
 
 
