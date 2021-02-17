@@ -2,6 +2,7 @@ package Breccia.parser;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.annotation.*;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
 import Java.IntArrayExtensor;
@@ -11,6 +12,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.NoSuchElementException;
 
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 import static java.lang.Character.charCount;
 import static java.lang.Character.codePointAt;
 import static java.lang.Character.isAlphabetic;
@@ -327,25 +330,25 @@ public class BrecciaCursor implements ReusableCursor {
 
     /** Reads through any fractal segment located at `segmentStart`, beginning at the present buffer
       * position, and sets the remainder of its determining bounds.  Ensure before calling this method
-      * that the following are initialized.
+      * that the following are updated.
       *
       * <ul><li>`{@linkplain #fractumStart       fractumStart}`</li>
       *     <li>`{@linkplain #fractumLineCounter fractumLineCounter}`</li>
-      *     <li>`{@linkplain #segmentStart       segmentStart}`</li>
-      *     <li>`{@linkplain #segmentLineCounter segmentLineCounter}`</li></ul>
+      *     <li>`{@linkplain #segmentStart       segmentStart}`</li></ul>
       *
       * <p>Also ensure that:</p>
       *
-      * <ul><li>`{@linkplain #segmentLineEnds segmentLineEnds}` is empty, and</li>
+      * <ul><li>`{@linkplain #fractumLineEnds fractumLineEnds}` is empty in the case of a segment
+      *         that begins a new fractum, and</li>
       *     <li>the buffer is positioned at the `{@linkplain #segmentEndIndicator segmentEndIndicator}`
       *         of the preceding segment, or at zero in case of a new markup source.</li></ul>
       *
-      * <p>This method sets the following.</p>
+      * <p>This method updates the following.</p>
       *
-      * <ul><li>`{@linkplain #segmentEnd              segmentEnd}`</li>
+      * <ul><li>`{@linkplain #fractumLineEnds         fractumLineEnds}`</li>
+      *     <li>`{@linkplain #segmentEnd              segmentEnd}`</li>
       *     <li>`{@linkplain #segmentEndIndicator     segmentEndIndicator}`</li>
-      *     <li>`{@linkplain #segmentEndIndicatorChar segmentEndIndicatorChar}`</li>
-      *     <li>`{@linkplain #segmentLineEnds         segmentLineEnds}`</li></ul>
+      *     <li>`{@linkplain #segmentEndIndicatorChar segmentEndIndicatorChar}`</li></ul>
       *
       * <p>This method may shift the contents of the buffer, rendering invalid all buffer offsets
       * save those recorded in the fields named above.</p>
@@ -355,9 +358,9 @@ public class BrecciaCursor implements ReusableCursor {
       *       buffer position through the newly determined `segmentEndIndicator`.
       */
     private void boundSegment( final boolean isNewSource ) throws ParseError {
-        assert segmentLineEnds.isEmpty();
+        assert segmentStart != fractumStart || fractumLineEnds.isEmpty();
         assert buffer.position() == (isNewSource? 0 : segmentEndIndicator);
-        int lineStart = segmentStart; // [ABO]
+        int lineStart = segmentStart; // [ABP]
         assert lineStart == 0 || completesNewline(buffer.get(lineStart-1)); /* Either the preceding text
           is unreachable (does not exist, or lies outside the buffer) or it comprises a newline. */
         boolean inMargin = isNewSource; /* Tracking whether `buffer.position` is in the left margin,
@@ -378,8 +381,8 @@ public class BrecciaCursor implements ReusableCursor {
                     buffer.position( shift ).compact(); // Shifted and limit extended, ready to refill.
                     fractumStart = 0; // Or `fractumStart -= shift`, so adjust the other variables:
                     segmentStart -= shift;
-                    final int[] ends = segmentLineEnds.array;
-                    for( int e = segmentLineEnds.length - 1; e >= 0; --e ) { ends[e] -= shift; }
+                    final int[] endsArray = fractumLineEnds.array;
+                    for( int e = fractumLineEnds.length - 1; e >= 0; --e ) { endsArray[e] -= shift; }
                     lineStart -= shift;
                     if( inPotentialBackslashBullet ) {
                         segmentEnd -= shift;
@@ -396,10 +399,10 @@ public class BrecciaCursor implements ReusableCursor {
                 buffer.limit( p ).reset(); // Whether to resume scanning, or regardless for consistency.
                 if( count < 0 ) { // Then the markup source is exhausted.
                     if( impliesWithoutCompletingNewline( ch )) { // So ends with e.g. a carriage return.
-                        throw truncatedNewlineError( segmentLineNumber(buffer.position()), ch ); }
+                        throw truncatedNewlineError( bufferLineNumber(), ch ); }
                     segmentEnd = segmentEndIndicator = p;
                     segmentEndIndicatorChar = '\u0000';
-                    segmentLineEnds.add( segmentEnd ); /* The end of the final line.  All lines end with
+                    fractumLineEnds.add( segmentEnd ); /* The end of the final line.  All lines end with
                       a newline (and so were counted already) except the final line, which never does. */
                     break; }
                 if( count == 0 ) throw new IllegalStateException(); }
@@ -409,16 +412,15 @@ public class BrecciaCursor implements ReusableCursor {
           // ────────────
             ch = buffer.get();
             if( completesNewline( ch )) { // Then record the fact and clear the indentation record:
-                final int p = buffer.position();
-                lineStart = p;
-                segmentLineEnds.add( lineStart );
+                lineStart = buffer.position();
+                fractumLineEnds.add( lineStart );
                 inMargin = true;
                 indentAccumulator = 0; // Thus far.
                 inPotentialBackslashBullet = false;
                 continue; }
             if( impliesWithoutCompletingNewline( ch )) continue; // To its completion.
             if( impliesWithoutCompletingNewline( chLast )) { // Then its completion has failed.
-                throw truncatedNewlineError( segmentLineNumber(buffer.position()), chLast ); }
+                throw truncatedNewlineError( bufferLineNumberBack(), chLast ); }
             if( inMargin ) { // Then detect any perfect indent that marks the end boundary:
                 if( ch == ' ' ) {
                     ++indentAccumulator;
@@ -439,6 +441,28 @@ public class BrecciaCursor implements ReusableCursor {
     /** The source buffer.
       */
     private CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
+
+
+
+    private @Subst int bufferLineNumber() { return bufferLineNumber( buffer.position() ); }
+
+
+
+    /** The line number at the given buffer position within the present fractum.  If the position lies
+      * before `fractumStart`, then this method returns `fractumLineNumber`; if it lies after the region
+      * already parsed by `boundSegment`, then it returns the line number of the last parsed position.
+      */
+    private @Subst int bufferLineNumber( final int position ) {
+        final int[] endsArray = fractumLineEnds.array;
+        int n = fractumLineNumber();
+        for( int e = 0, eN = fractumLineEnds.length; // For each line,
+          e < eN && endsArray[e] <= position;       // if it ends before the position,
+          ++e, ++n );                              // then add one.
+        return n; }
+
+
+
+    private @Subst int bufferLineNumberBack() { return bufferLineNumber( buffer.position() - 1 ); }
 
 
 
@@ -500,35 +524,37 @@ public class BrecciaCursor implements ReusableCursor {
 
     /** The offset from the start of the present fractum to its first non-space character.
       * This is either zero or a multiple of four.
-      *
-      *     @see #fractumStart
       */
-    private int fractumIndentWidth;
+    private @Subst int fractumIndentWidth;
 
 
 
     /** The number of lines before the present fractum.
-      *
-      *     @see #fractumStart
       */
-    private int fractumLineCounter;
+    private @Subst int fractumLineCounter;
+
+
+
+    /** The end boundaries of the lines of the present fractum, each recorded as a buffer position.
+      * Each is either the position of the first character of the succeeding line, or `buffer.limit`
+      * in the case of the final line of the markup source.
+      */
+    private @Subst final IntArrayExtensor fractumLineEnds = new IntArrayExtensor( new int[0x100] );
+      // Each an adjustable buffer position. [ABP]
 
 
 
     /** The ordinal number of the first line of the present fractum.
       * Lines are numbered beginning at one.
-      *
-      *     @see #fractumStart
       */
-    private int fractumLineNumber() { return fractumLineCounter + 1; }
+    private @Subst int fractumLineNumber() { return fractumLineCounter + 1; }
 
 
 
-    /** The start position in the buffer of the present fractum, if any, which is the
-      * position of its first character.  It is defined only for substansive parse states.
-      * Likewise for any member whose API refers to it.
+    /** The start position in the buffer of the present fractum, if any,
+      * which is the position of its first character.
       */
-    private int fractumStart; // [ABO]
+    private @Subst int fractumStart; // [ABP]
 
 
 
@@ -544,9 +570,8 @@ public class BrecciaCursor implements ReusableCursor {
       * as their content is no longer valid at the present cursor position.</p>.
       *
       *     @see #fractumIndentWidth
-      *     @see #fractumStart
       */
-    private final ArrayList<BodyFractum> hierarchy = new ArrayList<>();
+    private final @Subst ArrayList<BodyFractum> hierarchy = new ArrayList<>();
 
 
 
@@ -565,13 +590,12 @@ public class BrecciaCursor implements ReusableCursor {
         // Changing what follows?  Sync → `_next`.
         fractumStart = 0;
         fractumLineCounter = 0;
+        fractumLineEnds.clear();
         fractumIndentWidth = 0;
         state = commitDocument();
         hierarchy.clear();
 
         // Changing what follows?  Sync → `nextSegment`.
-        segmentLineCounter = 0;
-        segmentLineEnds.clear();
         segmentStart = segmentEnd = segmentEndIndicator = 0;
         boundSegment( true ); }
 
@@ -591,15 +615,16 @@ public class BrecciaCursor implements ReusableCursor {
         if( !state.isInitial() ) { // Then unwind any past siblings from `hierarchy`, ending each.
             while( fractumIndentWidth >= nextIndentWidth ) { /* For its own purposes, this loop maintains
                   the records of `fractumIndentWidth` and `hierarchy` even through the ending states
-                  of past siblings, during which they are undefined for their intended purposes. */
+                  of past siblings, during which they are meaningless for their intended purposes. */
                 fractumIndentWidth -= 4;
                 final BodyFractum pastSibling = hierarchy.remove( hierarchy.size() - 1 );
                 if( pastSibling != null ) return state = pastSibling.commitEnd(); }}
 
         // Changing what follows?  Sync → `markupSource`.
         fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
-        fractumLineCounter = segmentLineCounter + segmentLineEnds.length; /* Its line number is
-          the line number of the present segment, plus the line count of the present segment. */
+        fractumLineCounter += fractumLineEnds.length; /* Its line number is the line number
+          of the present fractum plus the *line count* of the present fractum. */
+        fractumLineEnds.clear();
         fractumIndentWidth = nextIndentWidth;
         if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
               starting a division whose head comprises all contiguous divider segments. */
@@ -620,8 +645,6 @@ public class BrecciaCursor implements ReusableCursor {
         buffer.position( segmentEndIndicator );
 
         // Changing what follows?  Sync → `markupSource`.
-        segmentLineCounter += segmentLineEnds.length;
-        segmentLineEnds.clear();
         segmentStart = segmentEnd;
         boundSegment( false ); }
 
@@ -631,19 +654,15 @@ public class BrecciaCursor implements ReusableCursor {
       * after its final character.  This is zero in case of an empty markup source
       * or headless document fractum, the only cases of a zero length fractal segment.
       * If the value here is the buffer limit, then no segment remains in the markup source.
-      *
-      *     @see #segmentStart
       */
-    private int segmentEnd; // [ABO]
+    private @Subst int segmentEnd; // [ABP]
 
 
 
     /** The buffer position of the first non-space character of the present fractal segment’s
       * linear-order successor, or the buffer limit if there is none.
-      *
-      *     @see #segmentStart
       */
-    private int segmentEndIndicator; // [ABO]
+    private @Subst int segmentEndIndicator; // [ABP]
 
 
 
@@ -653,49 +672,10 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** The number of lines before the present fractal segment.
-      *
-      *     @see #segmentStart
+    /** The start position in the buffer of the present fractal segment, if any,
+      * which is the position of its first character.
       */
-    private int segmentLineCounter;
-
-
-
-    /** The end boundaries of the lines of the present fractal segment,
-      * each recorded as an offset from the segment start.
-      *
-      *     @see #segmentStart
-      */
-    private final IntArrayExtensor segmentLineEnds = new IntArrayExtensor( new int[0x100] ); // [ABO]
-
-
-
-    /** The ordinal number of the first line of the present fractal segment.
-      * Lines are numbered beginning at one.
-      *
-      *     @see #segmentStart
-      */
-    private int segmentLineNumber() { return segmentLineCounter + 1;}
-
-
-
-    /** The line number at the given offset within the present fractal segment.
-      *
-      *     @see #segmentStart
-      */
-    private int segmentLineNumber( final int offset ) {
-        int n = segmentLineNumber();
-        final int[] ends = segmentLineEnds.array;
-        for( int e = 0, eN = segmentLineEnds.length;  e < eN && ends[e] <= offset;  ++e, ++n );
-        return n; }
-
-
-
-    /** The start position in the buffer of the present fractal segment, if any, which is
-      * the position of its first character.  It is defined only for substansive parse states.
-      * Likewise for any member whose API refers to it.
-      */
-    private int segmentStart; // [ABO]
+    private @Subst int segmentStart; // [ABP]
 
 
 
@@ -956,13 +936,24 @@ public class BrecciaCursor implements ReusableCursor {
                         appenderFound = false;
                         endFound = false;
                         cNext = c; }
-                    break; }}}}}
+                    break; }}}}
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    /** A warning that the target member is meaningful (as its API describes it)
+      * only for substansive parse states.
+      *
+      */ @Documented @Retention(SOURCE) @Target({ FIELD, METHOD })
+    private static @interface Subst {}}
 
 
 
 // NOTES
 // ─────
-//   ABO  Adjustable buffer offset.  This note serves as a reminder to adjust the value of the variable
+//   ABP  Adjustable buffer position.  This note serves as a reminder to adjust the value of the variable
 //        in `boundSegment` after each call to `buffer.compact`.
 //
 //   CIC  Cached instance of a concrete parse state.  Each instance is held in a constant field named
