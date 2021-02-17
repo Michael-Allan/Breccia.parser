@@ -52,6 +52,11 @@ public final class Breccia {
     public static boolean isDividerDrawing( final char ch ) { return '\u2500' <= ch && ch <= '\u259F'; }
 
 
+    /** Whether `ch` is a divider drawing character, a character in the range 2500-259F.
+      */
+    public static boolean isDividerDrawing( final  int ch ) { return '\u2500' <= ch && ch <= '\u259F'; }
+
+
 
     /** Whether character  `ch` is a plain (20) or no-break space (A0).
       */
