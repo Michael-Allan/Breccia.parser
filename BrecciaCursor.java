@@ -16,6 +16,7 @@ import static java.lang.Character.codePointAt;
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
 import static Breccia.parser.Breccia.*;
+import static Breccia.parser.MalformedLineBreak.truncatedNewlineError;
 import static Breccia.parser.Project.newSourceReader;
 
 
@@ -703,15 +704,6 @@ public class BrecciaCursor implements ReusableCursor {
 
 
     protected ParseState state;
-
-
-
-    /** @param ch The character that implies the newline that never gets completed.
-      */
-    private static MalformedLineBreak truncatedNewlineError( final int lineNumber, final char ch ) {
-        assert ch == '\r'; // For sake of an intelligible error message.
-        return new MalformedLineBreak( lineNumber,
-          "Truncated newline: Carriage return (Unicode D) without line feed successor (A)" ); }
 
 
 
