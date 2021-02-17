@@ -416,7 +416,7 @@ public class BrecciaCursor implements ReusableCursor {
                 inPotentialBackslashBullet = false;
                 continue; }
             if( impliesWithoutCompletingNewline( ch )) continue; // To its completion.
-            if( impliesWithoutCompletingNewline( chLast )) {
+            if( impliesWithoutCompletingNewline( chLast )) { // Then its completion has failed.
                 throw truncatedNewlineError( segmentLineNumber(buffer.position()), chLast ); }
             if( inMargin ) { // Then detect any perfect indent that marks the end boundary:
                 if( ch == ' ' ) {
@@ -711,7 +711,7 @@ public class BrecciaCursor implements ReusableCursor {
     private static MalformedLineBreak truncatedNewlineError( final int lineNumber, final char ch ) {
         assert ch == '\r'; // For sake of an intelligible error message.
         return new MalformedLineBreak( lineNumber,
-          "Carriage return (Unicode D) without line feed successor (A)" ); }
+          "Truncated newline: Carriage return (Unicode D) without line feed successor (A)" ); }
 
 
 
