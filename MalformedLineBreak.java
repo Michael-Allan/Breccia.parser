@@ -11,7 +11,8 @@ public class MalformedLineBreak extends MalformedMarkup {
 
 
 
-    /** @param ch The character that implies the newline that never gets completed.
+    /** @see #lineNumber
+      * @param ch The character that implies the newline that never gets completed.
       */
     static MalformedLineBreak truncatedNewlineError( final int lineNumber, final char ch ) {
         assert ch == '\r'; // For sake of an intelligible error message; see `Breccia.impliesNewline`.
