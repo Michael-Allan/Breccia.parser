@@ -421,8 +421,7 @@ public class BrecciaCursor implements ReusableCursor {
             if( impliesWithoutCompletingNewline( ch )) continue; // To its completion.
             if( impliesWithoutCompletingNewline( chLast )) { // Then its completion has failed.
                 throw truncatedNewlineError( bufferLineNumberBack(), chLast ); }
-            if( ch != ' ' &&/*yet*/ Character.isWhitespace(ch) // Cf. `Breccia.isWhitespace`.
-                  || ch == '\u2007' || ch == '\u202F' ) {
+            if( ch != ' ' && yetIsWhitespace(ch) ) {
                 throw new ForbiddenWhitespace( bufferLineNumberBack(), ch ); }
             if( inMargin ) { // Then detect any perfect indent that marks the end boundary:
                 if( ch == ' ' ) {

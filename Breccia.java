@@ -58,6 +58,25 @@ public final class Breccia {
 
 
 
+    /** Whether character  `ch` is a whitespace character other than those allowed.  This method is
+      * equivalent to `!= ' '
+      *          &amp; !{@linkplain #impliesNewline(char) impliesNewline}
+      *          &amp;  {@linkplain #yetIsWhitespace(char) yetIsWhitespace}`.
+      */
+    public static boolean isForbiddenWhitespace( final char ch ) {
+        return ch != ' ' && !impliesNewline(ch) && yetIsWhitespace(ch); }
+
+
+    /** Whether code point `ch` is a whitespace character other than those allowed.  This method is
+      * equivalent to `!= ' '
+      *          &amp; !{@linkplain #impliesNewline(int)  impliesNewline}
+      *          &amp;  {@linkplain #yetIsWhitespace(int)  yetIsWhitespace}`.
+      */
+    public static boolean isForbiddenWhitespace( final  int ch ) {
+        return ch != ' ' && !impliesNewline(ch) && yetIsWhitespace(ch); }
+
+
+
     /** Whether character  `ch` is a plain (20) or no-break space (A0).
       */
     public static boolean isSpace( final char ch ) { return ch == ' ' || ch == '\u00A0'; }
@@ -69,16 +88,31 @@ public final class Breccia {
 
 
 
-    /** Whether character  `ch` is a whitespace character.
+    /** Whether character  `nonSpaceNewline` is a whitespace character when already it is known
+      * to be neither a plain space nor a newline constituent.
+      *
+      *     @param nonSpaceNewline A character known to be other than a plain space (20)
+      *       or {@linkplain #impliesNewline(char) newline constituent}
+      *     @throws AssertionError If assertions are enabled and `nonSpaceNewline` is a space
+      *       or newline constituent.
       */
-    public static boolean isWhitespace( final char ch ) { return isWhitespace( (int)ch ); }
+    public static boolean yetIsWhitespace( final char nonSpaceNewline ) {
+        return yetIsWhitespace( (int)nonSpaceNewline ); }
 
 
-    /** Whether code point `ch` is a whitespace character.
+    /** Whether code point `nonSpaceNewline` is a whitespace character when already it is known
+      * to be neither a plain space nor a newline constituent.
+      *
+      *     @param nonSpaceNewline A code point known to be other than a plain space (20)
+      *       or {@linkplain #impliesNewline(int) newline constituent}
+      *     @throws AssertionError If assertions are enabled and `nonSpaceNewline` is a space
+      *       or newline constituent.
       */
-    public static boolean isWhitespace( final  int ch ) {
-        return Character.isWhitespace/*[TL]*/( ch ) // Which excludes the following no-break spaces,
-          || ch == '\u00A0' || ch == '\u2007' || ch == '\u202F'; }} // wherefore include them.
+    public static boolean yetIsWhitespace( final  int nonSpaceNewline ) {
+        assert !( nonSpaceNewline == ' ' || impliesNewline(nonSpaceNewline) );
+        return Character.isWhitespace/*[TL]*/( nonSpaceNewline ) /* Which test excludes the allowed
+            no-break space (A0), plus some forbidden no-break spaces.  Wherefore include the latter: */
+          || nonSpaceNewline == '\u2007' || nonSpaceNewline == '\u202F'; }}
 
 
 
