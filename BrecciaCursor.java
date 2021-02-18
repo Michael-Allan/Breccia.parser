@@ -20,6 +20,7 @@ import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
 import static Breccia.parser.Breccia.*;
 import static Breccia.parser.MalformedLineBreak.truncatedNewlineError;
+import static Breccia.parser.MalformedMarkup.misplacedNoBreakSpaceError;
 import static Breccia.parser.Project.newSourceReader;
 
 
@@ -363,11 +364,18 @@ public class BrecciaCursor implements ReusableCursor {
         int lineStart = segmentStart; // [ABP]
         assert lineStart == 0 || completesNewline(buffer.get(lineStart-1)); /* Either the preceding text
           is unreachable (does not exist, or lies outside the buffer) or it comprises a newline. */
-        boolean inMargin = isNewSource; /* Tracking whether `buffer.position` is in the left margin,
-          where the next `get` might yield either an indent space or the indented initial character. */
+        boolean inMargin = isNewSource; /* True while blindly scanning a left margin, where the next
+          `get` might yield either an indent space or the indented, initial character of the line. */
         int indentAccumulator = 0; // What reveals the end boundary of the segment.
-        boolean inPotentialBackslashBullet = false; // Scanning a perfectly indented backslash sequence.
+        boolean inPerfectlyIndentedBackslashes = false;
+        boolean inIndentedBackslashes = false;
+        boolean inCommentBlock = false; // Scanning where `gets` may yield block commentary.
         for( char ch = '\u0000', chLast = '\u0000';; chLast = ch ) {
+
+          // ════════════════════════
+          // Keep the buffer supplied
+          // ════════════════════════
+
             if( !buffer.hasRemaining() ) { // Redundant only on the first pass with a new `markupSource`.
 
               // Prepare buffer for refill
@@ -384,7 +392,7 @@ public class BrecciaCursor implements ReusableCursor {
                     final int[] endsArray = fractumLineEnds.array;
                     for( int e = fractumLineEnds.length - 1; e >= 0; --e ) { endsArray[e] -= shift; }
                     lineStart -= shift;
-                    if( inPotentialBackslashBullet ) {
+                    if( inPerfectlyIndentedBackslashes ) {
                         segmentEnd -= shift;
                         segmentEndIndicator -= shift; }}
 
@@ -404,39 +412,74 @@ public class BrecciaCursor implements ReusableCursor {
                     segmentEndIndicatorChar = '\u0000';
                     fractumLineEnds.add( segmentEnd ); /* The end of the final line.  All lines end with
                       a newline (and so were counted already) except the final line, which never does. */
-                    break; }
+                    break; } // Segment end boundary = end of markup source.
                 if( count == 0 ) throw new IllegalStateException(); }
                   // Undefined in the `Reader` API, given the buffer `hasRemaining` space.
 
-          // Scan forward seeking the end boundary
-          // ────────────
+
+          // ════════════
+          // Scan forward seeking the end boundary of the segment
+          // ════════════
+
             ch = buffer.get();
-            if( completesNewline( ch )) { // Then record the fact and clear the indentation record:
+
+          // Detect any line break
+          // ─────────────────────
+            if( completesNewline( ch )) { // Then record the fact:
                 lineStart = buffer.position();
                 fractumLineEnds.add( lineStart );
                 inMargin = true;
                 indentAccumulator = 0; // Thus far.
-                inPotentialBackslashBullet = false;
+                inPerfectlyIndentedBackslashes = inIndentedBackslashes = false;
+                inCommentBlock = false;
                 continue; }
             if( impliesWithoutCompletingNewline( ch )) continue; // To its completion.
             if( impliesWithoutCompletingNewline( chLast )) { // Then its completion has failed.
                 throw truncatedNewlineError( bufferLineNumberBack(), chLast ); }
+
+          // Or forbidden whitespace
+          // ───────────────────────
             if( ch != ' ' && yetIsWhitespace(ch) ) {
                 throw new ForbiddenWhitespace( bufferLineNumberBack(), ch ); }
+
+          // Or the end boundary
+          // ───────────────────
             if( inMargin ) { // Then detect any perfect indent that marks the end boundary:
                 if( ch == ' ' ) {
                     ++indentAccumulator;
-                    continue; }
-                if( ch != /*no-break space*/'\u00A0' && indentAccumulator % 4 == /*perfect*/0 ) {
-                    segmentEnd = lineStart; // Assumption, yet unproven.
-                    segmentEndIndicator = buffer.position() - 1;
-                    segmentEndIndicatorChar = ch;
-                    if( ch != '\\' ) break; // Typical case: divider or non-backslash bullet.
-                    inPotentialBackslashBullet = true; } // Either that or a comment delimiter.
-                inMargin = false; }
-            else if( inPotentialBackslashBullet && ch != '\\' ) {
-                if( ch != ' ' ) break; // Indeed it is a backslash bullet.
-                inPotentialBackslashBullet = false; }}} // Rather it is a comment delimiter.
+                    continue; } // To any indented, initial character of the line.
+                if( ch != /*no-break space*/'\u00A0' ) { // Viz. not an indent blind.
+                    if( indentAccumulator % 4 == /*perfect*/0 ) {
+                        segmentEnd = lineStart; // Assumption, yet unproven. [ABP]
+                        segmentEndIndicator = buffer.position() - 1; //      [ABP]
+                        segmentEndIndicatorChar = ch;
+                        if( ch != '\\' ) break; /* Segment end boundary = either a divider,
+                          or a point with a non-backslashed bullet). */
+                        inPerfectlyIndentedBackslashes = inIndentedBackslashes = true; } /* Indicating
+                          either a comment-block delimiter, or the beginning of a backslashed bullet. */
+                    else if( ch == '\\' ) inIndentedBackslashes = true; } // Indicating the beginning of
+                inMargin = false; }                                       // a comment-block delimiter.
+            else if( inPerfectlyIndentedBackslashes ) {
+                if( ch == '\\' ) continue; // To the end of the backslash sequence.
+                if( ch != ' ' ) break; // Segment end boundary = point with a backslashed bullet.
+                inPerfectlyIndentedBackslashes = inIndentedBackslashes = false;
+                inCommentBlock = true; }
+
+          // Or a misplaced no-break space
+          // ─────────────────────────────
+            else if( inIndentedBackslashes ) {
+                if( ch == '\\' ) continue; // To the end of the backslash sequence.
+                if( ch == ' ' ) inCommentBlock = true;
+                else if( ch == '\u00A0' ) {
+                    assert !fractumLineEnds.isEmpty(); /* Not on the first line.  Never could these
+                      imperfectly indented backslashes occur there, where `commitAsPoint` does the
+                      policing.  No need therefore to guard against trespassing on its jurisdiction. */
+                    throw misplacedNoBreakSpaceError( bufferLineNumberBack() ); }
+                inIndentedBackslashes = false; }
+            else if( ch == '\u00A0' && !/*b*/inCommentBlock && !/*f*/fractumLineEnds.isEmpty() ) { /*
+                  A no-break space occuring not (f) on the first line, where instead `commitAsPoint`
+                  does the policing, nor (b) in a comment block, the only remaining place allowed. */
+                throw misplacedNoBreakSpaceError( bufferLineNumberBack() ); }}}
 
 
 
