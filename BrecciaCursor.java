@@ -407,7 +407,7 @@ public class BrecciaCursor implements ReusableCursor {
                 buffer.limit( p ).reset(); // Whether to resume scanning, or regardless for consistency.
                 if( count < 0 ) { // Then the markup source is exhausted.
                     if( impliesWithoutCompletingNewline( ch )) { // So ends with e.g. a carriage return.
-                        throw truncatedNewlineError( bufferLineNumber(), ch ); }
+                        throw truncatedNewlineError( bufferPointer(), ch ); }
                     segmentEnd = segmentEndIndicator = p;
                     segmentEndIndicatorChar = '\u0000';
                     fractumLineEnds.add( segmentEnd ); /* The end of the final line.  All lines end with
@@ -435,12 +435,12 @@ public class BrecciaCursor implements ReusableCursor {
                 continue; }
             if( impliesWithoutCompletingNewline( ch )) continue; // To its completion.
             if( impliesWithoutCompletingNewline( chLast )) { // Then its completion has failed.
-                throw truncatedNewlineError( bufferLineNumberBack(), chLast ); }
+                throw truncatedNewlineError( bufferPointerBack(), chLast ); }
 
           // Or forbidden whitespace
           // ───────────────────────
             if( ch != ' ' && yetIsWhitespace(ch) ) {
-                throw new ForbiddenWhitespace( bufferLineNumberBack(), ch ); }
+                throw new ForbiddenWhitespace( bufferPointerBack(), ch ); }
 
           // Or the end boundary
           // ───────────────────
@@ -474,12 +474,12 @@ public class BrecciaCursor implements ReusableCursor {
                     assert !fractumLineEnds.isEmpty(); /* Not on the first line.  Never could these
                       imperfectly indented backslashes occur there, where `commitAsPoint` does the
                       policing.  No need therefore to guard against trespassing on its jurisdiction. */
-                    throw misplacedNoBreakSpaceError( bufferLineNumberBack() ); }
+                    throw misplacedNoBreakSpaceError( bufferPointerBack() ); }
                 inIndentedBackslashes = false; }
             else if( ch == '\u00A0' && !/*b*/inCommentBlock && !/*f*/fractumLineEnds.isEmpty() ) { /*
                   A no-break space occuring not (f) on the first line, where instead `commitAsPoint`
                   does the policing, nor (b) in a comment block, the only remaining place allowed. */
-                throw misplacedNoBreakSpaceError( bufferLineNumberBack() ); }}}
+                throw misplacedNoBreakSpaceError( bufferPointerBack() ); }}}
 
 
 
@@ -489,25 +489,38 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    private @Subst int bufferLineNumber() { return bufferLineNumber( buffer.position() ); }
+    private @Subst MalformedMarkup.Pointer bufferPointer() { return bufferPointer( buffer.position() ); }
 
 
 
-    /** The line number at the given buffer position within the present fractum.  If the position lies
-      * before `fractumStart`, then this method returns `fractumLineNumber`; if it lies after the region
-      * already parsed by `boundSegment`, then it returns the line number of the last parsed position.
+    /** Makes an error pointer to the given buffer position, taking the line number from
+      * the parsed region of the present fractum.  If the position lies before `fractumStart`,
+      * then this method uses `fractumLineNumber`; if the position lies after the region already
+      * parsed by `boundSegment`, then this method uses the line number of the last parsed position.
       */
-    private @Subst int bufferLineNumber( final int position ) {
-        final int[] endsArray = fractumLineEnds.array;
-        int n = fractumLineNumber();
-        for( int e = 0, eN = fractumLineEnds.length; // For each line,
-          e < eN && endsArray[e] <= position;       // if it ends before the position,
-          ++e, ++n );                              // then add one.
-        return n; }
+    private @Subst MalformedMarkup.Pointer bufferPointer( final int position ) {
+        final int lineNumber, lineStart; {
+            final int[] endsArray = fractumLineEnds.array;
+            int n = fractumLineNumber(), s = fractumStart;
+            for( int end, e = 0, eN = fractumLineEnds.length; // For each line,
+              e < eN && (end = endsArray[e]) <= position;    // if it ends before the position,
+              ++e, ++n, s = end );                          // then advance to the next.
+            lineNumber = n;
+            lineStart = s; } // The end boundary of its predecessor, if any, else `fractumStart`.
+        final int lineLength; { // Or as far as the parse buffer allows.
+            final int pN = buffer.limit();
+            int p = position;
+            while( p < pN && !completesNewline(buffer.get(p++)) );
+            lineLength = p - lineStart; }
+        final String line = buffer.slice( lineStart, lineLength ).toString();
+        final int positionOffset = position - lineStart; // Offset of position in line.
+        final int column = line.codePointCount( 0, positionOffset );
+        return new MalformedMarkup.Pointer( lineNumber, line, column ); }
 
 
 
-    private @Subst int bufferLineNumberBack() { return bufferLineNumber( buffer.position() - 1 ); }
+    private @Subst MalformedMarkup.Pointer bufferPointerBack() {
+        return bufferPointer( buffer.position() - 1 ); }
 
 
 

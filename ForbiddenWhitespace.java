@@ -6,11 +6,11 @@ import static java.lang.String.format;
 public class ForbiddenWhitespace extends MalformedMarkup {
 
 
-    /** @see #lineNumber
+    /** @see #pointer
       * @see #ch
       */
-    public ForbiddenWhitespace( final int lineNumber, final char ch ) {
-        super( lineNumber, "Unicode " + format( "%04x", Integer.valueOf(ch) ));
+    public ForbiddenWhitespace( final Pointer pointer, final char ch ) {
+        super( pointer, "Unicode " + format( "%04x", Integer.valueOf(ch) ));
         this.ch = ch; }
 
 

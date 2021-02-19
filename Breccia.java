@@ -95,6 +95,7 @@ public final class Breccia {
       *       or {@linkplain #impliesNewline(char) newline constituent}
       *     @throws AssertionError If assertions are enabled and `nonSpaceNewline` is a space
       *       or newline constituent.
+      *     @see Java.Characters.isJavaOrUnicodeWhitespace(char)
       */
     public static boolean yetIsWhitespace( final char nonSpaceNewline ) {
         return yetIsWhitespace( (int)nonSpaceNewline ); }
@@ -107,6 +108,7 @@ public final class Breccia {
       *       or {@linkplain #impliesNewline(int) newline constituent}
       *     @throws AssertionError If assertions are enabled and `nonSpaceNewline` is a space
       *       or newline constituent.
+      *     @see Java.Characters.isJavaOrUnicodeWhitespace(int)
       */
     public static boolean yetIsWhitespace( final  int nonSpaceNewline ) {
         assert !( nonSpaceNewline == ' ' || impliesNewline(nonSpaceNewline) );
