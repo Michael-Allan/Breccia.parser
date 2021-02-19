@@ -370,7 +370,7 @@ public class BrecciaCursor implements ReusableCursor {
         boolean inPerfectlyIndentedBackslashes = false;
         boolean inIndentedBackslashes = false;
         boolean inCommentBlock = false; // Scanning where `gets` may yield block commentary.
-        for( char ch = '\u0000', chLast = '\u0000';; chLast = ch ) {
+        for( char ch = '\u0000', chLast = '\u0000';; chLast = ch ) { // Scan character by character:
 
           // ════════════════════════
           // Keep the buffer supplied
@@ -417,9 +417,9 @@ public class BrecciaCursor implements ReusableCursor {
                   // Undefined in the `Reader` API, given the buffer `hasRemaining` space.
 
 
-          // ════════════
-          // Scan forward seeking the end boundary of the segment
-          // ════════════
+          // ═════════════════════════════
+          // Scan forward by one character, seeking the end boundary of the segment
+          // ═════════════════════════════
 
             ch = buffer.get();
 
