@@ -534,9 +534,13 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @param bullet The buffer position of the bullet.
       */
-    private ParseState commitAsPoint( final int bullet ) {
-        buffer.rewind();
+    private ParseState commitAsPoint( final int bullet ) throws ParseError {
+        boolean bulletEndsWithLine = false; // Just before a newline, that is, or at the document end.
+
+      // Find the end boundary of the bullet
+      // ─────────────────────
         final int bulletEnd; {
+            buffer.rewind(); // So treating it whole as a `CharSequence` for sake of `codePointAt`.
             int c = bullet;
             int chLast = codePointAt( buffer, c );
               // Reading by full code point in order accurately to recognize alphanumeric characters.
@@ -545,9 +549,12 @@ public class BrecciaCursor implements ReusableCursor {
                 c += charCount( chLast );
                 if( c >= cEnd ) {
                     assert c == cEnd: "No character can straddle the boundary of a fractal segment";
+                    bulletEndsWithLine = true;
                     break; } // Ends at end of document.
                 int ch = codePointAt( buffer, c );
-                if( impliesNewline( ch )) break; // Ends at line break.
+                if( impliesNewline( ch )) {
+                    bulletEndsWithLine = true;
+                    break; } // Ends at line break.
                 if( isAlphabetic(chLast) || isDigit(chLast) ) { // Then `chLast` is alphanumeric.
                     if( ch == ' ' ) {
                         final var sCA = commentAppenderSeeker;
@@ -555,7 +562,8 @@ public class BrecciaCursor implements ReusableCursor {
                         if( sCA.appenderFound ) break; // Ends at comment appender.
                         if( sCA.endFound ) break; // Ends at end of line.
                         chLast = codePointAt( buffer, c = sCA.cNext );
-                        continue; }}
+                        continue; }
+                    if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c )); }
                 else { // `chLast` is non-alphanumeric and (by contract) non-whitespace.
                     if( ch == ' ' ) break; // Ends at space.
                     if( ch == '\u00A0'/*no-break space*/ ) {
@@ -567,6 +575,20 @@ public class BrecciaCursor implements ReusableCursor {
                         continue; }}
                 chLast = ch; }
             bulletEnd = c; }
+
+      // Police any remainder of the bullet line for misplaced no-break spaces
+      // ────────────────────
+        if( !bulletEndsWithLine ) {
+            buffer.position( bulletEnd );
+            assert buffer.hasRemaining() && !impliesNewline(buffer.get(buffer.position()));
+            char ch;
+            do {
+                ch = buffer.get();
+                if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointerBack() ); }
+            while( !impliesNewline(ch) && buffer.hasRemaining() ); }
+
+      // Commit a point of the correct type
+      // ──────────────
         return commitGenericPoint(); } // TEST
 
 
