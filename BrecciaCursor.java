@@ -535,11 +535,11 @@ public class BrecciaCursor implements ReusableCursor {
       *     @param bullet The buffer position of the bullet.
       */
     private ParseState commitAsPoint( final int bullet ) throws ParseError {
-        boolean bulletEndsWithLine = false; // Just before a newline, that is, or at the document end.
 
       // Find the end boundary of the bullet
       // ─────────────────────
-        final int bulletEnd; {
+        final int bulletEnd;
+        final boolean bulletEndsWithLine; { // Just before a newline, that is, or at the document end.
             buffer.rewind(); // So treating it whole as a `CharSequence` for sake of `codePointAt`.
             int c = bullet;
             int chLast = codePointAt( buffer, c );
@@ -549,29 +549,39 @@ public class BrecciaCursor implements ReusableCursor {
                 c += charCount( chLast );
                 if( c >= cEnd ) {
                     assert c == cEnd: "No character can straddle the boundary of a fractal segment";
-                    bulletEndsWithLine = true;
-                    break; } // Ends at end of document.
+                    bulletEndsWithLine = true; // Ends at document end.
+                    break; }
                 int ch = codePointAt( buffer, c );
                 if( impliesNewline( ch )) {
-                    bulletEndsWithLine = true;
-                    break; } // Ends at line break.
+                    bulletEndsWithLine = true; // Ends at line break.
+                    break; }
                 if( isAlphabetic(chLast) || isDigit(chLast) ) { // Then `chLast` is alphanumeric.
                     if( ch == ' ' ) {
                         final var sCA = commentAppenderSeeker;
-                        sCA.seekFromSpace( c, cEnd );
-                        if( sCA.appenderFound ) break; // Ends at comment appender.
-                        if( sCA.endFound ) break; // Ends at end of line.
-                        chLast = codePointAt( buffer, c = sCA.cNext );
+                        c = sCA.seekFromSpace( c, cEnd );
+                        if( sCA.appenderFound ) {
+                            bulletEndsWithLine = false; // Ends at comment appender.
+                            break; }
+                        if( sCA.endFound ) {
+                            bulletEndsWithLine = true; // Ends at line break or document end.
+                            break; }
+                        chLast = codePointAt( buffer, c );
                         continue; }
                     if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c )); }
                 else { // `chLast` is non-alphanumeric and (by contract) non-whitespace.
-                    if( ch == ' ' ) break; // Ends at space.
+                    if( ch == ' ' ) {
+                        bulletEndsWithLine = false; // Ends at space.
+                        break; }
                     if( ch == '\u00A0'/*no-break space*/ ) {
                         final var sCA = commentAppenderSeeker;
-                        sCA.seekFromNoBreakSpace( c, cEnd );
-                        if( sCA.appenderFound ) break; // Ends at comment appender.
-                        if( sCA.endFound ) break; // Ends at end of line.
-                        chLast = codePointAt( buffer, c = sCA.cNext );
+                        c = sCA.seekFromNoBreakSpace( c, cEnd );
+                        if( sCA.appenderFound ) {
+                            bulletEndsWithLine = false; // Ends at comment appender.
+                            break; }
+                        if( sCA.endFound ) {
+                            bulletEndsWithLine = true; // Ends at line break or document end.
+                            break; }
+                        chLast = codePointAt( buffer, c );
                         continue; }}
                 chLast = ch; }
             bulletEnd = c; }
@@ -941,13 +951,6 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-        /** Offset from `buffer.position` of the next non-space character.
-          * Updated together with `chNext` only when both `appenderFound` and `endFound` are false.
-          */
-        int cNext;
-
-
-
         /** Whether a line end was encountered instead of a comment appender.
           * Updated only when `appenderFound` is false.
           *
@@ -964,9 +967,9 @@ public class BrecciaCursor implements ReusableCursor {
           */
         private boolean isDelimiterSlashAt( int c, final int cEnd ) {
             for( ;; ) {
-                if( ++c == cEnd ) return false;
+                if( ++c == cEnd ) return true;
                 final char ch = buffer.charAt( c );
-                if( ch != '\\' ) return ch == ' '; }}
+                if( ch != '\\' ) return ch == ' ' || impliesNewline(ch); }}
 
 
 
@@ -975,20 +978,26 @@ public class BrecciaCursor implements ReusableCursor {
           *
           *     @param c Offset from `buffer.position` of a (known) no-break space character.
           *     @param cEnd End boundary of the point head.
-          *     @see #appenderFound
+          *     @throws MalformedMarkup On detection of a misplaced no-break space.
+          *     @return Either the offset from `buffer.position` of the next character not a plain space
+          *       (nor a misplaced no-break space), or `buffer.limit`.
           */
-        void seekFromNoBreakSpace( int c, final int cEnd ) {
+        int seekFromNoBreakSpace( int c, final int cEnd ) throws MalformedMarkup {
             assert c < cEnd;
             if( ++c == cEnd ) {
                 appenderFound = false;
-                endFound = true;
-                return; }
-            final char ch = buffer.charAt( c );
-            if( ch == ' ' ) seekFromSpace( c, cEnd );
+                endFound = true; }
             else {
-                appenderFound = false;
-                endFound = false;
-                cNext = c; }}
+                final char ch = buffer.charAt( c );
+                if( ch == ' ' ) c = seekFromSpace( c, cEnd );
+                else if( impliesNewline( ch )) {
+                    appenderFound = false;
+                    endFound = true; }
+                else {
+                    if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c ));
+                    appenderFound = false;
+                    endFound = false; }}
+            return c; }
 
 
 
@@ -997,9 +1006,11 @@ public class BrecciaCursor implements ReusableCursor {
           *
           *     @param c Offset from `buffer.position` of a (known) plain space character.
           *     @param cEnd End boundary of the point head.
-          *     @see #appenderFound
+          *     @throws MalformedMarkup On detection of a misplaced no-break space.
+          *     @return Either the offset from `buffer.position` of the next character not a plain space
+          *       (nor a misplaced no-break space), or `buffer.limit`.
           */
-        void seekFromSpace( int c, final int cEnd ) {
+        int seekFromSpace( int c, final int cEnd ) throws MalformedMarkup {
             assert c < cEnd;
             for( ;; ) {
                 if( ++c == cEnd ) {
@@ -1008,15 +1019,20 @@ public class BrecciaCursor implements ReusableCursor {
                     break; }
                 final char ch = buffer.charAt( c );
                 if( ch != ' ' ) {
-                    if( ch == '\\' && isDelimiterSlashAt(c,cEnd) ) appenderFound = true;
+                    if( ch == '\\' ) {
+                        if( isDelimiterSlashAt( c, cEnd )) appenderFound = true;
+                        else {
+                            appenderFound = false;
+                            endFound = false; }}
                     else if( impliesNewline( ch )) {
                         appenderFound = false;
                         endFound = true; }
                     else {
+                        if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c ));
                         appenderFound = false;
-                        endFound = false;
-                        cNext = c; }
-                    break; }}}}
+                        endFound = false; }
+                    break; }}
+            return c; }}
 
 
 
