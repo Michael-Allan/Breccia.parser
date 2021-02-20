@@ -602,8 +602,8 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** The offset from the start of the present fractum to its first non-space character.
-      * This is either zero or a multiple of four.
+    /** The offset from the start of the present fractum to its first non-space character.  This is -4 in
+      * the case of the document fractum, a multiple of four (including zero) in the case of body fracta.
       */
     private @Subst int fractumIndentWidth;
 
@@ -671,7 +671,7 @@ public class BrecciaCursor implements ReusableCursor {
         fractumStart = 0;
         fractumLineCounter = 0;
         fractumLineEnds.clear();
-        fractumIndentWidth = 0;
+        fractumIndentWidth = -4;
         state = commitDocument();
         hierarchy.clear();
 
