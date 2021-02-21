@@ -397,10 +397,7 @@ public class BrecciaCursor implements ReusableCursor {
                     segmentStart -= shift;
                     final int[] endsArray = fractumLineEnds.array;
                     for( int e = fractumLineEnds.length - 1; e >= 0; --e ) { endsArray[e] -= shift; }
-                    lineStart -= shift;
-                    if( inPerfectlyIndentedBackslashes ) {
-                        segmentEnd -= shift;
-                        segmentEndIndicator -= shift; }}
+                    lineStart -= shift; }
 
               // Refill buffer, or detect exhaustion of the markup source
               // ─────────────
@@ -456,18 +453,23 @@ public class BrecciaCursor implements ReusableCursor {
                     continue; } // To any indented, initial character of the line.
                 if( ch != /*no-break space*/'\u00A0' ) { // Viz. not an indent blind.
                     if( indentAccumulator % 4 == /*perfect*/0 ) {
-                        segmentEnd = lineStart; // Assumption, yet unproven. [ABP]
-                        segmentEndIndicator = buffer.position() - 1; //      [ABP]
-                        segmentEndIndicatorChar = ch;
-                        if( ch != '\\' ) break; /* Segment end boundary = either a divider,
-                          or a point with a non-backslashed bullet). */
+                        if( ch != '\\' ) {
+                            segmentEnd = lineStart;
+                            segmentEndIndicator = lineStart + indentAccumulator;
+                            assert segmentEndIndicator == buffer.position() - 1; // Where `ch` is.
+                            segmentEndIndicatorChar = ch; // Segment end boundary = either a divider,
+                            break; }                     // or a point with a non-backslashed bullet.
                         inPerfectlyIndentedBackslashes = inIndentedBackslashes = true; } /* Indicating
                           either a comment-block delimiter, or the beginning of a backslashed bullet. */
                     else if( ch == '\\' ) inIndentedBackslashes = true; } // Indicating the beginning of
                 inMargin = false; }                                       // a comment-block delimiter.
             else if( inPerfectlyIndentedBackslashes ) {
                 if( ch == '\\' ) continue; // To the end of the backslash sequence.
-                if( ch != ' ' ) break; // Segment end boundary = point with a backslashed bullet.
+                if( ch != ' ' ) {
+                    segmentEnd = lineStart;
+                    segmentEndIndicator = lineStart + indentAccumulator;
+                    segmentEndIndicatorChar = buffer.get( segmentEndIndicator );
+                    break; } // Segment end boundary = point with a backslashed bullet.
                 inPerfectlyIndentedBackslashes = inIndentedBackslashes = false;
                 inCommentBlock = true; }
 
@@ -476,15 +478,19 @@ public class BrecciaCursor implements ReusableCursor {
             else if( inIndentedBackslashes ) {
                 if( ch == '\\' ) continue; // To the end of the backslash sequence.
                 if( ch == ' ' ) inCommentBlock = true;
-                else if( ch == '\u00A0' ) {
-                    assert !fractumLineEnds.isEmpty(); /* Not on the first line.  Never could these
-                      imperfectly indented backslashes occur there, where `commitAsPoint` does the
-                      policing.  No need therefore to guard against trespassing on its jurisdiction. */
+                else if( ch == '\u00A0' ) { // A no-break space.
+                    assert isDocumentHead || !fractumLineEnds.isEmpty(); /* The sequence of backslashes
+                      lies either in the document head or a line after the first line of the segment.
+                      Nowhere else could imperfectly indented backslashes occur.  So either way, this
+                      no-break space lies outside of the first line of a point where `commitAsPoint`
+                      does the policing.  No need ∴ to guard against trespassing on its jurisdiction. */
                     throw misplacedNoBreakSpaceError( bufferPointerBack() ); }
                 inIndentedBackslashes = false; }
-            else if( ch == '\u00A0' && !/*b*/inCommentBlock && !/*f*/fractumLineEnds.isEmpty() ) { /*
-                  A no-break space occuring not (f) on the first line, where instead `commitAsPoint`
-                  does the policing, nor (b) in a comment block, the only remaining place allowed. */
+            else if( ch == '\u00A0' ) { // A no-break space not `inMargin` ∴ delimiting no indent blind.
+                if( inCommentBlock ) continue;
+                if( !isDocumentHead && !isDividerDrawing(segmentEndIndicatorChar) // In a point head,
+                 && fractumLineEnds.isEmpty() ) {                                // on the first line.
+                    continue; } // Leaving the first line of this point to be policed by `commitAsPoint`.
                 throw misplacedNoBreakSpaceError( bufferPointerBack() ); }}}
 
 
@@ -751,14 +757,14 @@ public class BrecciaCursor implements ReusableCursor {
       * or headless document fractum, the only cases of a zero length fractal segment.
       * If the value here is the buffer limit, then no segment remains in the markup source.
       */
-    private @Subst int segmentEnd; // [ABP]
+    private @Subst int segmentEnd;
 
 
 
     /** The buffer position of the first non-space character of the present fractal segment’s
       * linear-order successor, or the buffer limit if there is none.
       */
-    private @Subst int segmentEndIndicator; // [ABP]
+    private @Subst int segmentEndIndicator;
 
 
 
