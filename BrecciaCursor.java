@@ -334,6 +334,7 @@ public class BrecciaCursor implements ReusableCursor {
       * that the following are updated.
       *
       * <ul><li>`{@linkplain #fractumStart       fractumStart}`</li>
+      *     <li>`{@linkplain #fractumIndentWidth fractumIndentWidth}`</li>
       *     <li>`{@linkplain #fractumLineCounter fractumLineCounter}`</li>
       *     <li>`{@linkplain #segmentStart       segmentStart}`</li></ul>
       *
@@ -351,20 +352,25 @@ public class BrecciaCursor implements ReusableCursor {
       *     <li>`{@linkplain #segmentEndIndicator     segmentEndIndicator}`</li>
       *     <li>`{@linkplain #segmentEndIndicatorChar segmentEndIndicatorChar}`</li></ul>
       *
+      * <p>Always the first call to this method for a new source of markup will determine the bounds
+      * of the document head.  For a headless document, the first call returns with `segmentEnd` equal
+      * to `segmentStart`, so treating the non-existent head as though it were a segment of zero extent.
+      * All other calls result in bounds of positive extent.</p>
+      *
       * <p>This method may shift the contents of the buffer, rendering invalid all buffer offsets
       * save those recorded in the fields named above.</p>
       *
-      *     @param isNewSource Whether this the first call for a new source of markup.
       *     @throws MalformedLineBreak For any malformed line break that occurs from the initial
       *       buffer position through the newly determined `segmentEndIndicator`.
       */
-    private void boundSegment( final boolean isNewSource ) throws ParseError {
+    private void boundSegment() throws ParseError {
         assert segmentStart != fractumStart || fractumLineEnds.isEmpty();
-        assert buffer.position() == (isNewSource? 0 : segmentEndIndicator);
+        final boolean isDocumentHead = fractumIndentWidth < 0;
+        assert buffer.position() == (isDocumentHead? 0 : segmentEndIndicator);
         int lineStart = segmentStart; // [ABP]
         assert lineStart == 0 || completesNewline(buffer.get(lineStart-1)); /* Either the preceding text
           is unreachable (does not exist, or lies outside the buffer) or it comprises a newline. */
-        boolean inMargin = isNewSource; /* True while blindly scanning a left margin, where the next
+        boolean inMargin = isDocumentHead; /* True while blindly scanning a left margin, where the next
           `get` might yield either an indent space or the indented, initial character of the line. */
         int indentAccumulator = 0; // What reveals the end boundary of the segment.
         boolean inPerfectlyIndentedBackslashes = false;
@@ -534,7 +540,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @param bullet The buffer position of the bullet.
       */
-    private ParseState commitAsPoint( final int bullet ) throws ParseError {
+    private ParseState commitAsPoint( final int bullet ) throws MalformedMarkup {
 
       // Find the end boundary of the bullet
       // ─────────────────────
@@ -679,15 +685,15 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `_next`.
         fractumStart = 0;
+        fractumIndentWidth = -4;
         fractumLineCounter = 0;
         fractumLineEnds.clear();
-        fractumIndentWidth = -4;
         state = commitDocument();
         hierarchy.clear();
 
         // Changing what follows?  Sync → `nextSegment`.
         segmentStart = segmentEnd = segmentEndIndicator = 0;
-        boundSegment( true ); }
+        boundSegment(); }
 
 
 
@@ -701,7 +707,7 @@ public class BrecciaCursor implements ReusableCursor {
             return state = commitDocumentEnd(); }
         final int nextIndentWidth = segmentEndIndicator - segmentEnd; /* The offset from the start of
           the next fractum (`segmentEnd`) to its first non-space character (`segmentEndIndicator`). */
-        assert nextIndentWidth % 4 == 0;
+        assert nextIndentWidth >= 0 && nextIndentWidth % 4 == 0;
         if( !state.isInitial() ) { // Then unwind any past siblings from `hierarchy`, ending each.
             while( fractumIndentWidth >= nextIndentWidth ) { /* For its own purposes, this loop maintains
                   the records of `fractumIndentWidth` and `hierarchy` even through the ending states
@@ -712,10 +718,10 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `markupSource`.
         fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
+        fractumIndentWidth = nextIndentWidth;
         fractumLineCounter += fractumLineEnds.length; /* Its line number is the line number
           of the present fractum plus the *line count* of the present fractum. */
         fractumLineEnds.clear();
-        fractumIndentWidth = nextIndentWidth;
         if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
               starting a division whose head comprises all contiguous divider segments. */
             do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); // Scan through each.
@@ -736,7 +742,7 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `markupSource`.
         segmentStart = segmentEnd;
-        boundSegment( false ); }
+        boundSegment(); }
 
 
 
