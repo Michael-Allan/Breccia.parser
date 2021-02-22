@@ -362,6 +362,11 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @throws MalformedLineBreak For any malformed line break that occurs from the initial
       *       buffer position through the newly determined `segmentEndIndicator`.
+      *     @throws ForbiddenWhitespace For any forbidden whitespace detected from the initial
+      *       buffer position through the newly determined `segmentEndIndicator`.
+      *     @throws MalformedMarkup For any misplaced no-break space that occurs from the initial buffer
+      *       position through the newly determined `segmentEndIndicator`, except on the first line of a
+      *       point, where instead `{@linkplain #commitAsPoint(int) commitAsPoint}` polices this offence.
       */
     private void boundSegment() throws ParseError {
         assert segmentStart != fractumStart || fractumLineEnds.isEmpty();
@@ -443,6 +448,8 @@ public class BrecciaCursor implements ReusableCursor {
           // Or forbidden whitespace
           // ───────────────────────
             if( ch != ' ' && yetIsWhitespace(ch) ) {
+                  // A partial test, limited to Unicode plane zero, pending a cause to suffer
+                  // the added complexity and potential speed drag of testing full code points.
                 throw new ForbiddenWhitespace( bufferPointerBack(), ch ); }
 
           // Or the end boundary
@@ -545,6 +552,8 @@ public class BrecciaCursor implements ReusableCursor {
       * are initialized save for `hierarchy`.
       *
       *     @param bullet The buffer position of the bullet.
+      *     @throws MalformedMarkup For any misplaced no-break space that occurs on the same line.
+      *       Note that elsewhere `{@linkplain #boundSegment() boundSegment}` polices this offence.
       */
     private ParseState commitAsPoint( final int bullet ) throws MalformedMarkup {
 
