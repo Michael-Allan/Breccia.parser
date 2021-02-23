@@ -74,21 +74,33 @@ public class Typestamp {
 
 
 
+    /** The typestamp of `GenericCommandPoint`.
+      */
+    public static final int genericCommandPoint     = 0x08;
+
+
+
+    /** The typestamp of `GenericCommandPointEnd`.
+      */
+    public static final int genericCommandPointEnd  = 0x09;
+
+
+
     /** The typestamp of `GenericPoint`.
       */
-    public static final int genericPoint            = 0x08;
+    public static final int genericPoint            = 0x0a;
 
 
 
     /** The typestamp of `GenericPointEnd`.
       */
-    public static final int genericPointEnd         = 0x09;
+    public static final int genericPointEnd         = 0x0b;
 
 
 
     /** The highest of the typestamps defined here.
       */
-    protected static final int maximum              = 0x09; } // Same as the preceding.
+    protected static final int maximum              = 0x0b; } // Same as the preceding.
 
 
 

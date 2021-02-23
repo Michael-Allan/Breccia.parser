@@ -5,13 +5,14 @@ import java.io.Reader;
 import java.lang.annotation.*;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
-import Java.IntArrayExtensor;
-import Java.Unhandled;
+import Java.*;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.NoSuchElementException;
 
+import static Java.CharBuffers.newDelimitableCharSequence;
+import static Java.CharSequences.equalInContent;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 import static java.lang.Character.charCount;
@@ -50,10 +51,11 @@ public class BrecciaCursor implements ReusableCursor {
       */
     public ParseState next() throws ParseError {
         if( state.isFinal() ) throw new NoSuchElementException();
-        try { return _next(); }
+        try { _next(); }
         catch( ParseError x ) {
             disable();
-            throw x; }}
+            throw x; }
+        return state; }
 
 
 
@@ -258,6 +260,32 @@ public class BrecciaCursor implements ReusableCursor {
 
 
         protected final void commitFractumEnd( final FractumEnd e ) { state = fractumEnd = e; }
+
+
+
+    /** Returns the present parse state as an `GenericCommandPoint`,
+      * or null if the cursor is not positioned at a generic command point.
+      */
+    public final GenericCommandPoint asGenericCommandPoint() {
+        return state == genericCommandPoint? genericCommandPoint : null; }
+
+
+        protected final void commitGenericCommandPoint( final GenericCommandPoint r ) {
+            genericCommandPoint = r;
+            commitCommandPoint( r ); }
+
+
+
+    /** Returns the present parse state as an `GenericCommandPointEnd`,
+      * or null if the cursor is not positioned at the end of a generic command point.
+      */
+    public final GenericCommandPointEnd asGenericCommandPointEnd() {
+        return state == genericCommandPointEnd? genericCommandPointEnd : null; }
+
+
+        protected final void commitGenericCommandPointEnd( final GenericCommandPointEnd e ) {
+            genericCommandPointEnd = e;
+            commitCommandPointEnd( e ); }
 
 
 
@@ -553,9 +581,11 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @param bullet The buffer position of the bullet.
       *     @throws MalformedMarkup For any misplaced no-break space that occurs on the same line.
-      *       Note that elsewhere `{@linkplain #boundSegment() boundSegment}` polices this offence.
+      *       Note that elsewhere `{@linkplain #boundSegment() boundSegment}` polices this offence. *//*
+      *
+      *  This method uses `xSeq`.
       */
-    private ParseState commitAsPoint( final int bullet ) throws MalformedMarkup {
+    private void commitAsPoint( final int bullet ) throws MalformedMarkup {
 
       // Find the end boundary of the bullet
       // ─────────────────────
@@ -620,7 +650,9 @@ public class BrecciaCursor implements ReusableCursor {
 
       // Commit a point of the correct type
       // ──────────────
-        return commitGenericPoint(); } // TEST
+        xSeq.delimit( bullet, bulletEnd );
+        if( equalInContent( ":", xSeq )) commitGenericCommandPoint();
+        else commitGenericPoint(); }
 
 
 
@@ -689,21 +721,21 @@ public class BrecciaCursor implements ReusableCursor {
     private void _markupSource( final Reader r ) throws ParseError {
         sourceReader = r;
         final int count; {
-            try { count = sourceReader.read( buffer.clear().array() ); }
+            try { count = sourceReader.read( buffer.clear() ); }
             catch( IOException x ) { throw new Unhandled( x ); }}
         if( count < 0 ) {
             buffer.limit( 0 );
-            state = commitEmpty();
+            commitEmpty();
             return; }
         if( count == 0 ) throw new IllegalStateException(); // Forbidden by `Reader` for array reads.
-        buffer.limit( count );
+        buffer.flip();
 
         // Changing what follows?  Sync → `_next`.
         fractumStart = 0;
         fractumIndentWidth = -4;
         fractumLineCounter = 0;
         fractumLineEnds.clear();
-        state = commitDocument();
+        commitDocument();
         hierarchy.clear();
 
         // Changing what follows?  Sync → `nextSegment`.
@@ -712,14 +744,17 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    private ParseState _next() throws ParseError {
+    private void _next() throws ParseError {
         assert !state.isFinal();
         if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
             while( fractumIndentWidth >= 0 ) { // Unwind any past body fracta, ending each.
                 fractumIndentWidth -= 4;
                 final BodyFractum past = hierarchy.remove( hierarchy.size() - 1 );
-                if( past != null ) return state = past.commitEnd(); }
-            return state = commitDocumentEnd(); }
+                if( past != null ) {
+                    past.commitEnd();
+                    return; }}
+            commitDocumentEnd();
+            return; }
         final int nextIndentWidth = segmentEndIndicator - segmentEnd; /* The offset from the start of
           the next fractum (`segmentEnd`) to its first non-space character (`segmentEndIndicator`). */
         assert nextIndentWidth >= 0 && nextIndentWidth % 4 == 0;
@@ -729,7 +764,9 @@ public class BrecciaCursor implements ReusableCursor {
                   of past siblings, during which they are meaningless for their intended purposes. */
                 fractumIndentWidth -= 4;
                 final BodyFractum pastSibling = hierarchy.remove( hierarchy.size() - 1 );
-                if( pastSibling != null ) return state = pastSibling.commitEnd(); }}
+                if( pastSibling != null ) {
+                    pastSibling.commitEnd();
+                    return; }}}
 
         // Changing what follows?  Sync → `markupSource`.
         fractumStart = segmentEnd; // It starts at the end boundary of the present segment.
@@ -740,15 +777,14 @@ public class BrecciaCursor implements ReusableCursor {
         if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
               starting a division whose head comprises all contiguous divider segments. */
             do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); // Scan through each.
-            state = commitDivision(); }
+            commitDivision(); }
         else { // Next is a point.
             nextSegment(); // Scan through to the end boundary of its head.
-            state = commitAsPoint( /*bullet position*/fractumStart + fractumIndentWidth ); }
+            commitAsPoint( /*bullet position*/fractumStart + fractumIndentWidth ); }
         final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
         while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
         assert state == bodyFractum;
-        hierarchy.add( bodyFractum );
-        return state; }
+        hierarchy.add( bodyFractum ); }
 
 
 
@@ -798,6 +834,11 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    private final DelimitableCharSequence xSeq = newDelimitableCharSequence( buffer );
+      // For use only where declared.
+
+
+
    // ┈┈┈  s t a t e   t y p i n g  ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 
 
@@ -807,15 +848,13 @@ public class BrecciaCursor implements ReusableCursor {
         private final AssociativeReference basicAssociativeReference // [CIC]
           = new AssociativeReference() {
 
-            protected @Override AssociativeReferenceEnd commitEnd() {
-                commitAssociativeReferenceEnd( basicAssociativeReferenceEnd );
-                return basicAssociativeReferenceEnd; }
+            protected @Override void commitEnd() {
+                commitAssociativeReferenceEnd( basicAssociativeReferenceEnd ); }
             public @Override String toString() { return tagName(); }}; // [SR]
 
 
-        private AssociativeReference commitAssociativeReference() {
-            commitAssociativeReference( basicAssociativeReference );
-            return basicAssociativeReference; }
+        private void commitAssociativeReference() {
+            commitAssociativeReference( basicAssociativeReference ); }
 
 
 
@@ -848,15 +887,11 @@ public class BrecciaCursor implements ReusableCursor {
 
         private final Division basicDivision = new Division() { // [CIC]
 
-            protected @Override DivisionEnd commitEnd() {
-                commitDivisionEnd( basicDivisionEnd );
-                return basicDivisionEnd; }
+            protected @Override void commitEnd() { commitDivisionEnd( basicDivisionEnd ); }
             public @Override String toString() { return tagName(); }}; // [SR]
 
 
-        private Division commitDivision() {
-            commitDivision( basicDivision );
-            return basicDivision; }
+        private void commitDivision() { commitDivision( basicDivision ); }
 
 
 
@@ -873,9 +908,7 @@ public class BrecciaCursor implements ReusableCursor {
         private final Document basicDocument = new Document(); // [CIC]
 
 
-        private Document commitDocument() {
-            commitDocument( basicDocument );
-            return basicDocument; }
+        private void commitDocument() { commitDocument( basicDocument ); }
 
 
 
@@ -885,9 +918,7 @@ public class BrecciaCursor implements ReusableCursor {
         private final DocumentEnd basicDocumentEnd = new DocumentEnd(); // [CIC]
 
 
-        private DocumentEnd commitDocumentEnd() {
-            commitDocumentEnd( basicDocumentEnd );
-            return basicDocumentEnd; }
+        private void commitDocumentEnd() { commitDocumentEnd( basicDocumentEnd ); }
 
 
 
@@ -897,9 +928,7 @@ public class BrecciaCursor implements ReusableCursor {
         private final Empty basicEmpty = new Empty(); // [CIC]
 
 
-        private Empty commitEmpty() {
-            commitEmpty( basicEmpty );
-            return basicEmpty; }
+        private void commitEmpty() { commitEmpty( basicEmpty ); }
 
 
 
@@ -909,9 +938,7 @@ public class BrecciaCursor implements ReusableCursor {
         private final Error basicError = new Error(); // [CIC]
 
 
-        private Error commitError() {
-            commitError( basicError );
-            return basicError; }
+        private void commitError() { commitError( basicError ); }
 
 
 
@@ -923,20 +950,39 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    private GenericCommandPoint genericCommandPoint;
+
+
+        private final GenericCommandPoint basicGenericCommandPoint = new GenericCommandPoint() { // [CIC]
+
+            protected @Override void commitEnd() {
+                commitGenericCommandPointEnd( basicGenericCommandPointEnd ); }
+            public @Override String toString() { return tagName(); }}; // [SR]
+
+
+        private void commitGenericCommandPoint() {
+            commitGenericCommandPoint( basicGenericCommandPoint ); }
+
+
+
+    private GenericCommandPointEnd genericCommandPointEnd;
+
+
+        private final GenericCommandPointEnd basicGenericCommandPointEnd // [CIC]
+           = new GenericCommandPointEnd();
+
+
+
     private GenericPoint genericPoint;
 
 
         private final GenericPoint basicGenericPoint = new GenericPoint() { // [CIC]
 
-            protected @Override GenericPointEnd commitEnd() {
-                commitGenericPointEnd( basicGenericPointEnd );
-                return basicGenericPointEnd; }
+            protected @Override void commitEnd() { commitGenericPointEnd( basicGenericPointEnd ); }
             public @Override String toString() { return tagName(); }}; // [SR]
 
 
-        private GenericPoint commitGenericPoint() {
-            commitGenericPoint( basicGenericPoint );
-            return basicGenericPoint; }
+        private void commitGenericPoint() { commitGenericPoint( basicGenericPoint ); }
 
 
 

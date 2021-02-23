@@ -267,6 +267,8 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
             case associativeReferenceEnd ->   END_ELEMENT;
             case division                -> START_ELEMENT;
             case divisionEnd             ->   END_ELEMENT;
+            case genericCommandPoint     -> START_ELEMENT;
+            case genericCommandPointEnd  ->   END_ELEMENT;
             case genericPoint            -> START_ELEMENT;
             case genericPointEnd         ->   END_ELEMENT;
             case documentEnd -> END_ELEMENT; // End of document element; next call ends document.
