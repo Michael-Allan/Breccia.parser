@@ -16,13 +16,6 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-   // ━━━  B o d y   F r a c t u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    protected abstract @Override AssociativeReferenceEnd commitEnd();
-
-
-
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -69,7 +62,7 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-        public CharSequence text() { throw new UnsupportedOperationException(); }}
+        public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
 
 
 
@@ -105,7 +98,7 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-        public CharSequence text() { throw new UnsupportedOperationException(); }}
+        public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
 
 
 
@@ -141,7 +134,7 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-        public CharSequence text() { throw new UnsupportedOperationException(); }}
+        public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
 
 
 
@@ -182,7 +175,7 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-        public CharSequence text() { throw new UnsupportedOperationException(); }}}
+        public @Override CharSequence text() { throw new UnsupportedOperationException(); }}}
 
 
 
