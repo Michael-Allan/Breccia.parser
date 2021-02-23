@@ -36,7 +36,7 @@ public class ResourceIndicator implements Markup {
 
 
 
-    public CharSequence text() { throw new UnsupportedOperationException(); }}
+    public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
 
 
 

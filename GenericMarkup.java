@@ -29,7 +29,7 @@ public abstract class GenericMarkup implements Markup { /* Modeling what is opti
 
 
 
-    public CharSequence text() { throw new UnsupportedOperationException(); }}
+    public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
 
 
 

@@ -27,7 +27,7 @@ public abstract class Fractum implements Markup, ParseState {
 
 
 
-    public CharSequence text() { throw new UnsupportedOperationException(); }}
+    public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
 
 
 
