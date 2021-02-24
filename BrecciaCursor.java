@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import java.util.NoSuchElementException;
 
 import static Java.CharBuffers.newDelimitableCharSequence;
+import static Java.CharBuffers.transferDirectly;
 import static Java.CharSequences.equalInContent;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
@@ -437,7 +438,7 @@ public class BrecciaCursor implements ReusableCursor {
                 assert buffer.hasRemaining(); // Not yet full, that is.
                 buffer.mark();
                 final int count; {
-                    try { count = sourceReader.read( buffer ); }
+                    try { count = transferDirectly( sourceReader, buffer ); }
                     catch( IOException x ) { throw new Unhandled( x ); }}
                 final int p = buffer.position();
                 buffer.limit( p ).reset(); // Whether to resume scanning, or regardless for consistency.
@@ -721,7 +722,7 @@ public class BrecciaCursor implements ReusableCursor {
     private void _markupSource( final Reader r ) throws ParseError {
         sourceReader = r;
         final int count; {
-            try { count = sourceReader.read( buffer.clear() ); }
+            try { count = transferDirectly( sourceReader, buffer.clear() ); }
             catch( IOException x ) { throw new Unhandled( x ); }}
         if( count < 0 ) {
             buffer.limit( 0 );
