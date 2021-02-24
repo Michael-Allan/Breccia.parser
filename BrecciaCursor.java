@@ -534,6 +534,8 @@ public class BrecciaCursor implements ReusableCursor {
     /** The source buffer.
       */
     private CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
+ // private CharBuffer buffer = CharBuffer.allocate( bufferCapacity + 1 ) // TEST: a buffer with a
+ //   .slice( 1, bufferCapacity );                                       // positive `arrayOffset`. [BAO]
 
 
 
@@ -1119,6 +1121,9 @@ public class BrecciaCursor implements ReusableCursor {
 // ─────
 //   ABP  Adjustable buffer position.  This note serves as a reminder to adjust the value of the variable
 //        in `boundSegment` after each call to `buffer.compact`.
+//
+//   BAO  Backing-array offset.  This is non-zero in case of an array-backed buffer formed as a slice
+//        of another buffer, but other cases may exist.  https://stackoverflow.com/a/24601336/2402790
 //
 //   CIC  Cached instance of a concrete parse state.  Each instance is held in a constant field named
 //        e.g. `basicFoo`, basic meaning not a subtype.  It could instead be held in `foo`, except
