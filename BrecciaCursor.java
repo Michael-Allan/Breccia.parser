@@ -63,8 +63,8 @@ public class BrecciaCursor implements ReusableCursor {
       * Calling this method will abort any parse already in progress.
       */
     public void perState( final Path sourceFile, final Consumer<ParseState> sink ) throws ParseError {
-        try( final Reader source = newSourceReader​( sourceFile )) {
-            markupSource( source );
+        try( final Reader r = newSourceReader​( sourceFile )) {
+            markupSource( r );
             for( ;; ) {
                 sink.accept( state );
                 if( state.isFinal() ) break;
@@ -81,8 +81,8 @@ public class BrecciaCursor implements ReusableCursor {
       */
     public void perStateConditionally( final Path sourceFile, final Predicate<ParseState> sink )
           throws ParseError {
-        try( final Reader source = newSourceReader​( sourceFile )) {
-            markupSource( source );
+        try( final Reader r = newSourceReader​( sourceFile )) {
+            markupSource( r );
             while( sink.test(state) && !state.isFinal() ) _next(); }
         catch( IOException x ) { throw new Unhandled( x ); }
         catch( ParseError x ) {
