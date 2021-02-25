@@ -262,19 +262,22 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
             //       a) Else emit `c.text`.
             //    3) Emit the corresponding end tag.
             // C) Emit a `Head` end tag.
-            case document -> START_ELEMENT;
             case associativeReference    -> START_ELEMENT;
             case associativeReferenceEnd ->   END_ELEMENT;
             case division                -> START_ELEMENT;
             case divisionEnd             ->   END_ELEMENT;
+            case document                -> START_ELEMENT;
+            case documentEnd             ->   END_ELEMENT; /* End of document element;
+                                                              next call ends document. */
+            case empty -> throw new IllegalStateException(); /* An initial and final state,
+              impossible here owing both to `markupSource` and the `hasNext()` guard above. */
+            case error -> throw new IllegalStateException(); /* A final state,
+              impossible here owing to the `hasNext()` guard above. */
             case genericCommandPoint     -> START_ELEMENT;
             case genericCommandPointEnd  ->   END_ELEMENT;
             case genericPoint            -> START_ELEMENT;
             case genericPointEnd         ->   END_ELEMENT;
-            case documentEnd -> END_ELEMENT; // End of document element; next call ends document.
-            case empty -> throw new IllegalStateException(); /* Illegal except as an initial state,
-              that is, which it cannot be owing to `markupSource` and the `!hasNext()` guard above. */
-            default -> throw new IllegalStateException(); };}
+            default -> throw new IllegalStateException(); };} // All are covered.
 
 
 
