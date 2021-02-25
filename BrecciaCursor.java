@@ -37,7 +37,7 @@ public class BrecciaCursor implements ReusableCursor {
       */
     static final int bufferCapacity; static {
         int n = 0x1_0000; // 65536, minimizing the likelihood of having to throw `OverlargeHead`.
-        // Now assume the IO system will transfer that much on each refill request by `boundSegment`.
+        // Now assume the IO system will transfer that much on each refill request by `delimitSegment`.
         // Let it do so even while the buffer holds the already-read portion of the present segment:
         n += 0x1000; // 4096, more than ample for that segment.
         bufferCapacity = n; }
@@ -358,6 +358,53 @@ public class BrecciaCursor implements ReusableCursor {
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 
+    /** The source buffer.
+      */
+    private CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
+ // private CharBuffer buffer = CharBuffer.allocate( bufferCapacity + 1 ) // TEST: a buffer with a
+ //   .slice( 1, bufferCapacity );                                       // positive `arrayOffset`. [BAO]
+
+
+
+    private @Subst MalformedMarkup.Pointer bufferPointer() { return bufferPointer( buffer.position() ); }
+
+
+
+    /** Makes an error pointer to the given buffer position, taking the line number from
+      * the parsed region of the present fractum.  If the position lies before `fractumStart`,
+      * then this method uses `fractumLineNumber`; if the position lies after the region already
+      * parsed by `delimitSegment`, then this method uses the line number of the last parsed position.
+      */
+    private @Subst MalformedMarkup.Pointer bufferPointer( final int position ) {
+        final int lineNumber, lineStart; {
+            final int[] endsArray = fractumLineEnds.array;
+            int n = fractumLineNumber(), s = fractumStart;
+            for( int end, e = 0, eN = fractumLineEnds.length; // For each line,
+              e < eN && (end = endsArray[e]) <= position;    // if it ends before the position,
+              ++e, ++n, s = end );                          // then advance to the next.
+            lineNumber = n;
+            lineStart = s; } // The end boundary of its predecessor, if any, else `fractumStart`.
+        final int lineLength; { // Or as far as the parse buffer allows.
+            final int pN = buffer.limit();
+            int p = position;
+            while( p < pN && !completesNewline(buffer.get(p++)) );
+            lineLength = p - lineStart; }
+        final String line = buffer.slice( lineStart, lineLength ).toString();
+        final int positionOffset = position - lineStart; // Offset of position in line.
+        final int column = line.codePointCount( 0, positionOffset );
+        return new MalformedMarkup.Pointer( lineNumber, line, column ); }
+
+
+
+    private @Subst MalformedMarkup.Pointer bufferPointerBack() {
+        return bufferPointer( buffer.position() - 1 ); }
+
+
+
+    private final CommentAppenderSeeker commentAppenderSeeker = new CommentAppenderSeeker();
+
+
+
     /** Reads through any fractal segment located at `segmentStart`, beginning at the present buffer
       * position, and sets the remainder of its determining bounds.  Ensure before calling this method
       * that the following are updated.
@@ -395,9 +442,9 @@ public class BrecciaCursor implements ReusableCursor {
       *       buffer position through the newly determined `segmentEndIndicator`.
       *     @throws MalformedMarkup For any misplaced no-break space that occurs from the initial buffer
       *       position through the newly determined `segmentEndIndicator`, except on the first line of a
-      *       point, where instead `{@linkplain #commitAsPoint(int) commitAsPoint}` polices this offence.
+      *       point, where instead `{@linkplain #parsePoint(int) parsePoint}` polices this offence.
       */
-    private void boundSegment() throws ParseError {
+    private void delimitSegment() throws ParseError {
         assert segmentStart != fractumStart || fractumLineEnds.isEmpty();
         final boolean isDocumentHead = fractumIndentWidth < 0;
         assert buffer.position() == (isDocumentHead? 0 : segmentEndIndicator);
@@ -518,7 +565,7 @@ public class BrecciaCursor implements ReusableCursor {
                     assert isDocumentHead || !fractumLineEnds.isEmpty(); /* The sequence of backslashes
                       lies either in the document head or a line after the first line of the segment.
                       Nowhere else could imperfectly indented backslashes occur.  So either way, this
-                      no-break space lies outside of the first line of a point where `commitAsPoint`
+                      no-break space lies outside of the first line of a point where `parsePoint`
                       does the policing.  No need ∴ to guard against trespassing on its jurisdiction. */
                     throw misplacedNoBreakSpaceError( bufferPointerBack() ); }
                 inIndentedBackslashes = false; }
@@ -526,136 +573,8 @@ public class BrecciaCursor implements ReusableCursor {
                 if( inCommentBlock ) continue;
                 if( !isDocumentHead && !isDividerDrawing(segmentEndIndicatorChar) // In a point head,
                  && fractumLineEnds.isEmpty() ) {                                // on the first line.
-                    continue; } // Leaving the first line of this point to be policed by `commitAsPoint`.
+                    continue; } // Leaving the first line of this point to be policed by `parsePoint`.
                 throw misplacedNoBreakSpaceError( bufferPointerBack() ); }}}
-
-
-
-    /** The source buffer.
-      */
-    private CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
- // private CharBuffer buffer = CharBuffer.allocate( bufferCapacity + 1 ) // TEST: a buffer with a
- //   .slice( 1, bufferCapacity );                                       // positive `arrayOffset`. [BAO]
-
-
-
-    private @Subst MalformedMarkup.Pointer bufferPointer() { return bufferPointer( buffer.position() ); }
-
-
-
-    /** Makes an error pointer to the given buffer position, taking the line number from
-      * the parsed region of the present fractum.  If the position lies before `fractumStart`,
-      * then this method uses `fractumLineNumber`; if the position lies after the region already
-      * parsed by `boundSegment`, then this method uses the line number of the last parsed position.
-      */
-    private @Subst MalformedMarkup.Pointer bufferPointer( final int position ) {
-        final int lineNumber, lineStart; {
-            final int[] endsArray = fractumLineEnds.array;
-            int n = fractumLineNumber(), s = fractumStart;
-            for( int end, e = 0, eN = fractumLineEnds.length; // For each line,
-              e < eN && (end = endsArray[e]) <= position;    // if it ends before the position,
-              ++e, ++n, s = end );                          // then advance to the next.
-            lineNumber = n;
-            lineStart = s; } // The end boundary of its predecessor, if any, else `fractumStart`.
-        final int lineLength; { // Or as far as the parse buffer allows.
-            final int pN = buffer.limit();
-            int p = position;
-            while( p < pN && !completesNewline(buffer.get(p++)) );
-            lineLength = p - lineStart; }
-        final String line = buffer.slice( lineStart, lineLength ).toString();
-        final int positionOffset = position - lineStart; // Offset of position in line.
-        final int column = line.codePointCount( 0, positionOffset );
-        return new MalformedMarkup.Pointer( lineNumber, line, column ); }
-
-
-
-    private @Subst MalformedMarkup.Pointer bufferPointerBack() {
-        return bufferPointer( buffer.position() - 1 ); }
-
-
-
-    private final CommentAppenderSeeker commentAppenderSeeker = new CommentAppenderSeeker();
-
-
-
-    /** Parses a bullet to learn the concrete type of its point, then sets the state-typing fields
-      * to the corresponding parse state.  Ensure before calling this method that all other fields
-      * are initialized save for `hierarchy`.
-      *
-      *     @param bullet The buffer position of the bullet.
-      *     @throws MalformedMarkup For any misplaced no-break space that occurs on the same line.
-      *       Note that elsewhere `{@linkplain #boundSegment() boundSegment}` polices this offence. *//*
-      *
-      *  This method uses `xSeq`.
-      */
-    private void commitAsPoint( final int bullet ) throws MalformedMarkup {
-
-      // Find the end boundary of the bullet
-      // ─────────────────────
-        final int bulletEnd;
-        final boolean bulletEndsWithLine; { // Just before a newline, that is, or at the document end.
-            buffer.rewind(); // So treating it whole as a `CharSequence` for sake of `codePointAt`.
-            int c = bullet;
-            int chLast = codePointAt( buffer, c );
-              // Reading by full code point in order accurately to recognize alphanumeric characters.
-              // Invariant: always `chLast` holds a non-whitespace character internal to the bullet.
-            for( final int cEnd = segmentEnd;; ) {
-                c += charCount( chLast );
-                if( c >= cEnd ) {
-                    assert c == cEnd: "No character can straddle the boundary of a fractal segment";
-                    bulletEndsWithLine = true; // Ends at document end.
-                    break; }
-                int ch = codePointAt( buffer, c );
-                if( impliesNewline( ch )) {
-                    bulletEndsWithLine = true; // Ends at line break.
-                    break; }
-                if( isAlphabetic(chLast) || isDigit(chLast) ) { // Then `chLast` is alphanumeric.
-                    if( ch == ' ' ) {
-                        final var sCA = commentAppenderSeeker;
-                        c = sCA.seekFromSpace( c, cEnd );
-                        if( sCA.appenderFound ) {
-                            bulletEndsWithLine = false; // Ends at comment appender.
-                            break; }
-                        if( sCA.endFound ) {
-                            bulletEndsWithLine = true; // Ends at line break or document end.
-                            break; }
-                        chLast = codePointAt( buffer, c );
-                        continue; }
-                    if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c )); }
-                else { // `chLast` is non-alphanumeric and (by contract) non-whitespace.
-                    if( ch == ' ' ) {
-                        bulletEndsWithLine = false; // Ends at space.
-                        break; }
-                    if( ch == '\u00A0'/*no-break space*/ ) {
-                        final var sCA = commentAppenderSeeker;
-                        c = sCA.seekFromNoBreakSpace( c, cEnd );
-                        if( sCA.appenderFound ) {
-                            bulletEndsWithLine = false; // Ends at comment appender.
-                            break; }
-                        if( sCA.endFound ) {
-                            bulletEndsWithLine = true; // Ends at line break or document end.
-                            break; }
-                        chLast = codePointAt( buffer, c );
-                        continue; }}
-                chLast = ch; }
-            bulletEnd = c; }
-
-      // Police any remainder of the bullet line for misplaced no-break spaces
-      // ────────────────────
-        if( !bulletEndsWithLine ) {
-            buffer.position( bulletEnd );
-            assert buffer.hasRemaining() && !impliesNewline(buffer.get(buffer.position()));
-            char ch;
-            do {
-                ch = buffer.get();
-                if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointerBack() ); }
-            while( !impliesNewline(ch) && buffer.hasRemaining() ); }
-
-      // Commit a point of the correct type
-      // ──────────────
-        xSeq.delimit( bullet, bulletEnd );
-        if( equalInContent( ":", xSeq )) commitGenericCommandPoint();
-        else commitGenericPoint(); }
 
 
 
@@ -743,20 +662,21 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `nextSegment`.
         segmentStart = segmentEnd = segmentEndIndicator = 0;
-        boundSegment(); }
+        delimitSegment(); }
 
 
 
-    private void _next() throws ParseError {
+    private void _next() throws ParseError { /* Below, in the left margin,
+          an empty comment marks each point of commitment to a new parse state. */
         assert !state.isFinal();
         if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
             while( fractumIndentWidth >= 0 ) { // Unwind any past body fracta, ending each.
                 fractumIndentWidth -= 4;
                 final BodyFractum past = hierarchy.remove( hierarchy.size() - 1 );
                 if( past != null ) {
-                    past.commitEnd();
+ /**/               past.commitEnd();
                     return; }}
-            commitDocumentEnd();
+ /**/       commitDocumentEnd();
             return; }
         final int nextIndentWidth = segmentEndIndicator - segmentEnd; /* The offset from the start of
           the next fractum (`segmentEnd`) to its first non-space character (`segmentEndIndicator`). */
@@ -768,7 +688,7 @@ public class BrecciaCursor implements ReusableCursor {
                 fractumIndentWidth -= 4;
                 final BodyFractum pastSibling = hierarchy.remove( hierarchy.size() - 1 );
                 if( pastSibling != null ) {
-                    pastSibling.commitEnd();
+ /**/               pastSibling.commitEnd();
                     return; }}}
 
         // Changing what follows?  Sync → `markupSource`.
@@ -780,10 +700,10 @@ public class BrecciaCursor implements ReusableCursor {
         if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
               starting a division whose head comprises all contiguous divider segments. */
             do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); // Scan through each.
-            commitDivision(); }
+ /**/       commitDivision(); }
         else { // Next is a point.
             nextSegment(); // Scan through to the end boundary of its head.
-            commitAsPoint( /*bullet position*/fractumStart + fractumIndentWidth ); }
+ /**/       parsePoint( /*bullet position*/fractumStart + fractumIndentWidth ); }
         final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
         while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
         assert state == bodyFractum;
@@ -796,7 +716,88 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `markupSource`.
         segmentStart = segmentEnd;
-        boundSegment(); }
+        delimitSegment(); }
+
+
+
+    /** Parses a bullet to learn the concrete type of its point, then sets the state-typing fields
+      * to the corresponding parse state.  Ensure before calling this method that all other fields
+      * are initialized save for `hierarchy`.
+      *
+      *     @param bullet The buffer position of the bullet.
+      *     @throws MalformedMarkup For any misplaced no-break space occuring on the same line.  Note
+      *       that elsewhere `{@linkplain #delimitSegment() delimitSegment}` polices this offence. *//*
+      *
+      *     @uses #xSeq
+      */
+    private void parsePoint( final int bullet ) throws MalformedMarkup {
+
+      // Find the end boundary of the bullet
+      // ─────────────────────
+        final int bulletEnd;
+        final boolean bulletEndsWithLine; { // Just before a newline, that is, or at the document end.
+            buffer.rewind(); // So treating it whole as a `CharSequence` for sake of `codePointAt`.
+            int c = bullet;
+            int chLast = codePointAt( buffer, c );
+              // Reading by full code point in order accurately to recognize alphanumeric characters.
+              // Invariant: always `chLast` holds a non-whitespace character internal to the bullet.
+            for( final int cEnd = segmentEnd;; ) {
+                c += charCount( chLast );
+                if( c >= cEnd ) {
+                    assert c == cEnd: "No character can straddle the boundary of a fractal segment";
+                    bulletEndsWithLine = true; // Ends at document end.
+                    break; }
+                int ch = codePointAt( buffer, c );
+                if( impliesNewline( ch )) {
+                    bulletEndsWithLine = true; // Ends at line break.
+                    break; }
+                if( isAlphabetic(chLast) || isDigit(chLast) ) { // Then `chLast` is alphanumeric.
+                    if( ch == ' ' ) {
+                        final var sCA = commentAppenderSeeker;
+                        c = sCA.seekFromSpace( c, cEnd );
+                        if( sCA.appenderFound ) {
+                            bulletEndsWithLine = false; // Ends at comment appender.
+                            break; }
+                        if( sCA.endFound ) {
+                            bulletEndsWithLine = true; // Ends at line break or document end.
+                            break; }
+                        chLast = codePointAt( buffer, c );
+                        continue; }
+                    if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c )); }
+                else { // `chLast` is non-alphanumeric and (by contract) non-whitespace.
+                    if( ch == ' ' ) {
+                        bulletEndsWithLine = false; // Ends at space.
+                        break; }
+                    if( ch == '\u00A0'/*no-break space*/ ) {
+                        final var sCA = commentAppenderSeeker;
+                        c = sCA.seekFromNoBreakSpace( c, cEnd );
+                        if( sCA.appenderFound ) {
+                            bulletEndsWithLine = false; // Ends at comment appender.
+                            break; }
+                        if( sCA.endFound ) {
+                            bulletEndsWithLine = true; // Ends at line break or document end.
+                            break; }
+                        chLast = codePointAt( buffer, c );
+                        continue; }}
+                chLast = ch; }
+            bulletEnd = c; }
+
+      // Police any remainder of the bullet line for misplaced no-break spaces
+      // ────────────────────
+        if( !bulletEndsWithLine ) {
+            buffer.position( bulletEnd );
+            assert buffer.hasRemaining() && !impliesNewline(buffer.get(buffer.position()));
+            char ch;
+            do {
+                ch = buffer.get();
+                if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointerBack() ); }
+            while( !impliesNewline(ch) && buffer.hasRemaining() ); }
+
+      // Commit a point of the correct type
+      // ──────────────
+        xSeq.delimit( bullet, bulletEnd );
+        if( equalInContent( ":", xSeq )) commitGenericCommandPoint();
+        else commitGenericPoint(); }
 
 
 
@@ -1120,7 +1121,7 @@ public class BrecciaCursor implements ReusableCursor {
 // NOTES
 // ─────
 //   ABP  Adjustable buffer position.  This note serves as a reminder to adjust the value of the variable
-//        in `boundSegment` after each call to `buffer.compact`.
+//        in `delimitSegment` after each call to `buffer.compact`.
 //
 //   BAO  Backing-array offset.  This is non-zero in case of an array-backed buffer formed as a slice
 //        of another buffer, but other cases may exist.  https://stackoverflow.com/a/24601336/2402790
