@@ -1,6 +1,5 @@
 package Breccia.parser;
 
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -19,14 +18,11 @@ public class FractumIndicator implements Markup {
 
 
 
-   // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    public Iterator<Markup> iterator() { throw new UnsupportedOperationException(); }
-
-
-
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
+
 
 
     public @Override int lineNumber() { throw new UnsupportedOperationException(); }

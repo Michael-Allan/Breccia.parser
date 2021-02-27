@@ -1,9 +1,9 @@
 package Breccia.parser;
 
-import java.util.Iterator;
+import java.util.List;
 
 
-/** An associative reference.
+/** An associative reference in Breccia.
   */
 public abstract class AssociativeReference extends CommandPoint {
 
@@ -47,7 +47,7 @@ public abstract class AssociativeReference extends CommandPoint {
        // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public Iterator<Markup> iterator() { throw new UnsupportedOperationException(); }
+        public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
 
 
@@ -83,7 +83,7 @@ public abstract class AssociativeReference extends CommandPoint {
        // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public Iterator<Markup> iterator() { throw new UnsupportedOperationException(); }
+        public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
 
 
@@ -119,7 +119,7 @@ public abstract class AssociativeReference extends CommandPoint {
        // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public Iterator<Markup> iterator() { throw new UnsupportedOperationException(); }
+        public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
 
 
@@ -157,14 +157,11 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-       // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-        public Iterator<Markup> iterator() { throw new UnsupportedOperationException(); }
-
-
-
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
+
 
 
         public @Override int lineNumber() { throw new UnsupportedOperationException(); }

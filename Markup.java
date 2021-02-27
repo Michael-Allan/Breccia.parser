@@ -1,24 +1,18 @@
 package Breccia.parser;
 
-import java.util.Iterator;
+import java.util.List;
 
 
 /** A parsed component of markup.
   */
-public interface Markup extends Iterable<Markup> {
+public interface Markup {
 
 
-    /** Whether this markup has parsed components.  For markup with parsed components, the whole of its
-      * text is parsed and modelled by components given through the {@linkplain #iterator() iterator}.
-      * For markup without parsed components, the text is modelled only as a flat character sequence.
-      *
-      * <p>Warning: the default implementation of this method returns
-      * `{@linkplain #iterator() iterator}().hasNext()`.  If the default implementation is called
-      * while an iteration is in progress, then that iteration may yield unexpected results.</p>
-      *
-      *     @see text()
+    /** A list in linear order of the parsed components that model this markup.
+      * If the list is empty, then the markup is modelled only as a {@linkplain #text() flat text}.
+      * Otherwise the listed components cover the whole text without omission.
       */
-    public default boolean isComposite() { return iterator().hasNext(); }
+    public List<Markup> components();
 
 
 
@@ -38,24 +32,7 @@ public interface Markup extends Iterable<Markup> {
 
 
 
-    public CharSequence text();
-
-
-
-   // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    /** Returns an ordered iterator over the parsed components of this markup.
-      * The iterator presents the components in linear order.
-      *
-      * <p>Warning: successive calls may return the same iterator instance,
-      * resetting it on each call.  Callers must therefore ensure that each
-      * iteration ends before the next begins, or the results may be unexpected.</p>
-      *
-      *     @see isComposite()
-      */
-    public Iterator<Markup> iterator(); }
-
+    public CharSequence text(); }
 
 
                                                         // Copyright © 2021  Michael Allan.  Licence MIT.

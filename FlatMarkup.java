@@ -1,8 +1,6 @@
 package Breccia.parser;
 
-import java.util.Iterator;
-
-import static java.util.Collections.emptyIterator;
+import java.util.List;
 
 
 /** Markup that is non-composite, having no parsed components.
@@ -16,23 +14,13 @@ public class FlatMarkup implements Markup {
 
 
 
-   // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    /** Returns an empty iterator.
-      *
-      *     @see isComposite()
-      */
-    public final Iterator<Markup> iterator() { return emptyIterator(); }
-
-
-
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** Returns false: this markup has no parsed components, only {@linkplain #text() flat text}.
+    /** Returns an empty list: this markup has no parsed components, only {@linkplain #text() flat text}.
       */
-    public final @Override boolean isComposite() { return false; }
+    public @Override List<Markup> components() { return List.of(); }
+
 
 
     public @Override int lineNumber() { throw new UnsupportedOperationException(); }
