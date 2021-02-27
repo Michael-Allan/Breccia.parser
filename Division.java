@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** A division fractum.
+/** A division fractum in Breccia.
   */
 public abstract class Division extends BodyFractum {
 

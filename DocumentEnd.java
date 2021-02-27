@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** The end of the document fractum.  This is a final state.
+/** The end of a document fractum.  This is a final state.
   */
 public class DocumentEnd extends FractumEnd {
 

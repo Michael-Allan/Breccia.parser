@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** The document fractum.  This is an initial state.
+/** A document fractum in Breccia.  This is an initial state.
   */
 public class Document extends Fractum implements Markup {
 

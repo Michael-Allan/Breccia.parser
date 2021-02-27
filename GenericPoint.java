@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** A generic point.
+/** A generic point in Breccia.
   */
 public abstract class GenericPoint extends Point {
 

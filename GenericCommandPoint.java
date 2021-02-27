@@ -3,7 +3,7 @@ package Breccia.parser;
 import java.util.Iterator;
 
 
-/** A command point of no defined subtype.
+/** A Breccian command point of no defined subtype.
   */
 public abstract class GenericCommandPoint extends CommandPoint {
 
