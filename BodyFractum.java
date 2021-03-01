@@ -8,8 +8,7 @@ public abstract class BodyFractum extends Fractum implements Markup {
 
 
 
-    /** Sets within the cursor the corresponding end state.  This method is implemented within the cursor
-      * for each fractal type that Breccia defines as concrete.
+    /** Sets within the cursor the corresponding end state.
       *
       *     @see BrecciaCursor
       */

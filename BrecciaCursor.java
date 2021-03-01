@@ -21,8 +21,9 @@ import static java.lang.Character.codePointAt;
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
 import static Breccia.parser.Breccia.*;
-import static Breccia.parser.MalformedLineBreak.truncatedNewlineError;
-import static Breccia.parser.MalformedMarkup.misplacedNoBreakSpaceError;
+import static Breccia.parser.MalformedLineBreak.truncatedNewline;
+import static Breccia.parser.MalformedMarkup.commandlessCommandPoint;
+import static Breccia.parser.MalformedMarkup.misplacedNoBreakSpace;
 import static Breccia.parser.Project.newSourceReader;
 
 
@@ -92,7 +93,9 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** The parse state at the current position in the markup.
+    /** The concrete parse state at the current position in the markup.  Concrete states alone occur,
+      * those with {@linkplain Typestamp dedicated typestamps}.  Abstract states are present (see the
+      * various `as` methods) only as alternative views.
       */
     public final ParseState state() { return state; }
 
@@ -380,7 +383,7 @@ public class BrecciaCursor implements ReusableCursor {
             final int[] endsArray = fractumLineEnds.array;
             int n = fractumLineNumber(), s = fractumStart;
             for( int end, e = 0, eN = fractumLineEnds.length; // For each line,
-              e < eN && (end = endsArray[e]) <= position;    // if it ends before the position,
+              e < eN && (end = endsArray[e]) < position;     // if it ends before the position,
               ++e, ++n, s = end );                          // then advance to the next.
             lineNumber = n;
             lineStart = s; } // The end boundary of its predecessor, if any, else `fractumStart`.
@@ -401,7 +404,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    private final CommentAppenderSeeker commentAppenderSeeker = new CommentAppenderSeeker();
+    private final BulletEndSeeker bulletEndSeeker = new BulletEndSeeker();
 
 
 
@@ -491,7 +494,7 @@ public class BrecciaCursor implements ReusableCursor {
                 buffer.limit( p ).reset(); // Whether to resume scanning, or regardless for consistency.
                 if( count < 0 ) { // Then the markup source is exhausted.
                     if( impliesWithoutCompletingNewline( ch )) { // So ends with e.g. a carriage return.
-                        throw truncatedNewlineError( bufferPointer(), ch ); }
+                        throw truncatedNewline( bufferPointer(), ch ); }
                     segmentEnd = segmentEndIndicator = p;
                     segmentEndIndicatorChar = '\u0000';
                     fractumLineEnds.add( segmentEnd ); /* The end of the final line.  All lines end with
@@ -519,7 +522,7 @@ public class BrecciaCursor implements ReusableCursor {
                 continue; }
             if( impliesWithoutCompletingNewline( ch )) continue; // To its completion.
             if( impliesWithoutCompletingNewline( chLast )) { // Then its completion has failed.
-                throw truncatedNewlineError( bufferPointerBack(), chLast ); }
+                throw truncatedNewline( bufferPointerBack(), chLast ); }
 
           // Or forbidden whitespace
           // ───────────────────────
@@ -567,14 +570,14 @@ public class BrecciaCursor implements ReusableCursor {
                       Nowhere else could imperfectly indented backslashes occur.  So either way, this
                       no-break space lies outside of the first line of a point where `parsePoint`
                       does the policing.  No need ∴ to guard against trespassing on its jurisdiction. */
-                    throw misplacedNoBreakSpaceError( bufferPointerBack() ); }
+                    throw misplacedNoBreakSpace( bufferPointerBack() ); }
                 inIndentedBackslashes = false; }
             else if( ch == '\u00A0' ) { // A no-break space not `inMargin` ∴ delimiting no indent blind.
                 if( inCommentBlock ) continue;
                 if( !isDocumentHead && !isDividerDrawing(segmentEndIndicatorChar) // In a point head,
                  && fractumLineEnds.isEmpty() ) {                                // on the first line.
                     continue; } // Leaving the first line of this point to be policed by `parsePoint`.
-                throw misplacedNoBreakSpaceError( bufferPointerBack() ); }}}
+                throw misplacedNoBreakSpace( bufferPointerBack() ); }}}
 
 
 
@@ -720,7 +723,16 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** Parses a bullet to learn the concrete type of its point, then sets the state-typing fields
+    /** Called by `parsePoint`.
+      *
+      *     @param bulletEnd The buffer position just after the bullet, viz. its end boundary.
+      */
+    private void parseCommandPoint( final int bulletEnd ) {
+        commitGenericCommandPoint(); }
+
+
+
+    /** Parses enough of a point to learn its concrete type, then sets the state-typing fields
       * to the corresponding parse state.  Ensure before calling this method that all other fields
       * are initialized save for `hierarchy`.
       *
@@ -734,10 +746,11 @@ public class BrecciaCursor implements ReusableCursor {
 
       // Find the end boundary of the bullet
       // ─────────────────────
+        int c = bullet; // The last parsed position.
+        BulletEndSeeker endSeeker = null; // Any that tells it ends with a comment appender or line end.
         final int bulletEnd;
-        final boolean bulletEndsWithLine; { // Just before a newline, that is, or at the document end.
+        final boolean wasLineEndFound; {
             buffer.rewind(); // So treating it whole as a `CharSequence` for sake of `codePointAt`.
-            int c = bullet;
             int chLast = codePointAt( buffer, c );
               // Reading by full code point in order accurately to recognize alphanumeric characters.
               // Invariant: always `chLast` holds a non-whitespace character internal to the bullet.
@@ -745,38 +758,44 @@ public class BrecciaCursor implements ReusableCursor {
                 c += charCount( chLast );
                 if( c >= cEnd ) {
                     assert c == cEnd: "No character can straddle the boundary of a fractal segment";
-                    bulletEndsWithLine = true; // Ends at document end.
+                    wasLineEndFound = true; // Ends at document end.
                     break; }
                 int ch = codePointAt( buffer, c );
                 if( impliesNewline( ch )) {
-                    bulletEndsWithLine = true; // Ends at line break.
+                    wasLineEndFound = true; // Ends at line break.
                     break; }
                 if( isAlphabetic(chLast) || isDigit(chLast) ) { // Then `chLast` is alphanumeric.
                     if( ch == ' ' ) {
-                        final var sCA = commentAppenderSeeker;
-                        c = sCA.seekFromSpace( c, cEnd );
-                        if( sCA.appenderFound ) {
-                            bulletEndsWithLine = false; // Ends at comment appender.
+                        final var s = bulletEndSeeker;
+                        s.seekFromSpace( c, cEnd );
+                        if( s.wasAppenderFound ) {
+                            wasLineEndFound = false; // Ends at comment appender.
+                            endSeeker = s;
                             break; }
-                        if( sCA.endFound ) {
-                            bulletEndsWithLine = true; // Ends at line break or document end.
+                        if( s.wasLineEndFound ) {
+                            wasLineEndFound = true; // Ends at line break or document end.
+                            endSeeker = s;
                             break; }
+                        c = s.cNextNonSpace;
                         chLast = codePointAt( buffer, c );
                         continue; }
-                    if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c )); }
+                    if( ch == '\u00A0' ) throw misplacedNoBreakSpace( bufferPointer( c )); }
                 else { // `chLast` is non-alphanumeric and (by contract) non-whitespace.
                     if( ch == ' ' ) {
-                        bulletEndsWithLine = false; // Ends at space.
+                        wasLineEndFound = false; // Ends at space.
                         break; }
                     if( ch == '\u00A0'/*no-break space*/ ) {
-                        final var sCA = commentAppenderSeeker;
-                        c = sCA.seekFromNoBreakSpace( c, cEnd );
-                        if( sCA.appenderFound ) {
-                            bulletEndsWithLine = false; // Ends at comment appender.
+                        final var s = bulletEndSeeker;
+                        s.seekFromNoBreakSpace( c, cEnd );
+                        if( s.wasAppenderFound ) {
+                            wasLineEndFound = false; // Ends at comment appender.
+                            endSeeker = s;
                             break; }
-                        if( sCA.endFound ) {
-                            bulletEndsWithLine = true; // Ends at line break or document end.
+                        if( s.wasLineEndFound ) {
+                            wasLineEndFound = true; // Ends at line break or document end.
+                            endSeeker = s;
                             break; }
+                        c = s.cNextNonSpace;
                         chLast = codePointAt( buffer, c );
                         continue; }}
                 chLast = ch; }
@@ -784,19 +803,24 @@ public class BrecciaCursor implements ReusableCursor {
 
       // Police any remainder of the bullet line for misplaced no-break spaces
       // ────────────────────
-        if( !bulletEndsWithLine ) {
-            buffer.position( bulletEnd );
-            assert buffer.hasRemaining() && !impliesNewline(buffer.get(buffer.position()));
-            char ch;
-            do {
-                ch = buffer.get();
-                if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointerBack() ); }
-            while( !impliesNewline(ch) && buffer.hasRemaining() ); }
+        if( !wasLineEndFound ) {
+            final int start; { // The next unparsed position.
+                if( endSeeker == null ) {
+                    assert !impliesNewline( buffer.get( c )); // Not to fall outside the line.
+                    start = c + 1; }
+                else {
+                    assert !endSeeker.wasLineEndFound; // Already covered by the guard above.
+                    start = endSeeker.cNextNonSpace + 1; }} // Past what cannot be a no-break space.
+            buffer.position( start );
+            while( buffer.hasRemaining() ) {
+                final char ch = buffer.get();
+                if( impliesNewline( ch )) break;
+                if( ch == '\u00A0' ) throw misplacedNoBreakSpace( bufferPointerBack() ); }}
 
       // Commit a point of the correct type
       // ──────────────
         xSeq.delimit( bullet, bulletEnd );
-        if( equalInContent( ":", xSeq )) commitGenericCommandPoint();
+        if( equalInContent( ":", xSeq )) parseCommandPoint( bulletEnd );
         else commitGenericPoint(); }
 
 
@@ -1008,26 +1032,15 @@ public class BrecciaCursor implements ReusableCursor {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** A device to detect a comment appender where it forms the end boundary of a bullet.
+    /** A device to detect a comment appender or line end where it forms the end boundary of a bullet.
       */
-    private final class CommentAppenderSeeker {
+    private final class BulletEndSeeker {
 
 
-
-        /** Whether a comment appender was found.
-          *
-          *     @see #endFound
+        /** Either the offset from `buffer.position` of the next non-space character (neither 20 nor A0),
+          * or `buffer.limit`.
           */
-        boolean appenderFound;
-
-
-
-        /** Whether a line end was encountered instead of a comment appender.
-          * Updated only when `appenderFound` is false.
-          *
-          *     @see #cNext
-          */
-        boolean endFound;
+        int cNextNonSpace;
 
 
 
@@ -1044,31 +1057,31 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-        /** Detects whether `c` is followed by a plain space that delimits a comment appender,
+        /** Detects whether `c` is followed by plain space that delimits a comment appender,
           * recording the result in one or more fields of this seeker.
           *
           *     @param c Offset from `buffer.position` of a (known) no-break space character.
           *     @param cEnd End boundary of the point head.
           *     @throws MalformedMarkup On detection of a misplaced no-break space.
-          *     @return Either the offset from `buffer.position` of the next character not a plain space
-          *       (nor a misplaced no-break space), or `buffer.limit`.
           */
-        int seekFromNoBreakSpace( int c, final int cEnd ) throws MalformedMarkup {
+        void seekFromNoBreakSpace( int c, final int cEnd ) throws MalformedMarkup {
             assert c < cEnd;
             if( ++c == cEnd ) {
-                appenderFound = false;
-                endFound = true; }
+                wasAppenderFound = false;
+                wasLineEndFound = true; }
             else {
                 final char ch = buffer.charAt( c );
-                if( ch == ' ' ) c = seekFromSpace( c, cEnd );
+                if( ch == ' ' ) {
+                    seekFromSpace( c, cEnd );
+                    return; }
                 else if( impliesNewline( ch )) {
-                    appenderFound = false;
-                    endFound = true; }
+                    wasAppenderFound = false;
+                    wasLineEndFound = true; }
                 else {
-                    if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c ));
-                    appenderFound = false;
-                    endFound = false; }}
-            return c; }
+                    if( ch == '\u00A0' ) throw misplacedNoBreakSpace( bufferPointer( c ));
+                    wasAppenderFound = false;
+                    wasLineEndFound = false; }}
+            cNextNonSpace = c; }
 
 
 
@@ -1078,40 +1091,50 @@ public class BrecciaCursor implements ReusableCursor {
           *     @param c Offset from `buffer.position` of a (known) plain space character.
           *     @param cEnd End boundary of the point head.
           *     @throws MalformedMarkup On detection of a misplaced no-break space.
-          *     @return Either the offset from `buffer.position` of the next character not a plain space
-          *       (nor a misplaced no-break space), or `buffer.limit`.
           */
-        int seekFromSpace( int c, final int cEnd ) throws MalformedMarkup {
+        void seekFromSpace( int c, final int cEnd ) throws MalformedMarkup {
             assert c < cEnd;
             for( ;; ) {
                 if( ++c == cEnd ) {
-                    appenderFound = false;
-                    endFound = true;
+                    wasAppenderFound = false;
+                    wasLineEndFound = true;
                     break; }
                 final char ch = buffer.charAt( c );
                 if( ch != ' ' ) {
                     if( ch == '\\' ) {
-                        if( isDelimiterSlashAt( c, cEnd )) appenderFound = true;
-                        else {
-                            appenderFound = false;
-                            endFound = false; }}
+                        wasAppenderFound = isDelimiterSlashAt( c, cEnd );
+                        wasLineEndFound = false; }
                     else if( impliesNewline( ch )) {
-                        appenderFound = false;
-                        endFound = true; }
+                        wasAppenderFound = false;
+                        wasLineEndFound = true; }
                     else {
-                        if( ch == '\u00A0' ) throw misplacedNoBreakSpaceError( bufferPointer( c ));
-                        appenderFound = false;
-                        endFound = false; }
+                        if( ch == '\u00A0' ) throw misplacedNoBreakSpace( bufferPointer( c ));
+                        wasAppenderFound = false;
+                        wasLineEndFound = false; }
                     break; }}
-            return c; }}
+            cNextNonSpace = c; }
+
+
+
+        /** Whether a comment appender was found.  Never true when `wasLineEndFound`.
+          */
+        boolean wasAppenderFound;
+
+
+
+        /** Whether a line end was encountered.  Never true when `wasAppenderFound`.
+          */
+        boolean wasLineEndFound; }
 
 
 
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** A warning that the target member is meaningful (as its API describes it)
-      * only for substansive parse states.
+    /** A warning that the target member is meaningful (as its API describes it) only for
+      * substansive parse states, those which model markup of non-zero length.  Each occurence
+      * of a substansive parse state represents an instance of a fractal type the parser treats
+      * as concrete — {@linkplain Typestamp Typestamp} category (a) — exclusive of their end states.
       *
       */ @Documented @Retention(SOURCE) @Target({ FIELD, METHOD })
     private static @interface Subst {}}

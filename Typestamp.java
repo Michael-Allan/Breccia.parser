@@ -4,8 +4,12 @@ package Breccia.parser;
 /** A typestamp is an ordinal number that uniquely identifies a type of parse state.  Its main purpose
   * is to support efficient conditional branching in comprehensive switch statements, those which cover
   * more-or-less all possible cases.  This class defines one typestamp for each of a) the fractal types
-  * defined as concrete by Breccia, b) their corresponding end states, and c) the empty and error states.
-  * Parser extensions may define their own typestamps outside the range of 0 to 65,535.
+  * the parser treats as concrete, b) their corresponding end states, and c) the empty and error states.
+  * The parser treats as concrete all types defined as such by Breccia except for jointers and pointers
+  * whose parent type (associative reference) the parser instead treats as concrete, and they as variants
+  * of it.  Further it treats as concrete one type undefined by Breccia, that of a generic command point.
+  *
+  * <p>Parser extensions may define their own typestamps outside the range of 0 to 65,535.</p>
   *
   *     @see ParseState#typestamp() *//*
   *
@@ -28,7 +32,7 @@ public class Typestamp {
 
     /** The typestamp of `AssociativeReference`.
       */
-    public static final int associativeReference    = 0x00; // Same as the preceding.
+    public static final int associativeReference    = 0x00; // Same as the preceding. [AR]
 
 
 
@@ -98,14 +102,29 @@ public class Typestamp {
 
 
 
+    /** The typestamp of `Privatizer`.
+      */
+    public static final int privatizer              = 0x0c;
+
+
+
+    /** The typestamp of `PrivatizerEnd`.
+      */
+    public static final int privatizerEnd           = 0x0d;
+
+
+
     /** The highest of the typestamps defined here.
       */
-    protected static final int maximum              = 0x0b; } // Same as the preceding.
+    protected static final int maximum              = 0x0d; } // Same as the preceding.
 
 
 
 // NOTES
 // ─────
+//   AR · Associative references are treated as concrete in order to defer the cost of resolving each
+//        into either a jointer or pointer, pending demand by the user.
+//
 //   ISS  The implementation of switch statements in the JVM.
 //        https://docs.oracle.com/javase/specs/jvms/se15/html/jvms-3.html#jvms-3.10
 //            Unfortunately the gap between basic and extended typestamps cannot be eliminated by using

@@ -3,26 +3,26 @@ package Breccia.parser;
 import java.util.Iterator;
 
 
-/** A command point of a type undefined by Breccia.
+/** A privatizer in Breccia.
   */
-public abstract class GenericCommandPoint extends CommandPoint {
+public abstract class Privatizer extends CommandPoint {
 
 
-    public GenericCommandPoint() {}
+    public Privatizer() {}
 
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override String tagName() { return "GenericCommandPoint"; }
+    public @Override String tagName() { return "Privatizer"; }
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int typestamp() { return Typestamp.genericCommandPoint; }}
+    public @Override int typestamp() { return Typestamp.privatizer; }}
 
 
 

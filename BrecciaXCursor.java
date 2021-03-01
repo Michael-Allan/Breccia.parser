@@ -277,6 +277,8 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
             case genericCommandPointEnd  ->   END_ELEMENT;
             case genericPoint            -> START_ELEMENT;
             case genericPointEnd         ->   END_ELEMENT;
+            case privatizer              -> START_ELEMENT;
+            case privatizerEnd           ->   END_ELEMENT;
             default -> throw new IllegalStateException(); };} // All are covered.
 
 
