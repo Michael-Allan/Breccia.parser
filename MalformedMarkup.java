@@ -18,15 +18,22 @@ public class MalformedMarkup extends ParseError {
 
     /** @see #pointer
       */
-    static MalformedMarkup commandlessCommandPoint( final Pointer pointer ) {
-        return new MalformedMarkup( pointer, "A command point without a command" ); }
+    static MalformedMarkup misplacedNoBreakSpace( final Pointer pointer ) {
+        return new MalformedMarkup( pointer, "Misplaced no-break space (Unicode 00A0)" ); }
 
 
 
     /** @see #pointer
       */
-    static MalformedMarkup misplacedNoBreakSpace( final Pointer pointer ) {
-        return new MalformedMarkup( pointer, "Misplaced no-break space (Unicode 00A0)" ); }
+    static MalformedMarkup spaceExpected( final Pointer pointer ) {
+        return new MalformedMarkup( pointer, "Plain space expected (Unicode 0020)" ); }
+
+
+
+    /** @see #pointer
+      */
+    static MalformedMarkup termExpected( final Pointer pointer ) {
+        return new MalformedMarkup( pointer, "Term expected" ); }
 
 
 

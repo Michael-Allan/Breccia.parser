@@ -20,10 +20,10 @@ import static java.lang.Character.charCount;
 import static java.lang.Character.codePointAt;
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
+import static java.util.Arrays.binarySearch;
 import static Breccia.parser.Breccia.*;
 import static Breccia.parser.MalformedLineBreak.truncatedNewline;
-import static Breccia.parser.MalformedMarkup.commandlessCommandPoint;
-import static Breccia.parser.MalformedMarkup.misplacedNoBreakSpace;
+import static Breccia.parser.MalformedMarkup.*;
 import static Breccia.parser.Project.newSourceReader;
 
 
@@ -267,7 +267,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** Returns the present parse state as an `GenericCommandPoint`,
+    /** Returns the present parse state as a `GenericCommandPoint`,
       * or null if the cursor is not positioned at a generic command point.
       */
     public final GenericCommandPoint asGenericCommandPoint() {
@@ -280,7 +280,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** Returns the present parse state as an `GenericCommandPointEnd`,
+    /** Returns the present parse state as a `GenericCommandPointEnd`,
       * or null if the cursor is not positioned at the end of a generic command point.
       */
     public final GenericCommandPointEnd asGenericCommandPointEnd() {
@@ -342,6 +342,30 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    /** Returns the present parse state as a `Privatizer`,
+      * or null if the cursor is not positioned at a privatizer.
+      */
+    public final Privatizer asPrivatizer() { return state == privatizer? privatizer : null; }
+
+
+        protected final void commitPrivatizer( final Privatizer r ) {
+            privatizer = r;
+            commitCommandPoint( r ); }
+
+
+
+    /** Returns the present parse state as a `PrivatizerEnd`,
+      * or null if the cursor is not positioned at the end of a privatizer.
+      */
+    public final PrivatizerEnd asPrivatizerEnd() { return state == privatizerEnd? privatizerEnd : null; }
+
+
+        protected final void commitPrivatizerEnd( final PrivatizerEnd e ) {
+            privatizerEnd = e;
+            commitCommandPointEnd( e ); }
+
+
+
    // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -361,7 +385,8 @@ public class BrecciaCursor implements ReusableCursor {
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 
-    /** The source buffer.
+    /** The source buffer.  Except where an API requires otherwise (e.g. `delimitSegment`), the buffer
+      * is maintained at a default position of zero, whence it may be treated whole as a `CharSequence`.
       */
     private CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
  // private CharBuffer buffer = CharBuffer.allocate( bufferCapacity + 1 ) // TEST: a buffer with a
@@ -405,6 +430,25 @@ public class BrecciaCursor implements ReusableCursor {
 
 
     private final BulletEndSeeker bulletEndSeeker = new BulletEndSeeker();
+
+
+
+    /** Commit methods for command-point keywords, ordered such that each is at the same index
+      * as its keyord in `commandPointKeywords`.  Parser extensions may overwrite these two arrays:
+      * each declaring its own version of the two, merge-sorting them with these, and overwriting these.
+      */
+    protected Runnable[] commandPointCommitters = {
+        this::commitPrivatizer }; // ‘private’
+
+
+
+    /** The keywords of all command points in lexicographic order as defined by `CharSequence.compare`.
+      * A keyword is any term that may appear first in the command.
+      *
+      *     @see CharSequence#compare(CharSequence,CharSequence)
+      */
+    protected String[] commandPointKeywords = {
+        "private" };
 
 
 
@@ -665,7 +709,8 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `nextSegment`.
         segmentStart = segmentEnd = segmentEndIndicator = 0;
-        delimitSegment(); }
+        delimitSegment();
+        buffer.rewind(); } // As per `buffer` contract.
 
 
 
@@ -719,16 +764,28 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `markupSource`.
         segmentStart = segmentEnd;
-        delimitSegment(); }
+        delimitSegment();
+        buffer.rewind(); } // As per `buffer` contract.
 
 
 
-    /** Called by `parsePoint`.
+    /** Subroutine to `parsePoint`.
       *
       *     @param bulletEnd The buffer position just after the bullet, viz. its end boundary.
+      *       Already it is known (and asserted) to hold a plain space character. *//*
+      *
+      *     @uses #xSeq
       */
-    private void parseCommandPoint( final int bulletEnd ) {
-        commitGenericCommandPoint(); }
+    private void parseCommandPoint( final int bulletEnd ) throws MalformedMarkup {
+        int c = bulletEnd + 1; // Past the known space character.
+        c = throughAnyS( c ); // Past any others.
+        xSeq.delimit( c, c = throughTerm(c) );
+        if( equalInContent( "privately", xSeq )) {
+            c = throughS( c );
+            xSeq.delimit( c, c = throughTerm(c) ); }
+        c = binarySearch( commandPointKeywords, xSeq, CharSequence::compare );
+        if( c >= 0 ) commandPointCommitters[c].run();
+        else commitGenericCommandPoint(); }
 
 
 
@@ -743,14 +800,14 @@ public class BrecciaCursor implements ReusableCursor {
       *     @uses #xSeq
       */
     private void parsePoint( final int bullet ) throws MalformedMarkup {
+        assert buffer.position() == 0;
 
       // Find the end boundary of the bullet
       // ─────────────────────
         int c = bullet; // The last parsed position.
-        BulletEndSeeker endSeeker = null; // Any that tells it ends with a comment appender or line end.
+        BulletEndSeeker endSeeker = null; // Any that finds the end by a comment appender or line end.
         final int bulletEnd;
         final boolean wasLineEndFound; {
-            buffer.rewind(); // So treating it whole as a `CharSequence` for sake of `codePointAt`.
             int chLast = codePointAt( buffer, c );
               // Reading by full code point in order accurately to recognize alphanumeric characters.
               // Invariant: always `chLast` holds a non-whitespace character internal to the bullet.
@@ -804,23 +861,28 @@ public class BrecciaCursor implements ReusableCursor {
       // Police any remainder of the bullet line for misplaced no-break spaces
       // ────────────────────
         if( !wasLineEndFound ) {
-            final int start; { // The next unparsed position.
-                if( endSeeker == null ) {
-                    assert !impliesNewline( buffer.get( c )); // Not to fall outside the line.
-                    start = c + 1; }
-                else {
-                    assert !endSeeker.wasLineEndFound; // Already covered by the guard above.
-                    start = endSeeker.cNextNonSpace + 1; }} // Past what cannot be a no-break space.
-            buffer.position( start );
-            while( buffer.hasRemaining() ) {
-                final char ch = buffer.get();
+            if( endSeeker == null ) {
+                assert !impliesNewline( buffer.get( c )); // Not to fall outside the line.
+                ++c; } // To the next unparsed position.
+            else {
+                assert endSeeker.wasAppenderFound;
+                c = endSeeker.cDelimiterTightEnd; }
+            for(; c < segmentEnd; ++c ) {
+                final char ch = buffer.get( c );
                 if( impliesNewline( ch )) break;
-                if( ch == '\u00A0' ) throw misplacedNoBreakSpace( bufferPointerBack() ); }}
+                if( ch == '\u00A0' ) throw misplacedNoBreakSpace( bufferPointer( c )); }}
 
       // Commit a point of the correct type
       // ──────────────
         xSeq.delimit( bullet, bulletEnd );
-        if( equalInContent( ":", xSeq )) parseCommandPoint( bulletEnd );
+        if( equalInContent( ":", xSeq )) {
+            if( endSeeker != null ) { // Then the only case is that of the bullet ending (wrongly for
+                assert buffer.get(bulletEnd) == '\u00A0'; // a command point) at a no-break space.
+                throw spaceExpected( bufferPointer( bulletEnd )); }
+            if( wasLineEndFound ) { // Then the bullet ends directly at the line end, with no
+                throw termExpected( bufferPointer( c )); } // command between the two.
+            assert buffer.get(bulletEnd) == ' '; // The only remaining case.
+            parseCommandPoint( bulletEnd ); }
         else commitGenericPoint(); }
 
 
@@ -859,6 +921,56 @@ public class BrecciaCursor implements ReusableCursor {
 
 
     protected ParseState state;
+
+
+
+    /** Scans through any sequence at buffer position `c` of plain space characters,
+      * namely ‘S’ in the language definition.
+      *
+      *     @return The end boundary of the sequence, or `c` if there is none.
+      */
+    private int throughAnyS( int c ) {
+        while( c < segmentEnd  &&  buffer.get(c) == ' ' ) ++c;
+        return c; }
+
+
+
+    /** Scans through any sequence at buffer position `c` of characters that are neither plain spaces
+      * nor proper to a newline.
+      *
+      *     @return The end boundary of the sequence, or `c` if there is none.
+      */
+    private int throughAnyTerm( int c ) {
+        for(; c < segmentEnd; ++c ) {
+            final char ch = buffer.get( c );
+            if( ch == ' ' || impliesNewline(ch) ) break; }
+        return c; }
+
+
+
+    /** Scans through a sequence at buffer position `c` of plain space characters,
+      * namely ‘S’ in the language definition.
+      *
+      *     @return The end boundary of the sequence.
+      *     @throws MalformedMarkup If no such sequence occurs at `c`.
+      */
+    private int throughS( final int c ) throws MalformedMarkup {
+        final int d = throughAnyS( c );
+        if( c == d ) throw spaceExpected( bufferPointer( c ));
+        return d; }
+
+
+
+    /** Scans through a sequence at buffer position `c` of characters that are neither plain spaces
+      * nor proper to a newline.
+      *
+      *     @return The end boundary of the sequence.
+      *     @throws MalformedMarkup If no such sequence occurs at `c`.
+      */
+    private int throughTerm( final int c ) throws MalformedMarkup {
+        final int d = throughAnyTerm( c );
+        if( c == d ) throw termExpected( bufferPointer( c ));
+        return d; }
 
 
 
@@ -1029,6 +1141,26 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    private Privatizer privatizer;
+
+
+        private final Privatizer basicPrivatizer = new Privatizer() { // [CIC]
+
+            protected @Override void commitEnd() { commitPrivatizerEnd( basicPrivatizerEnd ); }
+            public @Override String toString() { return tagName(); }}; // [SR]
+
+
+        private void commitPrivatizer() { commitPrivatizer( basicPrivatizer ); }
+
+
+
+    private PrivatizerEnd privatizerEnd;
+
+
+        private final PrivatizerEnd basicPrivatizerEnd = new PrivatizerEnd(); // [CIC]
+
+
+
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
@@ -1037,7 +1169,16 @@ public class BrecciaCursor implements ReusableCursor {
     private final class BulletEndSeeker {
 
 
-        /** Either the offset from `buffer.position` of the next non-space character (neither 20 nor A0),
+        /** Set when `wasAppenderFound` to the tight end boundary in the buffer of its delimiter.
+          * If a plain space character (20) succeeds the delimiting backslash sequence,
+          * then the tight end boundary is the position subsequent to that space character,
+          * otherwise the position subsequent to the backslash sequence.
+          */
+        int cDelimiterTightEnd;
+
+
+
+        /** Either the buffer position of the next non-space character (neither 20 nor A0),
           * or `buffer.limit`.
           */
         int cNextNonSpace;
@@ -1045,22 +1186,28 @@ public class BrecciaCursor implements ReusableCursor {
 
 
         /** Tells whether the slash at `c` delimits a comment appender.
+          * Updates `cDelimiterTightEnd` accordingly.
           *
-          *     @param c Offset from `buffer.position` of a (known) slash character ‘\’.
+          *     @param cSlash Buffer position of a (known) slash character ‘\’.
           *     @param cEnd End boundary of the point head.
           */
-        private boolean isDelimiterSlashAt( int c, final int cEnd ) {
-            for( ;; ) {
-                if( ++c == cEnd ) return true;
-                final char ch = buffer.charAt( c );
-                if( ch != '\\' ) return ch == ' ' || impliesNewline(ch); }}
+        private boolean isDelimiterSlashAt( final int cSlash, final int cEnd ) {
+            for( cDelimiterTightEnd = cSlash + 1;; ) {
+                if( cDelimiterTightEnd == cEnd ) {
+                    return true; }
+                final char ch = buffer.charAt( cDelimiterTightEnd );
+                if( ch != '\\' ) {
+                    if( ch == ' ' ) {
+                        ++cDelimiterTightEnd; // Past the space character, as per the contract.
+                        return true; }
+                    return impliesNewline( ch ); }}}
 
 
 
         /** Detects whether `c` is followed by plain space that delimits a comment appender,
           * recording the result in one or more fields of this seeker.
           *
-          *     @param c Offset from `buffer.position` of a (known) no-break space character.
+          *     @param c Buffer position of a (known) no-break space character.
           *     @param cEnd End boundary of the point head.
           *     @throws MalformedMarkup On detection of a misplaced no-break space.
           */
@@ -1073,7 +1220,8 @@ public class BrecciaCursor implements ReusableCursor {
                 final char ch = buffer.charAt( c );
                 if( ch == ' ' ) {
                     seekFromSpace( c, cEnd );
-                    return; }
+                    if( wasLineEndFound || wasAppenderFound ) return;
+                    throw misplacedNoBreakSpace( bufferPointer( c - 1 )); }
                 else if( impliesNewline( ch )) {
                     wasAppenderFound = false;
                     wasLineEndFound = true; }
@@ -1088,7 +1236,7 @@ public class BrecciaCursor implements ReusableCursor {
         /** Detects whether the plain space beginning at `c` delimits a comment appender,
           * recording the result in one or more fields of this seeker.
           *
-          *     @param c Offset from `buffer.position` of a (known) plain space character.
+          *     @param c Buffer position of a (known) plain space character.
           *     @param cEnd End boundary of the point head.
           *     @throws MalformedMarkup On detection of a misplaced no-break space.
           */
