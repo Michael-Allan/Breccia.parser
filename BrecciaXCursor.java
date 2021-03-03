@@ -71,15 +71,15 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
     /** {@inheritDoc}  Sets the translation state either to `{@linkplain #START_DOCUMENT START_DOCUMENT}`
       * or to `{@linkplain #EMPTY EMPTY}`.
       *
-      *     @param r {@inheritDoc}  It is taken to comprise a single document at most.
+      *     @param r {@inheritDoc}  It is taken to comprise a single file at most.
       */
     public @Override void markupSource( final Reader r ) throws ParseError {
         sourceCursor.markupSource( r );
-        var d = sourceCursor.asDocument();
-        if( d == null ) {
-            assert sourceCursor.asEmpty() != null;
-            eventType = EMPTY; }
-        else eventType = START_DOCUMENT; }
+        final int t = sourceCursor.state().typestamp();
+        if( t == fileFractum ) eventType = START_DOCUMENT;
+        else {
+            assert t == empty;
+            eventType = EMPTY; }}
 
 
 
@@ -247,7 +247,7 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
         if( !hasNext() ) throw new java.util.NoSuchElementException();
         final ParseState next; {
             final ParseState present = sourceCursor.state();
-            if( present.typestamp() == documentEnd ) return eventType = END_DOCUMENT;
+            if( present.typestamp() == fileFractumEnd ) return eventType = END_DOCUMENT;
             assert !present.isFinal();
             try { next = sourceCursor.next(); }
             catch( ParseError x ) { throw new XMLStreamException( x ); }}
@@ -266,13 +266,13 @@ public class BrecciaXCursor implements ReusableCursor, XMLStreamReader, XStreamC
             case associativeReferenceEnd ->   END_ELEMENT;
             case division                -> START_ELEMENT;
             case divisionEnd             ->   END_ELEMENT;
-            case document                -> START_ELEMENT;
-            case documentEnd             ->   END_ELEMENT; /* End of document element;
-                                                              next call ends document. */
             case empty -> throw new IllegalStateException(); /* An initial and final state,
               impossible here owing both to `markupSource` and the `hasNext()` guard above. */
             case error -> throw new IllegalStateException(); /* A final state,
               impossible here owing to the `hasNext()` guard above. */
+            case fileFractum             -> START_ELEMENT;
+            case fileFractumEnd          ->   END_ELEMENT; /* End of XML document element;
+                                                              next call ends document. */
             case genericCommandPoint     -> START_ELEMENT;
             case genericCommandPointEnd  ->   END_ELEMENT;
             case genericPoint            -> START_ELEMENT;

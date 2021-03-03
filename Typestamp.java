@@ -54,27 +54,27 @@ public class Typestamp {
 
 
 
-    /** The typestamp of `Document`.
-      */
-    public static final int document                = 0x04;
-
-
-
-    /** The typestamp of `DocumentEnd`.
-      */
-    public static final int documentEnd             = 0x05;
-
-
-
     /** The typestamp of `Empty`.
       */
-    public static final int empty                   = 0x06;
+    public static final int empty                   = 0x04;
 
 
 
     /** The typestamp of `Error`.
       */
-    public static final int error                   = 0x07;
+    public static final int error                   = 0x05;
+
+
+
+    /** The typestamp of `FileFractum`.
+      */
+    public static final int fileFractum             = 0x06;
+
+
+
+    /** The typestamp of `FileFractumEnd`.
+      */
+    public static final int fileFractumEnd          = 0x07;
 
 
 

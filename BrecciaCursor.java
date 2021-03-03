@@ -204,30 +204,6 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** Returns the present parse state as a `Document`,
-      * or null if the cursor is not positioned at a document fractum.
-      */
-    public final Document asDocument() { return state == document? document : null; }
-
-
-        protected final void commitDocument( final Document d ) {
-            document = d;
-            commitFractum( d ); }
-
-
-
-    /** Returns the present parse state as a `DocumentEnd`,
-      * or null if the cursor is not positioned at the end of a document fractum.
-      */
-    public final DocumentEnd asDocumentEnd() { return state == documentEnd? documentEnd : null; }
-
-
-        protected final void commitDocumentEnd( final DocumentEnd e ) {
-            documentEnd = e;
-            commitFractumEnd( e ); }
-
-
-
     /** Returns the present parse state as `Empty`, or null if the markup source is not empty.
       */
     public final Empty asEmpty() { return state == empty? empty : null; }
@@ -244,6 +220,31 @@ public class BrecciaCursor implements ReusableCursor {
 
 
         protected final void commitError( final Error e ) { state = error = e; }
+
+
+
+    /** Returns the present parse state as a `FileFractum`,
+      * or null if the cursor is not positioned at a file fractum.
+      */
+    public final FileFractum asFileFractum() { return state == fileFractum? fileFractum : null; }
+
+
+        protected final void commitFileFractum( final FileFractum d ) {
+            fileFractum = d;
+            commitFractum( d ); }
+
+
+
+    /** Returns the present parse state as a `FileFractumEnd`,
+      * or null if the cursor is not positioned at the end of a file fractum.
+      */
+    public final FileFractumEnd asFileFractumEnd() {
+        return state == fileFractumEnd? fileFractumEnd : null; }
+
+
+        protected final void commitFileFractumEnd( final FileFractumEnd e ) {
+            fileFractumEnd = e;
+            commitFractumEnd( e ); }
 
 
 
@@ -370,9 +371,9 @@ public class BrecciaCursor implements ReusableCursor {
 
 
     /** {@inheritDoc}  Sets the parse state either to `{@linkplain Empty Empty}`
-      * or to `{@linkplain Document Document}`.
+      * or to `{@linkplain FileFractum FileFractum}`.
       *
-      *     @param r {@inheritDoc}  It is taken to comprise a single document at most.
+      *     @param r {@inheritDoc}  It is taken to comprise a single file at most.
       */
     public @Override void markupSource( final Reader r ) throws ParseError {
         try { _markupSource( r ); }
@@ -476,7 +477,7 @@ public class BrecciaCursor implements ReusableCursor {
       *     <li>`{@linkplain #segmentEndIndicatorChar segmentEndIndicatorChar}`</li></ul>
       *
       * <p>Always the first call to this method for a new source of markup will determine the bounds
-      * of the document head.  For a headless document, the first call returns with `segmentEnd` equal
+      * of the file head.  For a headless file, the first call returns with `segmentEnd` equal
       * to `segmentStart`, so treating the non-existent head as though it were a segment of zero extent.
       * All other calls result in bounds of positive extent.</p>
       *
@@ -493,12 +494,12 @@ public class BrecciaCursor implements ReusableCursor {
       */
     private void delimitSegment() throws ParseError {
         assert segmentStart != fractumStart || fractumLineEnds.isEmpty();
-        final boolean isDocumentHead = fractumIndentWidth < 0;
-        assert buffer.position() == (isDocumentHead? 0 : segmentEndIndicator);
+        final boolean isFileHead = fractumIndentWidth < 0;
+        assert buffer.position() == (isFileHead? 0 : segmentEndIndicator);
         int lineStart = segmentStart; // [ABP]
         assert lineStart == 0 || completesNewline(buffer.get(lineStart-1)); /* Either the preceding text
           is unreachable (does not exist, or lies outside the buffer) or it comprises a newline. */
-        boolean inMargin = isDocumentHead; /* True while blindly scanning a left margin, where the next
+        boolean inMargin = isFileHead; /* True while blindly scanning a left margin, where the next
           `get` might yield either an indent space or the indented, initial character of the line. */
         int indentAccumulator = 0; // What reveals the end boundary of the segment.
         boolean inPerfectlyIndentedBackslashes = false;
@@ -609,8 +610,8 @@ public class BrecciaCursor implements ReusableCursor {
                 if( ch == '\\' ) continue; // To the end of the backslash sequence.
                 if( ch == ' ' ) inCommentBlock = true;
                 else if( ch == '\u00A0' ) { // A no-break space.
-                    assert isDocumentHead || !fractumLineEnds.isEmpty(); /* The sequence of backslashes
-                      lies either in the document head or a line after the first line of the segment.
+                    assert isFileHead || !fractumLineEnds.isEmpty(); /* The sequence of backslashes
+                      lies either in the file head or a line after the first line of the segment.
                       Nowhere else could imperfectly indented backslashes occur.  So either way, this
                       no-break space lies outside of the first line of a point where `parsePoint`
                       does the policing.  No need ∴ to guard against trespassing on its jurisdiction. */
@@ -618,7 +619,7 @@ public class BrecciaCursor implements ReusableCursor {
                 inIndentedBackslashes = false; }
             else if( ch == '\u00A0' ) { // A no-break space not `inMargin` ∴ delimiting no indent blind.
                 if( inCommentBlock ) continue;
-                if( !isDocumentHead && !isDividerDrawing(segmentEndIndicatorChar) // In a point head,
+                if( !isFileHead && !isDividerDrawing(segmentEndIndicatorChar) // In a point head,
                  && fractumLineEnds.isEmpty() ) {                                // on the first line.
                     continue; } // Leaving the first line of this point to be policed by `parsePoint`.
                 throw misplacedNoBreakSpace( bufferPointerBack() ); }}}
@@ -635,7 +636,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
     /** The offset from the start of the present fractum to its first non-space character.  This is -4 in
-      * the case of the document fractum, a multiple of four (including zero) in the case of body fracta.
+      * the case of the file fractum, a multiple of four (including zero) in the case of body fracta.
       */
     private @Subst int fractumIndentWidth;
 
@@ -704,7 +705,7 @@ public class BrecciaCursor implements ReusableCursor {
         fractumIndentWidth = -4;
         fractumLineCounter = 0;
         fractumLineEnds.clear();
-        commitDocument();
+        commitFileFractum();
         hierarchy.clear();
 
         // Changing what follows?  Sync → `nextSegment`.
@@ -724,7 +725,7 @@ public class BrecciaCursor implements ReusableCursor {
                 if( past != null ) {
  /**/               past.commitEnd();
                     return; }}
- /**/       commitDocumentEnd();
+ /**/       commitFileFractumEnd();
             return; }
         final int nextIndentWidth = segmentEndIndicator - segmentEnd; /* The offset from the start of
           the next fractum (`segmentEnd`) to its first non-space character (`segmentEndIndicator`). */
@@ -815,7 +816,7 @@ public class BrecciaCursor implements ReusableCursor {
                 c += charCount( chLast );
                 if( c >= cEnd ) {
                     assert c == cEnd: "No character can straddle the boundary of a fractal segment";
-                    wasLineEndFound = true; // Ends at document end.
+                    wasLineEndFound = true; // Ends at head end.
                     break; }
                 int ch = codePointAt( buffer, c );
                 if( impliesNewline( ch )) {
@@ -830,7 +831,7 @@ public class BrecciaCursor implements ReusableCursor {
                             endSeeker = s;
                             break; }
                         if( s.wasLineEndFound ) {
-                            wasLineEndFound = true; // Ends at line break or document end.
+                            wasLineEndFound = true; // Ends at line break or head end.
                             endSeeker = s;
                             break; }
                         c = s.cNextNonSpace;
@@ -849,7 +850,7 @@ public class BrecciaCursor implements ReusableCursor {
                             endSeeker = s;
                             break; }
                         if( s.wasLineEndFound ) {
-                            wasLineEndFound = true; // Ends at line break or document end.
+                            wasLineEndFound = true; // Ends at line break or head end.
                             endSeeker = s;
                             break; }
                         c = s.cNextNonSpace;
@@ -889,7 +890,7 @@ public class BrecciaCursor implements ReusableCursor {
 
     /** The end boundary in the buffer of the present fractal segment, which is the position
       * after its final character.  This is zero in case of an empty markup source
-      * or headless document fractum, the only cases of a zero length fractal segment.
+      * or headless file fractum, the only cases of a zero length fractal segment.
       * If the value here is the buffer limit, then no segment remains in the markup source.
       */
     private @Subst int segmentEnd;
@@ -1042,26 +1043,6 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    private Document document;
-
-
-        private final Document basicDocument = new Document(); // [CIC]
-
-
-        private void commitDocument() { commitDocument( basicDocument ); }
-
-
-
-    private DocumentEnd documentEnd;
-
-
-        private final DocumentEnd basicDocumentEnd = new DocumentEnd(); // [CIC]
-
-
-        private void commitDocumentEnd() { commitDocumentEnd( basicDocumentEnd ); }
-
-
-
     private Empty empty;
 
 
@@ -1079,6 +1060,26 @@ public class BrecciaCursor implements ReusableCursor {
 
 
         private void commitError() { commitError( basicError ); }
+
+
+
+    private FileFractum fileFractum;
+
+
+        private final FileFractum basicFileFractum = new FileFractum(); // [CIC]
+
+
+        private void commitFileFractum() { commitFileFractum( basicFileFractum ); }
+
+
+
+    private FileFractumEnd fileFractumEnd;
+
+
+        private final FileFractumEnd basicFileFractumEnd = new FileFractumEnd(); // [CIC]
+
+
+        private void commitFileFractumEnd() { commitFileFractumEnd( basicFileFractumEnd ); }
 
 
 

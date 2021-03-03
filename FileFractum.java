@@ -1,19 +1,19 @@
 package Breccia.parser;
 
 
-/** A document fractum in Breccia.  This is an initial state.
+/** A file fractum in Breccia.  This is an initial state.
   */
-public class Document extends Fractum implements Markup {
+public class FileFractum extends Fractum implements Markup {
 
 
-    public Document() {}
+    public FileFractum() {}
 
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override String tagName() { return "Document"; }
+    public @Override String tagName() { return "FileFractum"; }
 
 
 
@@ -32,7 +32,7 @@ public class Document extends Fractum implements Markup {
 
 
 
-    public @Override int typestamp() { return Typestamp.document; }}
+    public @Override int typestamp() { return Typestamp.fileFractum; }}
 
 
 

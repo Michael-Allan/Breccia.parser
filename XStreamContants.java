@@ -10,7 +10,7 @@ package Breccia.parser;
 public interface XStreamContants {
 
 
-    /** Indicates the absence of a document, no markup to translate.  Occurs on attempting to translate
+    /** Indicates the absence of an XML document.  Occurs on attempting to translate
       * an empty source of markup.
       */
     public static final int EMPTY = 174_358_467; }

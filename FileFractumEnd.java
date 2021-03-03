@@ -1,12 +1,12 @@
 package Breccia.parser;
 
 
-/** The end of a document fractum.  This is a final state.
+/** The end of a file fractum.  This is a final state.
   */
-public class DocumentEnd extends FractumEnd {
+public class FileFractumEnd extends FractumEnd {
 
 
-    public DocumentEnd() {}
+    public FileFractumEnd() {}
 
 
 
@@ -19,7 +19,7 @@ public class DocumentEnd extends FractumEnd {
 
 
 
-    public @Override int typestamp() { return Typestamp.documentEnd; }}
+    public @Override int typestamp() { return Typestamp.fileFractumEnd; }}
 
 
 

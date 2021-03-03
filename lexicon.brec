@@ -7,7 +7,7 @@ Definition of terms for project Breccia Parser
             - One of a point head or divider segment.
     fractal segment
         ─ noun
-            - One of a document head, point head or divider segment.
+            - One of a file head, point head or divider segment.
 
 
                                                          \ Copyright © 2021  Michael Allan.  Licence MIT.
