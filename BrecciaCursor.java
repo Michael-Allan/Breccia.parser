@@ -1280,10 +1280,9 @@ public class BrecciaCursor implements ReusableCursor {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** A warning that the target member is meaningful (as its API describes it) only for
-      * substansive parse states, those which model markup of non-zero length.  Each occurence
-      * of a substansive parse state represents an instance of a fractal type the parser treats
-      * as concrete — {@linkplain Typestamp Typestamp} category (a) — exclusive of their end states.
+    /** A warning that the target member is meaningful (fulfils its API description) only for substansive
+      * parse states, those which implement `Markup` and therefore model text of non-zero length.
+      * These are the parse states of {@linkplain Typestamp Typestamp} category (a).
       *
       */ @Documented @Retention(SOURCE) @Target({ FIELD, METHOD })
     private static @interface Subst {}}
