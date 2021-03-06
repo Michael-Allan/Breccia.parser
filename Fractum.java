@@ -1,6 +1,9 @@
 package Breccia.parser;
 
+import Java.DelimitableCharSequence;
 import java.util.List;
+
+import static Java.CharBuffers.newDelimitableCharSequence;
 
 
 /** A fractum of Breccia modelled as a parse state.  It covers the markup of the fractal head alone,
@@ -9,7 +12,9 @@ import java.util.List;
 public abstract class Fractum implements Markup, ParseState {
 
 
-    protected Fractum( BrecciaCursor cursor ) { this.cursor = cursor; }
+    protected Fractum( BrecciaCursor cursor ) {
+        this.cursor = cursor;
+        text = newDelimitableCharSequence( cursor.buffer ); }
 
 
 
@@ -20,19 +25,26 @@ public abstract class Fractum implements Markup, ParseState {
 
 
 
-    public final @Override int lineNumber() { return cursor.fractumLineNumber(); }
+    public final @Override int lineNumber() { return lineNumber; }
 
 
 
-    public final @Override CharSequence text() { throw new UnsupportedOperationException(); }
+    public final @Override CharSequence text() { return text; }
 
 
 
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 
-    protected final BrecciaCursor cursor; }
+    protected final BrecciaCursor cursor;
 
+
+
+    int lineNumber;
+
+
+
+    final DelimitableCharSequence text; }
 
 
 
