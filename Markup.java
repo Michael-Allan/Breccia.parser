@@ -2,10 +2,20 @@ package Breccia.parser;
 
 import java.util.List;
 
+import static Breccia.parser.Breccia.impliesNewline;
+
 
 /** A parsed component of markup.
   */
 public interface Markup {
+
+
+    /** The zero-based offset of the markup in the line where it occurs.
+      *
+      *     @see #lineNumber()
+      */
+    public int column();
+
 
 
     /** A list in linear order of the parsed components that model this markup.
@@ -16,7 +26,33 @@ public interface Markup {
 
 
 
-    /** The ordinal number of the first line of the markup.  Lines are numbered beginning at one.
+    /** @see Object#toString()
+      */
+    public static String toString( final Markup m ) {
+        final StringBuilder b = new StringBuilder();
+        final int column = m.column();
+        b.append( m.tagName() );
+        b.append( ':' );
+        b.append( m.lineNumber() );
+        if( column != 0 ) {
+            b.append( ':' );
+            b.append( m.column() ); }
+        b.append( ':' ).append( ' ' ).append( '{' );
+        b.append( m.text() );
+        for( int c = b.length() - 1, cBreak = 0;; --c ) { // Escape any trailing sequence of line breaks
+            final char ch = b.charAt( c );               // for sake of readability.
+            if( ch == '\n' ) b.setCharAt( cBreak = c, 'n' );
+            else if( ch == '\r' ) b.setCharAt( cBreak = c, 'r' );
+            else {
+                assert !impliesNewline( ch );
+                if( cBreak != 0 ) b.insert( cBreak, '\\' ); // One backslash for the whole sequence.
+                break; }}
+        b.append( '}' );
+        return b.toString(); }
+
+
+
+    /** The ordinal number of the line wherein the markup starts.  Lines are numbered beginning at one.
       */
     public int lineNumber();
 

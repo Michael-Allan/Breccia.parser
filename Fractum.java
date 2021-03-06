@@ -21,6 +21,10 @@ public abstract class Fractum implements Markup, ParseState {
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
+    public final @Override int column() { return 0; }
+
+
+
     public final @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
 
@@ -30,6 +34,13 @@ public abstract class Fractum implements Markup, ParseState {
 
 
     public final @Override CharSequence text() { return text; }
+
+
+
+   // ━━━  O b j e c t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    public @Override String toString() { return Markup.toString( this ); }
 
 
 

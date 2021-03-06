@@ -709,14 +709,13 @@ public class BrecciaCursor implements ReusableCursor {
         fractumStart = 0;
         fractumIndentWidth = -4;
         fractumLineCounter = 0;
-        fractumLineEnds.clear();
+        fractumLineEnds.clear(); {
+            // Changing this part of it?  Sync → `nextSegment`.
+            segmentStart = segmentEnd = segmentEndIndicator = 0;
+            delimitSegment(); }
+        buffer.rewind(); // As per `buffer` contract.
         commitFileFractum();
-        hierarchy.clear();
-
-        // Changing what follows?  Sync → `nextSegment`.
-        segmentStart = segmentEnd = segmentEndIndicator = 0;
-        delimitSegment();
-        buffer.rewind(); } // As per `buffer` contract.
+        hierarchy.clear(); }
 
 
 
@@ -754,9 +753,11 @@ public class BrecciaCursor implements ReusableCursor {
         if( isDividerDrawing( segmentEndIndicatorChar )) { /* Then next is a divider segment,
               starting a division whose head comprises all contiguous divider segments. */
             do nextSegment(); while( isDividerDrawing( segmentEndIndicatorChar )); // Scan through each.
+            buffer.rewind(); // As per `buffer` contract.
  /**/       commitDivision(); }
         else { // Next is a point.
             nextSegment(); // Scan through to the end boundary of its head.
+            buffer.rewind(); // As per `buffer` contract.
  /**/       parsePoint( /*bullet position*/fractumStart + fractumIndentWidth ); }
         final int i = fractumIndentWidth / 4; // Indent in perfect units, that is.
         while( hierarchy.size() < i ) hierarchy.add( null ); // Padding for unoccupied ancestral indents.
@@ -770,8 +771,7 @@ public class BrecciaCursor implements ReusableCursor {
 
         // Changing what follows?  Sync → `markupSource`.
         segmentStart = segmentEnd;
-        delimitSegment();
-        buffer.rewind(); } // As per `buffer` contract.
+        delimitSegment(); }
 
 
 
@@ -996,8 +996,7 @@ public class BrecciaCursor implements ReusableCursor {
           = new AssociativeReference( this ) {
 
             protected @Override void commitEnd() {
-                commitAssociativeReferenceEnd( basicAssociativeReferenceEnd ); }
-            public @Override String toString() { return tagName(); }}; // [SR]
+                commitAssociativeReferenceEnd( basicAssociativeReferenceEnd ); }};
 
 
         private void commitAssociativeReference() {
@@ -1034,8 +1033,7 @@ public class BrecciaCursor implements ReusableCursor {
 
         private final Division basicDivision = new Division( this ) { // [CIC]
 
-            protected @Override void commitEnd() { commitDivisionEnd( basicDivisionEnd ); }
-            public @Override String toString() { return tagName(); }}; // [SR]
+            protected @Override void commitEnd() { commitDivisionEnd( basicDivisionEnd ); }};
 
 
         private void commitDivision() { commitDivision( basicDivision ); }
@@ -1104,8 +1102,7 @@ public class BrecciaCursor implements ReusableCursor {
           = new GenericCommandPoint( this ) {
 
             protected @Override void commitEnd() {
-                commitGenericCommandPointEnd( basicGenericCommandPointEnd ); }
-            public @Override String toString() { return tagName(); }}; // [SR]
+                commitGenericCommandPointEnd( basicGenericCommandPointEnd ); }};
 
 
         private void commitGenericCommandPoint() {
@@ -1126,8 +1123,7 @@ public class BrecciaCursor implements ReusableCursor {
 
         private final GenericPoint basicGenericPoint = new GenericPoint( this ) { // [CIC]
 
-            protected @Override void commitEnd() { commitGenericPointEnd( basicGenericPointEnd ); }
-            public @Override String toString() { return tagName(); }}; // [SR]
+            protected @Override void commitEnd() { commitGenericPointEnd( basicGenericPointEnd ); }};
 
 
         private void commitGenericPoint() { commitGenericPoint( basicGenericPoint ); }
@@ -1154,8 +1150,7 @@ public class BrecciaCursor implements ReusableCursor {
 
         private final Privatizer basicPrivatizer = new Privatizer( this ) { // [CIC]
 
-            protected @Override void commitEnd() { commitPrivatizerEnd( basicPrivatizerEnd ); }
-            public @Override String toString() { return tagName(); }}; // [SR]
+            protected @Override void commitEnd() { commitPrivatizerEnd( basicPrivatizerEnd ); }};
 
 
         private void commitPrivatizer() { commitPrivatizer( basicPrivatizer ); }
@@ -1308,9 +1303,6 @@ public class BrecciaCursor implements ReusableCursor {
 //        e.g. `basicFoo`, basic meaning not a subtype.  It could instead be held in `foo`, except
 //        that field might be overwritten with a `Foo` subtype defined by an extended parser,
 //        leaving the base instance unavailable for future resuse.
-//
-//   SR · String representation.  Implemented for this class merely because it is an anonymous class,
-//        which makes the default implementation less informative.
 
 
 
