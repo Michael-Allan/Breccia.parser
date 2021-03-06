@@ -389,13 +389,14 @@ public class BrecciaCursor implements ReusableCursor {
     /** The source buffer.  Except where an API requires otherwise (e.g. `delimitSegment`), the buffer
       * is maintained at a default position of zero, whence it may be treated whole as a `CharSequence`.
       */
-    private CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
- // private CharBuffer buffer = CharBuffer.allocate( bufferCapacity + 1 ) // TEST: a buffer with a
- //   .slice( 1, bufferCapacity );                                       // positive `arrayOffset`. [BAO]
+    protected final CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
+ // protected final CharBuffer buffer = CharBuffer.allocate( bufferCapacity + 1 ) // TEST with a positive
+ //   .slice( 1, bufferCapacity );                                               // `arrayOffset`. [BAO]
 
 
 
-    private @Subst MalformedMarkup.Pointer bufferPointer() { return bufferPointer( buffer.position() ); }
+    protected @Subst MalformedMarkup.Pointer bufferPointer() {
+        return bufferPointer( buffer.position() ); }
 
 
 
@@ -404,7 +405,7 @@ public class BrecciaCursor implements ReusableCursor {
       * then this method uses `fractumLineNumber`; if the position lies after the region already
       * parsed by `delimitSegment`, then this method uses the line number of the last parsed position.
       */
-    private @Subst MalformedMarkup.Pointer bufferPointer( final int position ) {
+    protected @Subst MalformedMarkup.Pointer bufferPointer( final int position ) {
         final int lineNumber, lineStart; {
             final int[] endsArray = fractumLineEnds.array;
             int n = fractumLineNumber(), s = fractumStart;
@@ -425,12 +426,12 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    private @Subst MalformedMarkup.Pointer bufferPointerBack() {
+    protected @Subst MalformedMarkup.Pointer bufferPointerBack() {
         return bufferPointer( buffer.position() - 1 ); }
 
 
 
-    private final BulletEndSeeker bulletEndSeeker = new BulletEndSeeker();
+    protected final BulletEndSeeker bulletEndSeeker = new BulletEndSeeker();
 
 
 
@@ -492,7 +493,7 @@ public class BrecciaCursor implements ReusableCursor {
       *       position through the newly determined `segmentEndIndicator`, except on the first line of a
       *       point, where instead `{@linkplain #parsePoint(int) parsePoint}` polices this offence.
       */
-    private void delimitSegment() throws ParseError {
+    protected void delimitSegment() throws ParseError {
         assert segmentStart != fractumStart || fractumLineEnds.isEmpty();
         final boolean isFileHead = fractumIndentWidth < 0;
         assert buffer.position() == (isFileHead? 0 : segmentEndIndicator);
@@ -629,7 +630,7 @@ public class BrecciaCursor implements ReusableCursor {
     /** Ensures this cursor is rendered unusable for the present markup source,
       * e.g. owing to an irrecoverable parse error.
       */
-    private void disable() {
+    protected void disable() {
         if( state != null && state.isFinal() ) return; // Already this cursor is effectively unusable.
         commitError(); }
 
@@ -638,13 +639,13 @@ public class BrecciaCursor implements ReusableCursor {
     /** The offset from the start of the present fractum to its first non-space character.  This is -4 in
       * the case of the file fractum, a multiple of four (including zero) in the case of body fracta.
       */
-    private @Subst int fractumIndentWidth;
+    protected @Subst int fractumIndentWidth;
 
 
 
     /** The number of lines before the present fractum.
       */
-    private @Subst int fractumLineCounter;
+    protected @Subst int fractumLineCounter;
 
 
 
@@ -652,7 +653,7 @@ public class BrecciaCursor implements ReusableCursor {
       * Each is either the position of the first character of the succeeding line, or `buffer.limit`
       * in the case of the final line of the markup source.
       */
-    private @Subst final IntArrayExtensor fractumLineEnds = new IntArrayExtensor( new int[0x100] );
+    protected @Subst final IntArrayExtensor fractumLineEnds = new IntArrayExtensor( new int[0x100] );
       // Each an adjustable buffer position. [ABP]
 
 
@@ -660,14 +661,14 @@ public class BrecciaCursor implements ReusableCursor {
     /** The ordinal number of the first line of the present fractum.
       * Lines are numbered beginning at one.
       */
-    private @Subst int fractumLineNumber() { return fractumLineCounter + 1; }
+    protected @Subst int fractumLineNumber() { return fractumLineCounter + 1; }
 
 
 
     /** The start position in the buffer of the present fractum, if any,
       * which is the position of its first character.
       */
-    private @Subst int fractumStart; // [ABP]
+    protected @Subst int fractumStart; // [ABP]
 
 
 
@@ -684,11 +685,11 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @see #fractumIndentWidth
       */
-    private final @Subst ArrayList<BodyFractum> hierarchy = new ArrayList<>();
+    protected final @Subst ArrayList<BodyFractum> hierarchy = new ArrayList<>();
 
 
 
-    private void _markupSource( final Reader r ) throws ParseError {
+    protected void _markupSource( final Reader r ) throws ParseError {
         sourceReader = r;
         final int count; {
             try { count = transferDirectly( sourceReader, buffer.clear() ); }
@@ -715,7 +716,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    private void _next() throws ParseError { /* Below, in the left margin,
+    protected void _next() throws ParseError { /* Below, in the left margin,
           an empty comment marks each point of commitment to a new parse state. */
         assert !state.isFinal();
         if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
@@ -760,7 +761,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    private void nextSegment() throws ParseError {
+    protected void nextSegment() throws ParseError {
         buffer.position( segmentEndIndicator );
 
         // Changing what follows?  Sync → `markupSource`.
@@ -770,14 +771,14 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** Subroutine to `parsePoint`.
+    /** A subroutine to `parsePoint`.
       *
       *     @param bulletEnd The buffer position just after the bullet, viz. its end boundary.
       *       Already it is known (and asserted) to hold a plain space character. *//*
       *
       *     @uses #xSeq
       */
-    private void parseCommandPoint( final int bulletEnd ) throws MalformedMarkup {
+    protected void parseCommandPoint( final int bulletEnd ) throws MalformedMarkup {
         int c = bulletEnd + 1; // Past the known space character.
         c = throughAnyS( c ); // Past any others.
         xSeq.delimit( c, c = throughTerm(c) );
@@ -800,7 +801,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @uses #xSeq
       */
-    private void parsePoint( final int bullet ) throws MalformedMarkup {
+    protected void parsePoint( final int bullet ) throws MalformedMarkup {
         assert buffer.position() == 0;
 
       // Find the end boundary of the bullet
@@ -893,31 +894,31 @@ public class BrecciaCursor implements ReusableCursor {
       * or headless file fractum, the only cases of a zero length fractal segment.
       * If the value here is the buffer limit, then no segment remains in the markup source.
       */
-    private @Subst int segmentEnd;
+    protected @Subst int segmentEnd;
 
 
 
     /** The buffer position of the first non-space character of the present fractal segment’s
       * linear-order successor, or the buffer limit if there is none.
       */
-    private @Subst int segmentEndIndicator;
+    protected @Subst int segmentEndIndicator;
 
 
 
     /** The character at `segmentEndIndicator`, or the null character (00) if there is none.
       */
-    private char segmentEndIndicatorChar;
+    protected char segmentEndIndicatorChar;
 
 
 
     /** The start position in the buffer of the present fractal segment, if any,
       * which is the position of its first character.
       */
-    private @Subst int segmentStart; // [ABP]
+    protected @Subst int segmentStart; // [ABP]
 
 
 
-    private Reader sourceReader;
+    protected Reader sourceReader;
 
 
 
@@ -930,7 +931,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @return The end boundary of the sequence, or `c` if there is none.
       */
-    private int throughAnyS( int c ) {
+    protected int throughAnyS( int c ) {
         while( c < segmentEnd  &&  buffer.get(c) == ' ' ) ++c;
         return c; }
 
@@ -941,7 +942,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @return The end boundary of the sequence, or `c` if there is none.
       */
-    private int throughAnyTerm( int c ) {
+    protected int throughAnyTerm( int c ) {
         for(; c < segmentEnd; ++c ) {
             final char ch = buffer.get( c );
             if( ch == ' ' || impliesNewline(ch) ) break; }
@@ -955,7 +956,7 @@ public class BrecciaCursor implements ReusableCursor {
       *     @return The end boundary of the sequence.
       *     @throws MalformedMarkup If no such sequence occurs at `c`.
       */
-    private int throughS( final int c ) throws MalformedMarkup {
+    protected int throughS( final int c ) throws MalformedMarkup {
         final int d = throughAnyS( c );
         if( c == d ) throw spaceExpected( bufferPointer( c ));
         return d; }
@@ -968,14 +969,14 @@ public class BrecciaCursor implements ReusableCursor {
       *     @return The end boundary of the sequence.
       *     @throws MalformedMarkup If no such sequence occurs at `c`.
       */
-    private int throughTerm( final int c ) throws MalformedMarkup {
+    protected int throughTerm( final int c ) throws MalformedMarkup {
         final int d = throughAnyTerm( c );
         if( c == d ) throw termExpected( bufferPointer( c ));
         return d; }
 
 
 
-    private final DelimitableCharSequence xSeq = newDelimitableCharSequence( buffer );
+    protected final DelimitableCharSequence xSeq = newDelimitableCharSequence( buffer );
       // For use only where declared.
 
 
@@ -1167,7 +1168,7 @@ public class BrecciaCursor implements ReusableCursor {
 
     /** A device to detect a comment appender or line end where it forms the end boundary of a bullet.
       */
-    private final class BulletEndSeeker {
+    protected final class BulletEndSeeker {
 
 
         /** Set when `wasAppenderFound` to the tight end boundary in the buffer of its delimiter.
@@ -1175,14 +1176,14 @@ public class BrecciaCursor implements ReusableCursor {
           * then the tight end boundary is the position subsequent to that space character,
           * otherwise the position subsequent to the backslash sequence.
           */
-        int cDelimiterTightEnd;
+        public int cDelimiterTightEnd;
 
 
 
         /** Either the buffer position of the next non-space character (neither 20 nor A0),
           * or `buffer.limit`.
           */
-        int cNextNonSpace;
+        public int cNextNonSpace;
 
 
 
@@ -1192,7 +1193,7 @@ public class BrecciaCursor implements ReusableCursor {
           *     @param cSlash Buffer position of a (known) slash character ‘\’.
           *     @param cEnd End boundary of the point head.
           */
-        private boolean isDelimiterSlashAt( final int cSlash, final int cEnd ) {
+        public boolean isDelimiterSlashAt( final int cSlash, final int cEnd ) {
             for( cDelimiterTightEnd = cSlash + 1;; ) {
                 if( cDelimiterTightEnd == cEnd ) {
                     return true; }
@@ -1212,7 +1213,7 @@ public class BrecciaCursor implements ReusableCursor {
           *     @param cEnd End boundary of the point head.
           *     @throws MalformedMarkup On detection of a misplaced no-break space.
           */
-        void seekFromNoBreakSpace( int c, final int cEnd ) throws MalformedMarkup {
+        public void seekFromNoBreakSpace( int c, final int cEnd ) throws MalformedMarkup {
             assert c < cEnd;
             if( ++c == cEnd ) {
                 wasAppenderFound = false;
@@ -1241,7 +1242,7 @@ public class BrecciaCursor implements ReusableCursor {
           *     @param cEnd End boundary of the point head.
           *     @throws MalformedMarkup On detection of a misplaced no-break space.
           */
-        void seekFromSpace( int c, final int cEnd ) throws MalformedMarkup {
+        public void seekFromSpace( int c, final int cEnd ) throws MalformedMarkup {
             assert c < cEnd;
             for( ;; ) {
                 if( ++c == cEnd ) {
@@ -1267,13 +1268,13 @@ public class BrecciaCursor implements ReusableCursor {
 
         /** Whether a comment appender was found.  Never true when `wasLineEndFound`.
           */
-        boolean wasAppenderFound;
+        public boolean wasAppenderFound;
 
 
 
         /** Whether a line end was encountered.  Never true when `wasAppenderFound`.
           */
-        boolean wasLineEndFound; }
+        public boolean wasLineEndFound; }
 
 
 
@@ -1285,7 +1286,7 @@ public class BrecciaCursor implements ReusableCursor {
       * These are the parse states of {@linkplain Typestamp Typestamp} category (a).
       *
       */ @Documented @Retention(SOURCE) @Target({ FIELD, METHOD })
-    private static @interface Subst {}}
+    protected static @interface Subst {}}
 
 
 
