@@ -6,7 +6,7 @@ package Breccia.parser;
 public abstract class GenericPoint extends Point {
 
 
-    public GenericPoint() {}
+    public GenericPoint( BrecciaCursor cursor ) { super( cursor ); }
 
 
 

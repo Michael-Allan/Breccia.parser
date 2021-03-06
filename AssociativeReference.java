@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class AssociativeReference extends CommandPoint {
 
 
-    public AssociativeReference() {}
+    public AssociativeReference( BrecciaCursor cursor ) { super( cursor ); }
 
 
 

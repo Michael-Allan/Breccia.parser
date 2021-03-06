@@ -1,6 +1,8 @@
 package Breccia.parser;
 
 
+/** The end of a body fractum.
+  */
 public abstract class BodyFractumEnd extends FractumEnd {
 
 

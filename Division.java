@@ -6,7 +6,7 @@ package Breccia.parser;
 public abstract class Division extends BodyFractum {
 
 
-    public Division() {}
+    public Division( BrecciaCursor cursor ) { super( cursor ); }
 
 
 

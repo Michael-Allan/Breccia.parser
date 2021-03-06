@@ -8,7 +8,7 @@ import java.util.Iterator;
 public abstract class GenericCommandPoint extends CommandPoint {
 
 
-    public GenericCommandPoint() {}
+    public GenericCommandPoint( BrecciaCursor cursor ) { super( cursor ); }
 
 
 

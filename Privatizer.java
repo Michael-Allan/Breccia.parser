@@ -8,7 +8,7 @@ import java.util.Iterator;
 public abstract class Privatizer extends CommandPoint {
 
 
-    public Privatizer() {}
+    public Privatizer( BrecciaCursor cursor ) { super( cursor ); }
 
 
 

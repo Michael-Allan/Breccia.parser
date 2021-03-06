@@ -3,28 +3,35 @@ package Breccia.parser;
 import java.util.List;
 
 
-/** A fractum modelled as a parse state.  It covers the markup of the fractal head alone,
+/** A fractum of Breccia modelled as a parse state.  It covers the markup of the fractal head alone,
   * leaving the body (if any) to be covered by future states.
   */
 public abstract class Fractum implements Markup, ParseState {
 
 
-    protected Fractum() {}
+    protected Fractum( BrecciaCursor cursor ) { this.cursor = cursor; }
 
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
+    public final @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
 
 
-    public @Override int lineNumber() { throw new UnsupportedOperationException(); }
+    public final @Override int lineNumber() { return cursor.fractumLineNumber(); }
 
 
 
-    public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
+    public final @Override CharSequence text() { throw new UnsupportedOperationException(); }
+
+
+
+////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
+
+
+    protected final BrecciaCursor cursor; }
 
 
 

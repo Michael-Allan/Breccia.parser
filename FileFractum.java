@@ -6,7 +6,7 @@ package Breccia.parser;
 public class FileFractum extends Fractum implements Markup {
 
 
-    public FileFractum() {}
+    public FileFractum( BrecciaCursor cursor ) { super( cursor ); }
 
 
 

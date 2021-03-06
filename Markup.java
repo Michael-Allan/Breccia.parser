@@ -16,6 +16,8 @@ public interface Markup {
 
 
 
+    /** The ordinal number of the first line of the markup.  Lines are numbered beginning at one.
+      */
     public int lineNumber();
 
 

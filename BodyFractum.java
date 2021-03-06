@@ -1,18 +1,12 @@
 package Breccia.parser;
 
 
+/** A body fractum in Breccia.
+  */
 public abstract class BodyFractum extends Fractum implements Markup {
 
 
-    protected BodyFractum() {}
-
-
-
-    /** Sets within the cursor the corresponding end state.
-      *
-      *     @see BrecciaCursor
-      */
-    protected abstract void commitEnd();
+    protected BodyFractum( BrecciaCursor cursor ) { super( cursor ); }
 
 
 
@@ -27,7 +21,18 @@ public abstract class BodyFractum extends Fractum implements Markup {
 
     /** @return False.
       */
-    public final @Override boolean isInitial() { return false; }}
+    public final @Override boolean isInitial() { return false; }
+
+
+
+////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
+
+
+    /** Sets within the cursor the corresponding end state.
+      *
+      *     @see BrecciaCursor
+      */
+    protected abstract void commitEnd(); }
 
 
 
