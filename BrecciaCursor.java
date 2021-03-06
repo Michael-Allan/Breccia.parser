@@ -771,7 +771,8 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** A subroutine to `parsePoint`.
+    /** Parses enough of a command point to learn its concrete type, then sets the state-typing fields
+      * to the corresponding parse state.  This method is a subroutine of `parsePoint`.
       *
       *     @param bulletEnd The buffer position just after the bullet, viz. its end boundary.
       *       Already it is known (and asserted) to hold a plain space character. *//*
