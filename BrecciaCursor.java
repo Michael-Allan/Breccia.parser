@@ -51,7 +51,7 @@ public class BrecciaCursor implements ReusableCursor {
       *     @throws NoSuchElementException If the present state
       *       {@linkplain ParseState#isFinal() is final}.
       */
-    public ParseState next() throws ParseError {
+    public final ParseState next() throws ParseError {
         if( state.isFinal() ) throw new NoSuchElementException();
         try { _next(); }
         catch( ParseError x ) {
@@ -64,7 +64,8 @@ public class BrecciaCursor implements ReusableCursor {
     /** Parses the given source file, feeding each parse state to `sink` till all are exhausted.
       * Calling this method will abort any parse already in progress.
       */
-    public void perState( final Path sourceFile, final Consumer<ParseState> sink ) throws ParseError {
+    public final void perState( final Path sourceFile, final Consumer<ParseState> sink )
+          throws ParseError {
         try( final Reader r = newSourceReader​( sourceFile )) {
             markupSource( r );
             for( ;; ) {
@@ -81,7 +82,7 @@ public class BrecciaCursor implements ReusableCursor {
     /** Parses the given source file, feeding each parse state to `sink` till either all are exhausted
       * or `sink` returns false.  Calling this method will abort any parse already in progress.
       */
-    public void perStateConditionally( final Path sourceFile, final Predicate<ParseState> sink )
+    public final void perStateConditionally( final Path sourceFile, final Predicate<ParseState> sink )
           throws ParseError {
         try( final Reader r = newSourceReader​( sourceFile )) {
             markupSource( r );
@@ -375,7 +376,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @param r {@inheritDoc}  It is taken to comprise a single file at most.
       */
-    public @Override void markupSource( final Reader r ) throws ParseError {
+    public final @Override void markupSource( final Reader r ) throws ParseError {
         try { _markupSource( r ); }
         catch( ParseError x ) {
             disable();
@@ -395,7 +396,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    protected @Subst MalformedMarkup.Pointer bufferPointer() {
+    protected final @Subst MalformedMarkup.Pointer bufferPointer() {
         return bufferPointer( buffer.position() ); }
 
 
@@ -405,7 +406,7 @@ public class BrecciaCursor implements ReusableCursor {
       * then this method uses `fractumLineNumber`; if the position lies after the region already
       * parsed by `delimitSegment`, then this method uses the line number of the last parsed position.
       */
-    protected @Subst MalformedMarkup.Pointer bufferPointer( final int position ) {
+    protected final @Subst MalformedMarkup.Pointer bufferPointer( final int position ) {
         final int lineNumber, lineStart; {
             final int[] endsArray = fractumLineEnds.array;
             int n = fractumLineNumber(), s = fractumStart;
@@ -426,12 +427,12 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    protected @Subst MalformedMarkup.Pointer bufferPointerBack() {
+    protected final @Subst MalformedMarkup.Pointer bufferPointerBack() {
         return bufferPointer( buffer.position() - 1 ); }
 
 
 
-    protected final BulletEndSeeker bulletEndSeeker = new BulletEndSeeker();
+    private final BulletEndSeeker bulletEndSeeker = new BulletEndSeeker();
 
 
 
@@ -493,7 +494,7 @@ public class BrecciaCursor implements ReusableCursor {
       *       position through the newly determined `segmentEndIndicator`, except on the first line of a
       *       point, where instead `{@linkplain #parsePoint(int) parsePoint}` polices this offence.
       */
-    protected void delimitSegment() throws ParseError {
+    private void delimitSegment() throws ParseError {
         assert segmentStart != fractumStart || fractumLineEnds.isEmpty();
         final boolean isFileHead = fractumIndentWidth < 0;
         assert buffer.position() == (isFileHead? 0 : segmentEndIndicator);
@@ -630,7 +631,7 @@ public class BrecciaCursor implements ReusableCursor {
     /** Ensures this cursor is rendered unusable for the present markup source,
       * e.g. owing to an irrecoverable parse error.
       */
-    protected void disable() {
+    private void disable() {
         if( state != null && state.isFinal() ) return; // Already this cursor is effectively unusable.
         commitError(); }
 
@@ -661,7 +662,7 @@ public class BrecciaCursor implements ReusableCursor {
     /** The ordinal number of the first line of the present fractum.
       * Lines are numbered beginning at one.
       */
-    protected @Subst int fractumLineNumber() { return fractumLineCounter + 1; }
+    protected final @Subst int fractumLineNumber() { return fractumLineCounter + 1; }
 
 
 
@@ -689,7 +690,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    protected void _markupSource( final Reader r ) throws ParseError {
+    private void _markupSource( final Reader r ) throws ParseError {
         sourceReader = r;
         final int count; {
             try { count = transferDirectly( sourceReader, buffer.clear() ); }
@@ -716,7 +717,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    protected void _next() throws ParseError { /* Below, in the left margin,
+    private void _next() throws ParseError { /* Below, in the left margin,
           an empty comment marks each point of commitment to a new parse state. */
         assert !state.isFinal();
         if( segmentEnd == buffer.limit() ) { // Then no fracta remain.
@@ -761,7 +762,7 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    protected void nextSegment() throws ParseError {
+    private void nextSegment() throws ParseError {
         buffer.position( segmentEndIndicator );
 
         // Changing what follows?  Sync → `markupSource`.
@@ -932,7 +933,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @return The end boundary of the sequence, or `c` if there is none.
       */
-    protected int throughAnyS( int c ) {
+    protected final int throughAnyS( int c ) {
         while( c < segmentEnd  &&  buffer.get(c) == ' ' ) ++c;
         return c; }
 
@@ -943,7 +944,7 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @return The end boundary of the sequence, or `c` if there is none.
       */
-    protected int throughAnyTerm( int c ) {
+    protected final int throughAnyTerm( int c ) {
         for(; c < segmentEnd; ++c ) {
             final char ch = buffer.get( c );
             if( ch == ' ' || impliesNewline(ch) ) break; }
@@ -957,7 +958,7 @@ public class BrecciaCursor implements ReusableCursor {
       *     @return The end boundary of the sequence.
       *     @throws MalformedMarkup If no such sequence occurs at `c`.
       */
-    protected int throughS( final int c ) throws MalformedMarkup {
+    protected final int throughS( final int c ) throws MalformedMarkup {
         final int d = throughAnyS( c );
         if( c == d ) throw spaceExpected( bufferPointer( c ));
         return d; }
@@ -970,7 +971,7 @@ public class BrecciaCursor implements ReusableCursor {
       *     @return The end boundary of the sequence.
       *     @throws MalformedMarkup If no such sequence occurs at `c`.
       */
-    protected int throughTerm( final int c ) throws MalformedMarkup {
+    protected final int throughTerm( final int c ) throws MalformedMarkup {
         final int d = throughAnyTerm( c );
         if( c == d ) throw termExpected( bufferPointer( c ));
         return d; }
@@ -1170,7 +1171,7 @@ public class BrecciaCursor implements ReusableCursor {
 
     /** A device to detect a comment appender or line end where it forms the end boundary of a bullet.
       */
-    protected final class BulletEndSeeker {
+    private final class BulletEndSeeker {
 
 
         /** Set when `wasAppenderFound` to the tight end boundary in the buffer of its delimiter.
@@ -1178,14 +1179,14 @@ public class BrecciaCursor implements ReusableCursor {
           * then the tight end boundary is the position subsequent to that space character,
           * otherwise the position subsequent to the backslash sequence.
           */
-        public int cDelimiterTightEnd;
+        int cDelimiterTightEnd;
 
 
 
         /** Either the buffer position of the next non-space character (neither 20 nor A0),
           * or `buffer.limit`.
           */
-        public int cNextNonSpace;
+        int cNextNonSpace;
 
 
 
@@ -1195,7 +1196,7 @@ public class BrecciaCursor implements ReusableCursor {
           *     @param cSlash Buffer position of a (known) slash character ‘\’.
           *     @param cEnd End boundary of the point head.
           */
-        public boolean isDelimiterSlashAt( final int cSlash, final int cEnd ) {
+        boolean isDelimiterSlashAt( final int cSlash, final int cEnd ) {
             for( cDelimiterTightEnd = cSlash + 1;; ) {
                 if( cDelimiterTightEnd == cEnd ) {
                     return true; }
@@ -1215,7 +1216,7 @@ public class BrecciaCursor implements ReusableCursor {
           *     @param cEnd End boundary of the point head.
           *     @throws MalformedMarkup On detection of a misplaced no-break space.
           */
-        public void seekFromNoBreakSpace( int c, final int cEnd ) throws MalformedMarkup {
+        void seekFromNoBreakSpace( int c, final int cEnd ) throws MalformedMarkup {
             assert c < cEnd;
             if( ++c == cEnd ) {
                 wasAppenderFound = false;
@@ -1244,7 +1245,7 @@ public class BrecciaCursor implements ReusableCursor {
           *     @param cEnd End boundary of the point head.
           *     @throws MalformedMarkup On detection of a misplaced no-break space.
           */
-        public void seekFromSpace( int c, final int cEnd ) throws MalformedMarkup {
+        void seekFromSpace( int c, final int cEnd ) throws MalformedMarkup {
             assert c < cEnd;
             for( ;; ) {
                 if( ++c == cEnd ) {
@@ -1270,13 +1271,13 @@ public class BrecciaCursor implements ReusableCursor {
 
         /** Whether a comment appender was found.  Never true when `wasLineEndFound`.
           */
-        public boolean wasAppenderFound;
+        boolean wasAppenderFound;
 
 
 
         /** Whether a line end was encountered.  Never true when `wasAppenderFound`.
           */
-        public boolean wasLineEndFound; }
+        boolean wasLineEndFound; }
 
 
 
