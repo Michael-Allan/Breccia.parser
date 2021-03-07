@@ -17,6 +17,10 @@ public class FlatMarkup implements Markup {
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
+    public @Override int column() { throw new UnsupportedOperationException(); }
+
+
+
     /** Returns an empty list: this markup has no parsed components, only {@linkplain #text() flat text}.
       */
     public @Override List<Markup> components() { return List.of(); }

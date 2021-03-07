@@ -21,6 +21,10 @@ public class ResourceIndicator implements Markup {
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
+    public @Override int column() { throw new UnsupportedOperationException(); }
+
+
+
     public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
 

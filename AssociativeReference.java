@@ -44,14 +44,15 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-       // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        public @Override int column() { throw new UnsupportedOperationException(); }
+
 
 
         public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
-
-
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         public @Override int lineNumber() { throw new UnsupportedOperationException(); }
@@ -80,14 +81,15 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-       // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        public @Override int column() { throw new UnsupportedOperationException(); }
+
 
 
         public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
-
-
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         public @Override int lineNumber() { throw new UnsupportedOperationException(); }
@@ -116,14 +118,15 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
 
-       // ━━━  I t e r a b l e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        public @Override int column() { throw new UnsupportedOperationException(); }
+
 
 
         public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
 
-
-
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         public @Override int lineNumber() { throw new UnsupportedOperationException(); }
@@ -158,6 +161,10 @@ public abstract class AssociativeReference extends CommandPoint {
 
 
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        public @Override int column() { throw new UnsupportedOperationException(); }
+
 
 
         public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
