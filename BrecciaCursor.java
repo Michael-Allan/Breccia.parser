@@ -256,7 +256,6 @@ public class BrecciaCursor implements ReusableCursor {
 
 
         protected final void commitFractum( final Fractum f ) {
-            f.lineNumber = fractumLineNumber();
             f.text.delimit( fractumStart, segmentEnd );
             state = fractum = f; }
 

@@ -21,6 +21,8 @@ public abstract class Fractum implements Markup, ParseState {
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
+    /** @return Zero: fracta comprise whole lines.
+      */
     public final @Override int column() { return 0; }
 
 
@@ -29,7 +31,7 @@ public abstract class Fractum implements Markup, ParseState {
 
 
 
-    public final @Override int lineNumber() { return lineNumber; }
+    public final @Override int lineNumber() { return cursor.fractumLineNumber(); }
 
 
 
@@ -48,10 +50,6 @@ public abstract class Fractum implements Markup, ParseState {
 
 
     protected final BrecciaCursor cursor;
-
-
-
-    int lineNumber;
 
 
 

@@ -10,7 +10,11 @@ import static Breccia.parser.Breccia.impliesNewline;
 public interface Markup {
 
 
-    /** The zero-based offset of the markup in the line where it occurs.
+    /** Resolves the columnar offset of the markup within the line where it occurs.
+      * Columnar offsets are zero based, the first character of the line being at offset zero.
+      *
+      * <p>This is considered adjunct state; implementations need not cache it,
+      * but may redetermine it anew on each call.</p>
       *
       *     @see #lineNumber()
       */
@@ -52,7 +56,11 @@ public interface Markup {
 
 
 
-    /** The ordinal number of the line wherein the markup starts.  Lines are numbered beginning at one.
+    /** Resolves the ordinal number of the line wherein the markup starts.
+      * Lines are numbered beginning at one.
+      *
+      * <p>This is considered adjunct state; implementations need not cache it,
+      * but may redetermine it anew on each call.</p>
       */
     public int lineNumber();
 
