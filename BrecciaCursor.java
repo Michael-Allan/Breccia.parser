@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static Java.CharBuffers.newDelimitableCharSequence;
 import static Java.CharBuffers.transferDirectly;
@@ -398,6 +400,32 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    /** Returns the number of grapheme clusters between buffer positions `start` and `end`.
+      *
+      *     @see <a href='https://unicode.org/reports/tr29/'>
+      *       Grapheme clusters in Unicode text segmentation</a>
+      *     @throws IndexOutOfBoundsException If `start` is less than `buffer.position`.
+      */
+    protected final int bufferColumnarSpan( final int start, final int end ) { /*
+          A regex-based cluster counter.  The alternative (within the JDK) is `java.txt.BreakIterator`,
+          but it looks to be outdated, wheras `java.util.regex` was updated for JDK 15.
+          https://bugs.openjdk.java.net/browse/JDK-8174266
+          https://bugs.openjdk.java.net/browse/JDK-8243579 */
+        graphemeClusterMatcher.reset( /*input source*/buffer ); /* No point in dedicating the matcher to
+          the buffer.  Regardless its input must be reset on each use anyway in order to avoid the hazard
+          of a `Matcher` implementation that assumes a static input, which the buffer is not. */
+        final int p = buffer.position();
+        graphemeClusterMatcher.region( start - p, end - p );
+        int count = 0;
+        while( graphemeClusterMatcher.find() ) ++count;
+        return count; }
+
+
+
+    protected final Matcher graphemeClusterMatcher = Pattern.compile( "\\X" ).matcher( "" );
+
+
+
     protected final @Subst MalformedMarkup.Pointer bufferPointer() {
         return bufferPointer( buffer.position() ); }
 
@@ -423,8 +451,7 @@ public class BrecciaCursor implements ReusableCursor {
             while( p < pN && !completesNewline(buffer.get(p++)) );
             lineLength = p - lineStart; }
         final String line = buffer.slice( lineStart, lineLength ).toString();
-        final int positionOffset = position - lineStart; // Offset of position in line.
-        final int column = line.codePointCount( 0, positionOffset );
+        final int column = bufferColumnarSpan( lineStart, position );
         return new MalformedMarkup.Pointer( lineNumber, line, column ); }
 
 

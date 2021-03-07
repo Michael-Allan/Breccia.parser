@@ -10,20 +10,23 @@ import static Breccia.parser.Breccia.impliesNewline;
 public interface Markup {
 
 
-    /** Resolves the columnar offset of the markup within the line where it occurs.
-      * Columnar offsets are zero based, the first character of the line being at offset zero.
+    /** Resolves the columnar offset at which this markup starts.  Columnar offsets are zero based
+      * and measured in terms of grapheme clusters, beginning with the first cluster of the line
+      * at offset zero.
       *
-      * <p>This is considered adjunct state; implementations need not cache it,
-      * but may redetermine it anew on each call.</p>
+      * <p>The return value of this method is considered adjunct state;
+      * implementations need not cache it, but may redetermine it anew on each call.</p>
       *
       *     @see #lineNumber()
+      *     @see <a href='https://unicode.org/reports/tr29/'>
+      *       Grapheme clusters in Unicode text segmentation</a>
       */
     public int column();
 
 
 
     /** A list in linear order of the parsed components that model this markup.
-      * If the list is empty, then the markup is modelled only as a {@linkplain #text() flat text}.
+      * If the list is empty, then this markup is modelled only as a {@linkplain #text() flat text}.
       * Otherwise the listed components cover the whole text without omission.
       */
     public List<Markup> components();
@@ -56,11 +59,13 @@ public interface Markup {
 
 
 
-    /** Resolves the ordinal number of the line wherein the markup starts.
+    /** Resolves the ordinal number of the line in which this markup occurs, or starts.
       * Lines are numbered beginning at one.
       *
-      * <p>This is considered adjunct state; implementations need not cache it,
-      * but may redetermine it anew on each call.</p>
+      * <p>The return value of this method is considered adjunct state;
+      * implementations need not cache it, but may redetermine it anew on each call.</p>
+      *
+      *     @see #column()
       */
     public int lineNumber();
 

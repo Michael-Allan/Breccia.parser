@@ -13,7 +13,8 @@ public abstract class ParseError extends Exception {
 
 
 
-    /** The ordinal number of the line containing the error.  Lines are numbered beginning at one.
+    /** The ordinal number of the line in which this error was detected.
+      * Lines are numbered beginning at one.
       */
     public final int lineNumber; }
 

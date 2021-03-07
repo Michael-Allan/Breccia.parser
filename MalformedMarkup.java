@@ -62,8 +62,9 @@ public class MalformedMarkup extends ParseError {
 
 
 
-        /** The zero-based offset within the line of the code pointer
-          * at which the malformed markup was detected.
+        /** The columnar offset at which the malformed markup was detected.
+          *
+          *     @see Markup#column()
           */
         public final int column;
 
