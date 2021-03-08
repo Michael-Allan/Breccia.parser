@@ -404,21 +404,21 @@ public class BrecciaCursor implements ReusableCursor {
       *
       *     @see <a href='https://unicode.org/reports/tr29/'>
       *       Grapheme clusters in Unicode text segmentation</a>
-      *     @throws IndexOutOfBoundsException If `start` is less than `buffer.position`.
       */
     protected final int bufferColumnarSpan( final int start, final int end ) { /*
           A regex-based cluster counter.  The alternative (within the JDK) is `java.txt.BreakIterator`,
           but it looks to be outdated, wheras `java.util.regex` was updated for JDK 15.
           https://bugs.openjdk.java.net/browse/JDK-8174266
           https://bugs.openjdk.java.net/browse/JDK-8243579 */
-        graphemeClusterMatcher.reset( /*input source*/buffer ); /* No point in dedicating the matcher to
-          the buffer.  Regardless its input must be reset on each use anyway in order to avoid the hazard
-          of a `Matcher` implementation that assumes a static input, which the buffer is not. */
-        final int p = buffer.position();
-        graphemeClusterMatcher.region( start - p, end - p );
+        bufferColumnarSpanSeq.delimit( start, end );
+        graphemeClusterMatcher.reset( /*input sequence*/bufferColumnarSpanSeq );
         int count = 0;
         while( graphemeClusterMatcher.find() ) ++count;
         return count; }
+
+
+
+    private final DelimitableCharSequence bufferColumnarSpanSeq = newDelimitableCharSequence( buffer );
 
 
 
