@@ -35,18 +35,6 @@ import static Breccia.parser.Project.newSourceReader;
 public class BrecciaCursor implements ReusableCursor {
 
 
-    /** The capacity of the read buffer in 16-bit code units.  Parsing markup with a fractal head large
-      * enough to overflow the buffer will cause an `{@linkplain OverlargeHead OverlargeHead}` exception.
-      */
-    static final int bufferCapacity; static {
-        int n = 0x1_0000; // 65536, minimizing the likelihood of having to throw `OverlargeHead`.
-        // Now assume the IO system will transfer that much on each refill request by `delimitSegment`.
-        // Let it do so even while the buffer holds the already-read portion of the present segment:
-        n += 0x1000; // 4096, more than ample for that segment.
-        bufferCapacity = n; }
-
-
-
     /** Advances this cursor to the next parse state.
       *
       *     @return The new parse state.
@@ -397,6 +385,18 @@ public class BrecciaCursor implements ReusableCursor {
     protected final CharBuffer buffer = CharBuffer.allocate( bufferCapacity );
  // protected final CharBuffer buffer = CharBuffer.allocate( bufferCapacity + 1 ) // TEST with a positive
  //   .slice( 1, bufferCapacity );                                               // `arrayOffset`. [BAO]
+
+
+
+    /** The capacity of the read buffer in 16-bit code units.  Parsing markup with a fractal head large
+      * enough to overflow the buffer will cause an `{@linkplain OverlargeHead OverlargeHead}` exception.
+      */
+    static final int bufferCapacity; static {
+        int n = 0x1_0000; // 65536, minimizing the likelihood of having to throw `OverlargeHead`.
+        // Now assume the IO system will transfer that much on each refill request by `delimitSegment`.
+        // Let it do so even while the buffer holds the already-read portion of the present segment:
+        n += 0x1000; // 4096, more than ample for that segment.
+        bufferCapacity = n; }
 
 
 
