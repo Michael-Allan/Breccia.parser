@@ -18,7 +18,6 @@ import static Java.CharBuffers.transferDirectly;
 import static Java.CharSequences.equalInContent;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
-import static java.lang.Character.charCount;
 import static java.lang.Character.codePointAt;
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
@@ -405,11 +404,7 @@ public class BrecciaCursor implements ReusableCursor {
       *     @see <a href='https://unicode.org/reports/tr29/'>
       *       Grapheme clusters in Unicode text segmentation</a>
       */
-    protected final int bufferColumnarSpan( final int start, final int end ) { /*
-          A regex-based cluster counter.  The alternative (within the JDK) is `java.txt.BreakIterator`,
-          but it looks to be outdated, wheras `java.util.regex` was updated for JDK 15.
-          https://bugs.openjdk.java.net/browse/JDK-8174266
-          https://bugs.openjdk.java.net/browse/JDK-8243579 */
+    protected final int bufferColumnarSpan( final int start, final int end ) {
         bufferColumnarSpanSeq.delimit( start, end );
         graphemeClusterMatcher.reset( /*input sequence*/bufferColumnarSpanSeq );
         int count = 0;
@@ -420,9 +415,6 @@ public class BrecciaCursor implements ReusableCursor {
 
     private final DelimitableCharSequence bufferColumnarSpanSeq = newDelimitableCharSequence( buffer );
 
-
-
-    protected final Matcher graphemeClusterMatcher = Pattern.compile( "\\X" ).matcher( "" );
 
 
 
@@ -707,6 +699,14 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
+    protected final Matcher graphemeClusterMatcher = Pattern.compile( "\\X" ).matcher( "" );
+      // The alternative for cluster discovery (within the JDK) is `java.txt.BreakIterator`, but
+      // apparently it is outdated in this regard, wheras `java.util.regex` was updated for JDK 15.
+      // https://bugs.openjdk.java.net/browse/JDK-8174266
+      // https://bugs.openjdk.java.net/browse/JDK-8243579
+
+
+
     /** A record of the present parse state’s indent and fractal ancestry in list form.  It records
       * indent in perfect units by its adjusted size: ``fractumIndentWidth / 4 == hierarchy.size - 1`.
       * It records fractal ancestry by ancestral parse states each at an index equal to its indent in
@@ -847,10 +847,14 @@ public class BrecciaCursor implements ReusableCursor {
         final int bulletEnd;
         final boolean wasLineEndFound; {
             int chLast = codePointAt( buffer, c );
-              // Reading by full code point in order accurately to recognize alphanumeric characters.
               // Invariant: always `chLast` holds a non-whitespace character internal to the bullet.
+              // Reading by full code point in order accurately to test for alphanumeric characters.
+              // Advancing by full cluster in order to apply that test to base characters alone.
+            final Matcher mCluster = graphemeClusterMatcher.reset( /*input sequence*/buffer )
+              .region( c, buffer.limit() );
             for( final int cEnd = segmentEnd;; ) {
-                c += charCount( chLast );
+                mCluster.find(); // Succeeds, else the following throws `IllegalStateException`.
+                c = mCluster.end(); // The cluster-aware equivalent of `c += charCount(chLast)`.
                 if( c >= cEnd ) {
                     assert c == cEnd: "No character can straddle the boundary of a fractal segment";
                     wasLineEndFound = true; // Ends at head end.
