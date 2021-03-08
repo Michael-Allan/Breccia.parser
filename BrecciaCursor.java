@@ -437,19 +437,24 @@ public class BrecciaCursor implements ReusableCursor {
       * parsed by `delimitSegment`, then this method uses the line number of the last parsed position.
       */
     protected final @Subst MalformedMarkup.Pointer bufferPointer( final int position ) {
-        final int lineNumber, lineStart; {
+        final int lineIndex, lineNumber, lineStart; {
             final int[] endsArray = fractumLineEnds.array;
-            int n = fractumLineNumber(), s = fractumStart;
-            for( int end, e = 0, eN = fractumLineEnds.length; // For each line,
-              e < eN && (end = endsArray[e]) < position;     // if it ends before the position,
-              ++e, ++n, s = end );                          // then advance to the next.
+            int e = 0, n = fractumLineNumber(), s = fractumStart;
+            for( int end, eN = fractumLineEnds.length;    // For each line,
+              e < eN && (end = endsArray[e]) < position; // if it ends before the position,
+              ++e, ++n, s = end );                      // then advance to the next.
+            lineIndex = e;
             lineNumber = n;
             lineStart = s; } // The end boundary of its predecessor, if any, else `fractumStart`.
-        final int lineLength; { // Or as far as the parse buffer allows.
-            final int pN = buffer.limit();
-            int p = position;
-            while( p < pN && !completesNewline(buffer.get(p++)) );
-            lineLength = p - lineStart; }
+        final int lineLength; { // Or partial length, if the whole line has yet to enter the buffer.
+            final int lineIndexNext = lineIndex + 1;
+            if( lineIndexNext < fractumLineEnds.length ) { // Then measure the easy way:
+                lineLength = fractumLineEnds.array[lineIndexNext] - lineStart; }
+            else { // The line has yet to be parsed to its end.  Measure it the hard way:
+                final int pN = buffer.limit();
+                int p = position;
+                while( p < pN && !completesNewline(buffer.get(p++)) );
+                lineLength = p - lineStart; }}
         final String line = buffer.slice( lineStart, lineLength ).toString();
         final int column = bufferColumnarSpan( lineStart, position );
         return new MalformedMarkup.Pointer( lineNumber, line, column ); }
@@ -679,9 +684,9 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-    /** The end boundaries of the lines of the present fractum, each recorded as a buffer position.
-      * Each is either the position of the first character of the succeeding line, or `buffer.limit`
-      * in the case of the final line of the markup source.
+    /** The end boundaries of the lines of the present fractum.  Each is recorded as a buffer position,
+      * which is either the position of the first character of the succeeding line, or `buffer.limit`
+      * in the case of the final line of the markup source.  Invariably each is preceded by a newline.
       */
     protected @Subst final IntArrayExtensor fractumLineEnds = new IntArrayExtensor( new int[0x100] );
       // Each an adjustable buffer position. [ABP]
