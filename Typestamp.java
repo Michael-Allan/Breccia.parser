@@ -13,8 +13,8 @@ package Breccia.parser;
   *
   *     @see ParseState#typestamp() *//*
   *
-  * Re parser extensions: Switch statements that combine basic and extended typestamps may be less
-  * efficient owing to the numeric gap between the two.  Therefore this class supports a scheme
+  * Re parser extensions: Switch statements that combine basic and extended typestamps may execute
+  * more slowly owing to the numeric gap between the two.  Therefore this class supports a scheme
   * to allow for a limited set of optimized extensions.  [ISS, OPE]
   */
 public class Typestamp {
@@ -22,101 +22,116 @@ public class Typestamp {
 
     private Typestamp() {}
 
+    // Declarations below are ordered by category of parse state such that switch statements omitting
+    // one or more categories might nevertheless avoid a speed penalty owing to numeric gaps. [ISS]
+
+
+
+   // ━━━  I n i t i a l   a n d   f i n a l  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** The lowest of the typestamps defined here.
       */
-    protected static final int minimum              = 0x00;
-
-
-
-    /** The typestamp of `AssociativeReference`.
-      */
-    public static final int associativeReference    = 0x00; // Same as the preceding. [AR]
-
-
-
-    /** The typestamp of `AssociativeReferenceEnd`.
-      */
-    public static final int associativeReferenceEnd = 0x01;
-
-
-
-    /** The typestamp of `Division`.
-      */
-    public static final int division                = 0x02;
-
-
-
-    /** The typestamp of `DivisionEnd`.
-      */
-    public static final int divisionEnd             = 0x03;
-
-
-
-    /** The typestamp of `Empty`.
-      */
-    public static final int empty                   = 0x04;
+    protected static final int minimum              = 0x00; // = ↓
 
 
 
     /** The typestamp of `Error`.
       */
-    public static final int error                   = 0x05;
+    public static final int error                   = 0x00; // = ↑
+
+
+
+    /** The typestamp of `Empty`.
+      */
+    public static final int empty                   = 0x01;
+
+
+
+   // ┈┈┈  f r a c t a l  ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+
+
+    /** The typestamp of `FileFractumEnd`.
+      */
+    public static final int fileFractumEnd          = 0x02;
 
 
 
     /** The typestamp of `FileFractum`.
       */
-    public static final int fileFractum             = 0x06;
+    public static final int fileFractum             = 0x03; // ↓ contiguous with other fractal starts
 
 
 
-    /** The typestamp of `FileFractumEnd`.
+   // ━━━  F r a c t a l   s t a r t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    /** The typestamp of `AssociativeReference`.
       */
-    public static final int fileFractumEnd          = 0x07;
+    public static final int associativeReference    = 0x04;
+
+
+
+    /** The typestamp of `Division`.
+      */
+    public static final int division                = 0x05;
 
 
 
     /** The typestamp of `GenericCommandPoint`.
       */
-    public static final int genericCommandPoint     = 0x08;
-
-
-
-    /** The typestamp of `GenericCommandPointEnd`.
-      */
-    public static final int genericCommandPointEnd  = 0x09;
+    public static final int genericCommandPoint     = 0x06;
 
 
 
     /** The typestamp of `GenericPoint`.
       */
-    public static final int genericPoint            = 0x0a;
-
-
-
-    /** The typestamp of `GenericPointEnd`.
-      */
-    public static final int genericPointEnd         = 0x0b;
+    public static final int genericPoint            = 0x07;
 
 
 
     /** The typestamp of `Privatizer`.
       */
-    public static final int privatizer              = 0x0c;
+    public static final int privatizer              = 0x08;
+
+
+
+   // ━━━  F r a c t a l   e n d  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    /** The typestamp of `AssociativeReferenceEnd`.
+      */
+    public static final int associativeReferenceEnd = 0x09;
+
+
+
+    /** The typestamp of `DivisionEnd`.
+      */
+    public static final int divisionEnd             = 0x0a;
+
+
+
+    /** The typestamp of `GenericCommandPointEnd`.
+      */
+    public static final int genericCommandPointEnd  = 0x0b;
+
+
+
+    /** The typestamp of `GenericPointEnd`.
+      */
+    public static final int genericPointEnd         = 0x0c;
 
 
 
     /** The typestamp of `PrivatizerEnd`.
       */
-    public static final int privatizerEnd           = 0x0d;
+    public static final int privatizerEnd           = 0x0d;   // = ↓
 
 
 
     /** The highest of the typestamps defined here.
       */
-    protected static final int maximum              = 0x0d; } // Same as the preceding.
+    protected static final int maximum              = 0x0d; } // = ↑
 
 
 
