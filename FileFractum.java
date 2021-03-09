@@ -20,12 +20,6 @@ public class FileFractum extends Fractum implements Markup {
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** @return False.
-      */
-    public final @Override boolean isFinal() { return false; }
-
-
-
     /** @return True.
       */
     public final @Override boolean isInitial() { return true; }

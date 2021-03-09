@@ -26,6 +26,12 @@ public class Empty implements ParseState {
 
 
 
+    /** @return Asymmetric.
+      */
+    public final @Override Symmetry symmetry() { return Symmetry.asymmetric; }
+
+
+
     public @Override int typestamp() { return Typestamp.empty; }}
 
 

@@ -13,7 +13,13 @@ public abstract class FractumEnd implements ParseState {
 
     /** @return False.
       */
-    public final @Override boolean isInitial() { return false; }}
+    public final @Override boolean isInitial() { return false; }
+
+
+
+    /** @return Fractal end.
+      */
+    public final @Override Symmetry symmetry() { return Symmetry.fractalEnd; }}
 
 
 

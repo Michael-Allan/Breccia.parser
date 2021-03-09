@@ -21,9 +21,31 @@ public interface ParseState {
 
 
 
+    public Symmetry symmetry();
+
+
+
     /** @see Typestamp
       */
-    public int typestamp(); }
+    public int typestamp();
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    public static enum Symmetry {
+
+
+        asymmetric,
+
+
+
+        fractalStart,
+
+
+
+        fractalEnd; }}
 
 
 

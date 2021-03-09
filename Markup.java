@@ -71,12 +71,12 @@ public interface Markup {
 
 
 
-    /** The tag name used in X-Breccia for this markup.
+    /** The tag name used by X-Breccia for this markup.
       *
       *     @see <a href='https://www.w3.org/TR/xml/#sec-starttags'>
       *       Start-tags, end-tags, and empty-element tags</a>
-      *     @see <a href='http://reluk.ca/project/Breccia/XML/language_definition.brec'>
-      *       X-Breccia language definition</a>
+      *     @see <a href='http://reluk.ca/project/Breccia/XML/'>
+      *       X-Breccia</a>
       *     @see ParseState#typestamp()
       */
     public String tagName();

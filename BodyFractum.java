@@ -15,12 +15,6 @@ public abstract class BodyFractum extends Fractum implements Markup {
 
     /** @return False.
       */
-    public final @Override boolean isFinal() { return false; }
-
-
-
-    /** @return False.
-      */
     public final @Override boolean isInitial() { return false; }
 
 

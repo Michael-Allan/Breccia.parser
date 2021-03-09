@@ -46,6 +46,21 @@ public abstract class Fractum implements Markup, ParseState {
 
 
 
+   // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    /** @return False.
+      */
+    public final @Override boolean isFinal() { return false; }
+
+
+
+    /** @return Fractal start.
+      */
+    public final @Override Symmetry symmetry() { return Symmetry.fractalStart; }
+
+
+
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 

@@ -1,6 +1,10 @@
 package Breccia.parser;
 
 
+/** A parse error.  Any occurence puts the parser into an error state.
+  *
+  *     @see Error
+  */
 public abstract class ParseError extends Exception {
 
 

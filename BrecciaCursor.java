@@ -36,7 +36,8 @@ public class BrecciaCursor implements ReusableCursor {
 
     /** Advances this cursor to the next parse state.
       *
-      *     @return The new parse state.
+      *     @return The new parse state, an instance neither of `{@linkplain Empty Empty}`
+      *       nor `{@linkplain Error Error}`.
       *     @throws NoSuchElementException If the present state
       *       {@linkplain ParseState#isFinal() is final}.
       */
@@ -46,6 +47,7 @@ public class BrecciaCursor implements ReusableCursor {
         catch( ParseError x ) {
             disable();
             throw x; }
+        assert !(state instanceof Empty || state instanceof Error);
         return state; }
 
 
@@ -362,8 +364,8 @@ public class BrecciaCursor implements ReusableCursor {
    // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** {@inheritDoc}  Sets the parse state either to `{@linkplain Empty Empty}`
-      * or to `{@linkplain FileFractum FileFractum}`.
+    /** {@inheritDoc}  Sets the parse state to an instance either of `{@linkplain Empty Empty}`
+      * or `{@linkplain FileFractum FileFractum}`.
       *
       *     @param r {@inheritDoc}  It is taken to comprise a single file at most.
       */

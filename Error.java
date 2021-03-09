@@ -1,7 +1,10 @@
 package Breccia.parser;
 
 
-/** A formal state of error, rendering the parser unusable for the present markup source.
+/** A formal state of error.  This is a final state, rendering the parser unusable
+  * for the present markup source.  It results from any occurence of a parse error.
+  *
+  *     @see ParseError
   */
 public class Error implements ParseState {
 
@@ -22,6 +25,12 @@ public class Error implements ParseState {
     /** @return False.  This state may occur subsequent to the first.
       */
     public final @Override boolean isInitial() { return false; }
+
+
+
+    /** @return Asymmetric.
+      */
+    public final @Override Symmetry symmetry() { return Symmetry.asymmetric; }
 
 
 
