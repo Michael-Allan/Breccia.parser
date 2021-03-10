@@ -7,7 +7,7 @@ package Breccia.parser;
   * the parser treats as concrete, b) their corresponding end states, and c) the empty and error states.
   * The parser treats as concrete all types defined as such by Breccia except for jointers and pointers
   * whose parent type (associative reference) the parser treats as concrete, and they as variants of it.
-  * Further it treats as concrete one type undefined by Breccia, that of a generic command point.
+  * Further it treats as concrete one type undefined by Breccia, that of a plain command point.
   *
   * <p>Parser extensions may define their own typestamps outside the range of 0 to 65,535.</p>
   *
@@ -78,15 +78,15 @@ public class Typestamp {
 
 
 
-    /** The typestamp of `GenericCommandPoint`.
+    /** The typestamp of `PlainCommandPoint`.
       */
-    public static final int genericCommandPoint     = 0x06;
+    public static final int plainCommandPoint       = 0x06;
 
 
 
-    /** The typestamp of `GenericPoint`.
+    /** The typestamp of `PlainPoint`.
       */
-    public static final int genericPoint            = 0x07;
+    public static final int plainPoint              = 0x07;
 
 
 
@@ -111,15 +111,15 @@ public class Typestamp {
 
 
 
-    /** The typestamp of `GenericCommandPointEnd`.
+    /** The typestamp of `PlainCommandPointEnd`.
       */
-    public static final int genericCommandPointEnd  = 0x0b;
+    public static final int plainCommandPointEnd    = 0x0b;
 
 
 
-    /** The typestamp of `GenericPointEnd`.
+    /** The typestamp of `PlainPointEnd`.
       */
-    public static final int genericPointEnd         = 0x0c;
+    public static final int plainPointEnd           = 0x0c;
 
 
 

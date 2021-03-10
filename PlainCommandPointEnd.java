@@ -1,19 +1,19 @@
 package Breccia.parser;
 
 
-/** The end of a generic command point.
+/** The end of a plain command point.
   */
-public class GenericCommandPointEnd extends CommandPointEnd {
+public class PlainCommandPointEnd extends CommandPointEnd {
 
 
-    public GenericCommandPointEnd() {}
+    public PlainCommandPointEnd() {}
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int typestamp() { return Typestamp.genericCommandPointEnd; }}
+    public @Override int typestamp() { return Typestamp.plainCommandPointEnd; }}
 
 
 

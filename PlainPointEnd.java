@@ -1,19 +1,19 @@
 package Breccia.parser;
 
 
-/** The end of a generic point.
+/** The end of a plain point.
   */
-public class GenericPointEnd extends PointEnd {
+public class PlainPointEnd extends PointEnd {
 
 
-    public GenericPointEnd() {}
+    public PlainPointEnd() {}
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int typestamp() { return Typestamp.genericPointEnd; }}
+    public @Override int typestamp() { return Typestamp.plainPointEnd; }}
 
 
 

@@ -208,9 +208,9 @@ public class BrecciaCursor implements MarkupCursor {
     public final FileFractum asFileFractum() { return state == fileFractum? fileFractum : null; }
 
 
-        protected final void commitFileFractum( final FileFractum d ) {
-            fileFractum = d;
-            commitFractum( d ); }
+        protected final void commitFileFractum( final FileFractum f ) {
+            fileFractum = f;
+            commitFractum( f ); }
 
 
 
@@ -249,53 +249,53 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `GenericCommandPoint`,
-      * or null if the cursor is not positioned at a generic command point.
+    /** Returns the present parse state as a `PlainCommandPoint`,
+      * or null if the cursor is not positioned at a plain command point.
       */
-    public final GenericCommandPoint asGenericCommandPoint() {
-        return state == genericCommandPoint? genericCommandPoint : null; }
+    public final PlainCommandPoint asPlainCommandPoint() {
+        return state == plainCommandPoint? plainCommandPoint : null; }
 
 
-        protected final void commitGenericCommandPoint( final GenericCommandPoint r ) {
-            genericCommandPoint = r;
-            commitCommandPoint( r ); }
+        protected final void commitPlainCommandPoint( final PlainCommandPoint p ) {
+            plainCommandPoint = p;
+            commitCommandPoint( p ); }
 
 
 
-    /** Returns the present parse state as a `GenericCommandPointEnd`,
-      * or null if the cursor is not positioned at the end of a generic command point.
+    /** Returns the present parse state as a `PlainCommandPointEnd`,
+      * or null if the cursor is not positioned at the end of a plain command point.
       */
-    public final GenericCommandPointEnd asGenericCommandPointEnd() {
-        return state == genericCommandPointEnd? genericCommandPointEnd : null; }
+    public final PlainCommandPointEnd asPlainCommandPointEnd() {
+        return state == plainCommandPointEnd? plainCommandPointEnd : null; }
 
 
-        protected final void commitGenericCommandPointEnd( final GenericCommandPointEnd e ) {
-            genericCommandPointEnd = e;
+        protected final void commitPlainCommandPointEnd( final PlainCommandPointEnd e ) {
+            plainCommandPointEnd = e;
             commitCommandPointEnd( e ); }
 
 
 
-    /** Returns the present parse state as a `GenericPoint`,
-      * or null if the cursor is not positioned at a generic point.
+    /** Returns the present parse state as a `PlainPoint`,
+      * or null if the cursor is not positioned at a plain point.
       */
-    public final GenericPoint asGenericPoint() { return state == genericPoint? genericPoint : null; }
+    public final PlainPoint asPlainPoint() { return state == plainPoint? plainPoint : null; }
 
 
-        protected final void commitGenericPoint( final GenericPoint p ) {
-            genericPoint = p;
+        protected final void commitPlainPoint( final PlainPoint p ) {
+            plainPoint = p;
             commitPoint( p ); }
 
 
 
-    /** Returns the present parse state as a `GenericPointEnd`,
-      * or null if the cursor is not positioned at the end of a generic point.
+    /** Returns the present parse state as a `PlainPointEnd`,
+      * or null if the cursor is not positioned at the end of a plain point.
       */
-    public final GenericPointEnd asGenericPointEnd() {
-        return state == genericPointEnd? genericPointEnd : null; }
+    public final PlainPointEnd asPlainPointEnd() {
+        return state == plainPointEnd? plainPointEnd : null; }
 
 
-        protected final void commitGenericPointEnd( final GenericPointEnd e ) {
-            genericPointEnd = e;
+        protected final void commitPlainPointEnd( final PlainPointEnd e ) {
+            plainPointEnd = e;
             commitPointEnd( e ); }
 
 
@@ -330,9 +330,9 @@ public class BrecciaCursor implements MarkupCursor {
     public final Privatizer asPrivatizer() { return state == privatizer? privatizer : null; }
 
 
-        protected final void commitPrivatizer( final Privatizer r ) {
-            privatizer = r;
-            commitCommandPoint( r ); }
+        protected final void commitPrivatizer( final Privatizer p ) {
+            privatizer = p;
+            commitCommandPoint( p ); }
 
 
 
@@ -817,7 +817,7 @@ public class BrecciaCursor implements MarkupCursor {
             xSeq.delimit( c, c = throughTerm(c) ); }
         c = binarySearch( commandPointKeywords, xSeq, CharSequence::compare );
         if( c >= 0 ) commandPointCommitters[c].run();
-        else commitGenericCommandPoint(); }
+        else commitPlainCommandPoint(); }
 
 
 
@@ -919,7 +919,7 @@ public class BrecciaCursor implements MarkupCursor {
                 throw termExpected( bufferPointer( c )); } // command between the two.
             assert buffer.get(bulletEnd) == ' '; // The only remaining case.
             parseCommandPoint( bulletEnd ); }
-        else commitGenericPoint(); }
+        else commitPlainPoint(); }
 
 
 
@@ -1124,45 +1124,43 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private GenericCommandPoint genericCommandPoint;
+    private PlainCommandPoint plainCommandPoint;
 
 
-        private final GenericCommandPoint basicGenericCommandPoint // [CIC]
-          = new GenericCommandPoint( this ) {
+        private final PlainCommandPoint basicPlainCommandPoint = new PlainCommandPoint( this ) { // [CIC]
 
             protected @Override void commitEnd() {
-                commitGenericCommandPointEnd( basicGenericCommandPointEnd ); }};
+                commitPlainCommandPointEnd( basicPlainCommandPointEnd ); }};
 
 
-        private void commitGenericCommandPoint() {
-            commitGenericCommandPoint( basicGenericCommandPoint ); }
-
-
-
-    private GenericCommandPointEnd genericCommandPointEnd;
-
-
-        private final GenericCommandPointEnd basicGenericCommandPointEnd // [CIC]
-           = new GenericCommandPointEnd();
+        private void commitPlainCommandPoint() { commitPlainCommandPoint( basicPlainCommandPoint ); }
 
 
 
-    private GenericPoint genericPoint;
+    private PlainCommandPointEnd plainCommandPointEnd;
 
 
-        private final GenericPoint basicGenericPoint = new GenericPoint( this ) { // [CIC]
-
-            protected @Override void commitEnd() { commitGenericPointEnd( basicGenericPointEnd ); }};
-
-
-        private void commitGenericPoint() { commitGenericPoint( basicGenericPoint ); }
+        private final PlainCommandPointEnd basicPlainCommandPointEnd // [CIC]
+           = new PlainCommandPointEnd();
 
 
 
-    private GenericPointEnd genericPointEnd;
+    private PlainPoint plainPoint;
 
 
-        private final GenericPointEnd basicGenericPointEnd = new GenericPointEnd(); // [CIC]
+        private final PlainPoint basicPlainPoint = new PlainPoint( this ) { // [CIC]
+
+            protected @Override void commitEnd() { commitPlainPointEnd( basicPlainPointEnd ); }};
+
+
+        private void commitPlainPoint() { commitPlainPoint( basicPlainPoint ); }
+
+
+
+    private PlainPointEnd plainPointEnd;
+
+
+        private final PlainPointEnd basicPlainPointEnd = new PlainPointEnd(); // [CIC]
 
 
 
@@ -1329,9 +1327,9 @@ public class BrecciaCursor implements MarkupCursor {
 //        of another buffer, but other cases may exist.  https://stackoverflow.com/a/24601336/2402790
 //
 //   CIC  Cached instance of a concrete parse state.  Each instance is held in a constant field named
-//        e.g. `basicFoo`, basic meaning not a subtype.  It could instead be held in `foo`, except
-//        that field might be overwritten with a `Foo` subtype defined by an extended parser,
-//        leaving the base instance unavailable for future resuse.
+//        e.g. `basicFoo`, basic meaning unextended.  It could instead be held in `foo`, except then
+//        it might be overwritten with an instance of a `Foo` subclass defined by a parser extension,
+//        leaving the basic instance unavailable for future reuse.
 
 
 
