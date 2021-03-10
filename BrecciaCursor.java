@@ -28,27 +28,22 @@ import static Breccia.parser.MalformedMarkup.*;
 import static Breccia.parser.Project.newSourceReader;
 
 
-/** A pull parser of Breccian markup that operates as a unidirectional cursor over a series
+/** A reusable, pull parser of Breccian markup that operates as a unidirectional cursor over a series
   * of discrete parse states.
   */
-public class BrecciaCursor implements ReusableCursor {
+public class BrecciaCursor implements MarkupCursor {
 
 
-    /** Advances this cursor to the next parse state.
+    /** Positions the cursor on a new source of markup comprising a single file.  Sets the parse state
+      * to an instance either of `{@linkplain Empty Empty}` or `{@linkplain FileFractum FileFractum}`.
       *
-      *     @return The new parse state, an instance neither of `{@linkplain Empty Empty}`
-      *       nor `{@linkplain Error Error}`.
-      *     @throws NoSuchElementException If the present state
-      *       {@linkplain ParseState#isFinal() is final}.
+      *     @param r {@inheritDoc}  It is taken to comprise a single file at most.
       */
-    public final ParseState next() throws ParseError {
-        if( state.isFinal() ) throw new NoSuchElementException();
-        try { _next(); }
+    public final void markupSource( final Reader r ) throws ParseError {
+        try { _markupSource( r ); }
         catch( ParseError x ) {
             disable();
-            throw x; }
-        assert !(state instanceof Empty || state instanceof Error);
-        return state; }
+            throw x; }}
 
 
 
@@ -82,14 +77,6 @@ public class BrecciaCursor implements ReusableCursor {
         catch( ParseError x ) {
             disable();
             throw x; }}
-
-
-
-    /** The concrete parse state at the current position in the markup.  Concrete states alone occur,
-      * those with {@linkplain Typestamp dedicated typestamps}.  Abstract states are present (see the
-      * various `as` methods) only as alternative views.
-      */
-    public final ParseState state() { return state; }
 
 
 
@@ -361,19 +348,24 @@ public class BrecciaCursor implements ReusableCursor {
 
 
 
-   // ━━━  R e u s a b l e   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  M a r k u p   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** {@inheritDoc}  Sets the parse state to an instance either of `{@linkplain Empty Empty}`
-      * or `{@linkplain FileFractum FileFractum}`.
-      *
-      *     @param r {@inheritDoc}  It is taken to comprise a single file at most.
-      */
-    public final @Override void markupSource( final Reader r ) throws ParseError {
-        try { _markupSource( r ); }
+    public final @Override ParseState next() throws ParseError {
+        if( state.isFinal() ) throw new NoSuchElementException();
+        try { _next(); }
         catch( ParseError x ) {
             disable();
-            throw x; }}
+            throw x; }
+        assert !(state instanceof Empty || state instanceof Error);
+        return state; }
+
+
+
+    /** {@inheritDoc}  Abstract states are present only as alternative views of concrete states.
+      * Each is got through a dedicated `as` method.
+      */
+    public final @Override ParseState state() { return state; }
 
 
 
