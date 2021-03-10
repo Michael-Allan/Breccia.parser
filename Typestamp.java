@@ -51,7 +51,7 @@ public class Typestamp {
    // ┈┈┈  f r a c t a l  ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 
 
-    /** The typestamp of `FileFractumEnd`.
+    /** The typestamp of `FileFractum.End`.
       */
     public static final int fileFractumEnd          = 0x02;
 
@@ -99,31 +99,31 @@ public class Typestamp {
    // ━━━  F r a c t a l   e n d  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** The typestamp of `AssociativeReferenceEnd`.
+    /** The typestamp of `AssociativeReference.End`.
       */
     public static final int associativeReferenceEnd = 0x09;
 
 
 
-    /** The typestamp of `DivisionEnd`.
+    /** The typestamp of `Division.End`.
       */
     public static final int divisionEnd             = 0x0a;
 
 
 
-    /** The typestamp of `PlainCommandPointEnd`.
+    /** The typestamp of `PlainCommandPoint.End`.
       */
     public static final int plainCommandPointEnd    = 0x0b;
 
 
 
-    /** The typestamp of `PlainPointEnd`.
+    /** The typestamp of `PlainPoint.End`.
       */
     public static final int plainPointEnd           = 0x0c;
 
 
 
-    /** The typestamp of `PrivatizerEnd`.
+    /** The typestamp of `Privatizer.End`.
       */
     public static final int privatizerEnd           = 0x0d;   // = ↓
 

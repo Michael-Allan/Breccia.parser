@@ -26,7 +26,32 @@ public class FileFractum extends Fractum implements Markup {
 
 
 
-    public @Override int typestamp() { return Typestamp.fileFractum; }}
+    public @Override int typestamp() { return Typestamp.fileFractum; }
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    /** The end of a file fractum.  This is a final state.
+      */
+    public static class End extends Fractum.End {
+
+
+        public End() {}
+
+
+
+       // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** @return True.
+          */
+        public final @Override boolean isFinal() { return true; }
+
+
+
+        public @Override int typestamp() { return Typestamp.fileFractumEnd; }}}
 
 
 

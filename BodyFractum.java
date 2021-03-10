@@ -26,7 +26,28 @@ public abstract class BodyFractum extends Fractum implements Markup {
       *
       *     @see BrecciaCursor
       */
-    protected abstract void commitEnd(); }
+    protected abstract void commitEnd();
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    /** The end of a body fractum.
+      */
+    public static abstract class End extends Fractum.End {
+
+
+        protected End() {}
+
+
+
+       // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** @return False.
+          */
+        public final @Override boolean isFinal() { return false; }}}
 
 
 

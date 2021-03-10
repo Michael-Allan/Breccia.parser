@@ -96,14 +96,14 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as an `AssociativeReferenceEnd`,
+    /** Returns the present parse state as an `AssociativeReference.End`,
       * or null if the cursor is not positioned at the end of an associative reference.
       */
-    public final AssociativeReferenceEnd asAssociativeReferenceEnd() {
+    public final AssociativeReference.End asAssociativeReferenceEnd() {
         return state == associativeReferenceEnd? associativeReferenceEnd : null; }
 
 
-        protected final void commitAssociativeReferenceEnd( final AssociativeReferenceEnd e ) {
+        protected final void commitAssociativeReferenceEnd( final AssociativeReference.End e ) {
             associativeReferenceEnd = e;
             commitCommandPointEnd( e ); }
 
@@ -121,14 +121,14 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `BodyFractumEnd`,
+    /** Returns the present parse state as a `BodyFractum.End`,
       * or null if the cursor is not positioned at the end of a body fractum.
       */
-    public final BodyFractumEnd asBodyFractumEnd() {
+    public final BodyFractum.End asBodyFractumEnd() {
         return state == bodyFractumEnd? bodyFractumEnd : null; }
 
 
-        protected final void commitBodyFractumEnd( final BodyFractumEnd e ) {
+        protected final void commitBodyFractumEnd( final BodyFractum.End e ) {
             bodyFractumEnd = e;
             commitFractumEnd( e ); }
 
@@ -146,14 +146,14 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `CommandPointEnd`,
+    /** Returns the present parse state as a `CommandPoint.End`,
       * or null if the cursor is not positioned at the end of a command point.
       */
-    public final CommandPointEnd asCommandPointEnd() {
+    public final CommandPoint.End asCommandPointEnd() {
         return state == commandPointEnd? commandPointEnd : null; }
 
 
-        protected final void commitCommandPointEnd( final CommandPointEnd e ) {
+        protected final void commitCommandPointEnd( final CommandPoint.End e ) {
             commandPointEnd = e;
             commitPointEnd( e ); }
 
@@ -171,13 +171,13 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `DivisionEnd`,
+    /** Returns the present parse state as a `Division.End`,
       * or null if the cursor is not positioned at the end of a division.
       */
-    public final DivisionEnd asDivisionEnd() { return state == divisionEnd? divisionEnd : null; }
+    public final Division.End asDivisionEnd() { return state == divisionEnd? divisionEnd : null; }
 
 
-        protected final void commitDivisionEnd( final DivisionEnd e ) {
+        protected final void commitDivisionEnd( final Division.End e ) {
             divisionEnd = e;
             commitBodyFractumEnd( e ); }
 
@@ -214,14 +214,14 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `FileFractumEnd`,
+    /** Returns the present parse state as a `FileFractum.End`,
       * or null if the cursor is not positioned at the end of a file fractum.
       */
-    public final FileFractumEnd asFileFractumEnd() {
+    public final FileFractum.End asFileFractumEnd() {
         return state == fileFractumEnd? fileFractumEnd : null; }
 
 
-        protected final void commitFileFractumEnd( final FileFractumEnd e ) {
+        protected final void commitFileFractumEnd( final FileFractum.End e ) {
             fileFractumEnd = e;
             commitFractumEnd( e ); }
 
@@ -239,13 +239,13 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `FractumEnd`,
+    /** Returns the present parse state as a `Fractum.End`,
       * or null if the cursor is not positioned at the end of a fractum.
       */
-    public final FractumEnd asFractumEnd() { return state == fractumEnd? fractumEnd : null; }
+    public final Fractum.End asFractumEnd() { return state == fractumEnd? fractumEnd : null; }
 
 
-        protected final void commitFractumEnd( final FractumEnd e ) { state = fractumEnd = e; }
+        protected final void commitFractumEnd( final Fractum.End e ) { state = fractumEnd = e; }
 
 
 
@@ -262,14 +262,14 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `PlainCommandPointEnd`,
+    /** Returns the present parse state as a `PlainCommandPoint.End`,
       * or null if the cursor is not positioned at the end of a plain command point.
       */
-    public final PlainCommandPointEnd asPlainCommandPointEnd() {
+    public final PlainCommandPoint.End asPlainCommandPointEnd() {
         return state == plainCommandPointEnd? plainCommandPointEnd : null; }
 
 
-        protected final void commitPlainCommandPointEnd( final PlainCommandPointEnd e ) {
+        protected final void commitPlainCommandPointEnd( final PlainCommandPoint.End e ) {
             plainCommandPointEnd = e;
             commitCommandPointEnd( e ); }
 
@@ -287,14 +287,14 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `PlainPointEnd`,
+    /** Returns the present parse state as a `PlainPoint.End`,
       * or null if the cursor is not positioned at the end of a plain point.
       */
-    public final PlainPointEnd asPlainPointEnd() {
+    public final PlainPoint.End asPlainPointEnd() {
         return state == plainPointEnd? plainPointEnd : null; }
 
 
-        protected final void commitPlainPointEnd( final PlainPointEnd e ) {
+        protected final void commitPlainPointEnd( final PlainPoint.End e ) {
             plainPointEnd = e;
             commitPointEnd( e ); }
 
@@ -312,13 +312,13 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `PointEnd`,
+    /** Returns the present parse state as a `Point.End`,
       * or null if the cursor is not positioned at the end of a point.
       */
-    public final PointEnd asPointEnd() { return state == pointEnd? pointEnd : null; }
+    public final Point.End asPointEnd() { return state == pointEnd? pointEnd : null; }
 
 
-        protected final void commitPointEnd( final PointEnd e ) {
+        protected final void commitPointEnd( final Point.End e ) {
             pointEnd = e;
             commitBodyFractumEnd( e ); }
 
@@ -336,13 +336,14 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    /** Returns the present parse state as a `PrivatizerEnd`,
+    /** Returns the present parse state as a `Privatizer.End`,
       * or null if the cursor is not positioned at the end of a privatizer.
       */
-    public final PrivatizerEnd asPrivatizerEnd() { return state == privatizerEnd? privatizerEnd : null; }
+    public final Privatizer.End asPrivatizerEnd() {
+        return state == privatizerEnd? privatizerEnd : null; }
 
 
-        protected final void commitPrivatizerEnd( final PrivatizerEnd e ) {
+        protected final void commitPrivatizerEnd( final Privatizer.End e ) {
             privatizerEnd = e;
             commitCommandPointEnd( e ); }
 
@@ -1033,11 +1034,11 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private AssociativeReferenceEnd associativeReferenceEnd;
+    private AssociativeReference.End associativeReferenceEnd;
 
 
-        private final AssociativeReferenceEnd basicAssociativeReferenceEnd // [CIC]
-          = new AssociativeReferenceEnd();
+        private final AssociativeReference.End basicAssociativeReferenceEnd // [CIC]
+          = new AssociativeReference.End();
 
 
 
@@ -1045,7 +1046,7 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private BodyFractumEnd bodyFractumEnd;
+    private BodyFractum.End bodyFractumEnd;
 
 
 
@@ -1053,7 +1054,7 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private CommandPointEnd commandPointEnd;
+    private CommandPoint.End commandPointEnd;
 
 
 
@@ -1069,10 +1070,10 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private DivisionEnd divisionEnd;
+    private Division.End divisionEnd;
 
 
-        private final DivisionEnd basicDivisionEnd = new DivisionEnd(); // [CIC]
+        private final Division.End basicDivisionEnd = new Division.End(); // [CIC]
 
 
 
@@ -1106,10 +1107,10 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private FileFractumEnd fileFractumEnd;
+    private FileFractum.End fileFractumEnd;
 
 
-        private final FileFractumEnd basicFileFractumEnd = new FileFractumEnd(); // [CIC]
+        private final FileFractum.End basicFileFractumEnd = new FileFractum.End(); // [CIC]
 
 
         private void commitFileFractumEnd() { commitFileFractumEnd( basicFileFractumEnd ); }
@@ -1120,7 +1121,7 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private FractumEnd fractumEnd;
+    private Fractum.End fractumEnd;
 
 
 
@@ -1137,11 +1138,11 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private PlainCommandPointEnd plainCommandPointEnd;
+    private PlainCommandPoint.End plainCommandPointEnd;
 
 
-        private final PlainCommandPointEnd basicPlainCommandPointEnd // [CIC]
-           = new PlainCommandPointEnd();
+        private final PlainCommandPoint.End basicPlainCommandPointEnd // [CIC]
+           = new PlainCommandPoint.End();
 
 
 
@@ -1157,10 +1158,10 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private PlainPointEnd plainPointEnd;
+    private PlainPoint.End plainPointEnd;
 
 
-        private final PlainPointEnd basicPlainPointEnd = new PlainPointEnd(); // [CIC]
+        private final PlainPoint.End basicPlainPointEnd = new PlainPoint.End(); // [CIC]
 
 
 
@@ -1168,7 +1169,7 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private PointEnd pointEnd;
+    private Point.End pointEnd;
 
 
 
@@ -1184,10 +1185,10 @@ public class BrecciaCursor implements MarkupCursor {
 
 
 
-    private PrivatizerEnd privatizerEnd;
+    private Privatizer.End privatizerEnd;
 
 
-        private final PrivatizerEnd basicPrivatizerEnd = new PrivatizerEnd(); // [CIC]
+        private final Privatizer.End basicPrivatizerEnd = new Privatizer.End(); // [CIC]
 
 
 

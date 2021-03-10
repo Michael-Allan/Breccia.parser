@@ -61,6 +61,33 @@ public abstract class Fractum implements Markup, ParseState {
 
 
 
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    /** The end of a fractum.
+      */
+    public static abstract class End implements ParseState {
+
+
+        protected End() {}
+
+
+
+       // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** @return False.
+          */
+        public final @Override boolean isInitial() { return false; }
+
+
+
+        /** @return Fractal end.
+          */
+        public final @Override Symmetry symmetry() { return Symmetry.fractalEnd; }}
+
+
+
 ////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
 
 
