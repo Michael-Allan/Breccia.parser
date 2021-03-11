@@ -3,7 +3,7 @@ package Breccia.parser;
 
 /** A command point in Breccia.
   */
-public abstract class CommandPoint extends Point {
+public abstract @DataReflector class CommandPoint extends Point {
 
 
     protected CommandPoint( BrecciaCursor cursor ) { super( cursor ); }

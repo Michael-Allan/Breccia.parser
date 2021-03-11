@@ -3,7 +3,7 @@ package Breccia.parser;
 
 /** A body fractum in Breccia.
   */
-public abstract class BodyFractum extends Fractum implements Markup {
+public abstract @DataReflector class BodyFractum extends Fractum implements Markup {
 
 
     protected BodyFractum( BrecciaCursor cursor ) { super( cursor ); }

@@ -3,7 +3,7 @@ package Breccia.parser;
 
 /** A plain point in Breccia.
   */
-public abstract class PlainPoint extends Point {
+public abstract @DataReflector class PlainPoint extends Point {
 
 
     public PlainPoint( BrecciaCursor cursor ) { super( cursor ); }

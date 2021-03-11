@@ -5,12 +5,12 @@ import java.util.List;
 import static Breccia.parser.Breccia.impliesNewline;
 
 
-/** A parsed component of markup.
+/** A reflector of parsed markup.
   */
-public interface Markup {
+public @DataReflector interface Markup {
 
 
-    /** Resolves the columnar offset at which this markup starts.  Columnar offsets are zero based
+    /** Resolves the columnar offset at which the markup starts.  Columnar offsets are zero based
       * and measured in terms of grapheme clusters, beginning with the first cluster of the line
       * at offset zero.
       *
@@ -25,9 +25,9 @@ public interface Markup {
 
 
 
-    /** A list in linear order of the parsed components that model this markup.
-      * If the list is empty, then this markup is modelled only as a {@linkplain #text() flat text}.
-      * Otherwise the listed components cover the whole text without omission.
+    /** A list in linear order of the parsed components of the markup.  Either the list is empty,
+      * in which case the markup is given only as unparsed, {@linkplain #text() flat text} (T), or the
+      * listed components cover the whole markup such that their concatenation is equal in content to T.
       */
     public List<Markup> components();
 
@@ -59,7 +59,7 @@ public interface Markup {
 
 
 
-    /** Resolves the ordinal number of the line in which this markup occurs, or starts.
+    /** Resolves the ordinal number of the line in which the markup occurs, or starts.
       * Lines are numbered beginning at one.
       *
       * <p>The return value of this method is considered adjunct state;
@@ -71,18 +71,18 @@ public interface Markup {
 
 
 
-    /** The tag name used by X-Breccia for this markup.
+    /** The tag name used by X-Breccia for the markup.
       *
       *     @see <a href='https://www.w3.org/TR/xml/#sec-starttags'>
       *       Start-tags, end-tags, and empty-element tags</a>
-      *     @see <a href='http://reluk.ca/project/Breccia/XML/'>
-      *       X-Breccia</a>
-      *     @see ParseState#typestamp()
+      *     @see <a href='http://reluk.ca/project/Breccia/XML/'>X-Breccia</a>
       */
     public String tagName();
 
 
 
+    /** The flat text of the markup.
+      */
     public CharSequence text(); }
 
 

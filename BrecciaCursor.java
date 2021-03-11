@@ -86,7 +86,7 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as an `AssociativeReference`,
       * or null if the cursor is not positioned at an associative reference.
       */
-    public final AssociativeReference asAssociativeReference() {
+    public final @DataReflector AssociativeReference asAssociativeReference() {
         return state == associativeReference? associativeReference : null; }
 
 
@@ -112,7 +112,8 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `BodyFractum`,
       * or null if the cursor is not positioned at a body fractum.
       */
-    public final BodyFractum asBodyFractum() { return state == bodyFractum? bodyFractum : null; }
+    public final @DataReflector BodyFractum asBodyFractum() {
+        return state == bodyFractum? bodyFractum : null; }
 
 
         protected final void commitBodyFractum( final BodyFractum f ) {
@@ -137,7 +138,8 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `CommandPoint`,
       * or null if the cursor is not positioned at a command point.
       */
-    public final CommandPoint asCommandPoint() { return state == commandPoint? commandPoint : null; }
+    public final @DataReflector CommandPoint asCommandPoint() {
+        return state == commandPoint? commandPoint : null; }
 
 
         protected final void commitCommandPoint( final CommandPoint p ) {
@@ -162,7 +164,7 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `Division`,
       * or null if the cursor is not positioned at a division.
       */
-    public final Division asDivision() { return state == division? division : null; }
+    public final @DataReflector Division asDivision() { return state == division? division : null; }
 
 
         protected final void commitDivision( final Division d ) {
@@ -205,7 +207,8 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `FileFractum`,
       * or null if the cursor is not positioned at a file fractum.
       */
-    public final FileFractum asFileFractum() { return state == fileFractum? fileFractum : null; }
+    public final @DataReflector FileFractum asFileFractum() {
+        return state == fileFractum? fileFractum : null; }
 
 
         protected final void commitFileFractum( final FileFractum f ) {
@@ -230,7 +233,7 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `Fractum`,
       * or null if the cursor is not positioned at a fractum.
       */
-    public final Fractum asFractum() { return state == fractum? fractum : null; }
+    public final @DataReflector Fractum asFractum() { return state == fractum? fractum : null; }
 
 
         protected final void commitFractum( final Fractum f ) {
@@ -252,7 +255,7 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `PlainCommandPoint`,
       * or null if the cursor is not positioned at a plain command point.
       */
-    public final PlainCommandPoint asPlainCommandPoint() {
+    public final @DataReflector PlainCommandPoint asPlainCommandPoint() {
         return state == plainCommandPoint? plainCommandPoint : null; }
 
 
@@ -278,7 +281,8 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `PlainPoint`,
       * or null if the cursor is not positioned at a plain point.
       */
-    public final PlainPoint asPlainPoint() { return state == plainPoint? plainPoint : null; }
+    public final @DataReflector PlainPoint asPlainPoint() {
+        return state == plainPoint? plainPoint : null; }
 
 
         protected final void commitPlainPoint( final PlainPoint p ) {
@@ -303,7 +307,7 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `Point`,
       * or null if the cursor is not positioned at a point.
       */
-    public final Point asPoint() { return state == point? point : null; }
+    public final @DataReflector Point asPoint() { return state == point? point : null; }
 
 
         protected final void commitPoint( final Point p ) {
@@ -327,7 +331,8 @@ public class BrecciaCursor implements MarkupCursor {
     /** Returns the present parse state as a `Privatizer`,
       * or null if the cursor is not positioned at a privatizer.
       */
-    public final Privatizer asPrivatizer() { return state == privatizer? privatizer : null; }
+    public final @DataReflector Privatizer asPrivatizer() {
+        return state == privatizer? privatizer : null; }
 
 
         protected final void commitPrivatizer( final Privatizer p ) {
@@ -352,7 +357,7 @@ public class BrecciaCursor implements MarkupCursor {
    // ━━━  M a r k u p   C u r s o r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public final @Override ParseState next() throws ParseError {
+    public final @Override @DataReflector ParseState next() throws ParseError {
         if( state.isFinal() ) throw new NoSuchElementException();
         try { _next(); }
         catch( ParseError x ) {
@@ -366,7 +371,7 @@ public class BrecciaCursor implements MarkupCursor {
     /** {@inheritDoc}  Abstract states are present only as alternative views of concrete states.
       * Each is got through a dedicated `as` method.
       */
-    public final @Override ParseState state() { return state; }
+    public final @Override @DataReflector ParseState state() { return state; }
 
 
 

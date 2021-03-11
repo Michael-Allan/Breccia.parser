@@ -3,7 +3,7 @@ package Breccia.parser;
 
 /** A point in Breccia.
   */
-public abstract class Point extends BodyFractum {
+public abstract @DataReflector class Point extends BodyFractum {
 
 
     protected Point( BrecciaCursor cursor ) { super( cursor ); }

@@ -5,7 +5,7 @@ import java.util.List;
 
 /** An associative reference in Breccia.
   */
-public abstract class AssociativeReference extends CommandPoint {
+public abstract @DataReflector class AssociativeReference extends CommandPoint {
 
 
     public AssociativeReference( BrecciaCursor cursor ) { super( cursor ); }
@@ -33,7 +33,7 @@ public abstract class AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static class ContainmentClause implements Markup {
+    public static @DataReflector class ContainmentClause implements Markup {
 
 
         public ContainmentClause() {}
@@ -89,7 +89,7 @@ public abstract class AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static class ImperativeClause implements Markup {
+    public static @DataReflector class ImperativeClause implements Markup {
 
 
         public ImperativeClause() {}
@@ -126,7 +126,7 @@ public abstract class AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static class InferentialReferentIndicator implements Markup {
+    public static @DataReflector class InferentialReferentIndicator implements Markup {
 
 
         public InferentialReferentIndicator() {}
@@ -163,7 +163,7 @@ public abstract class AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static class ReferentClause implements Markup {
+    public static @DataReflector class ReferentClause implements Markup {
 
 
         public ReferentClause() {}

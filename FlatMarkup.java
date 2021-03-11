@@ -5,7 +5,7 @@ import java.util.List;
 
 /** Markup that is non-composite, having no parsed components.
   */
-public class FlatMarkup implements Markup {
+public @DataReflector class FlatMarkup implements Markup {
 
 
     /** @see #tagName()

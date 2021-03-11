@@ -3,7 +3,7 @@ package Breccia.parser;
 
 /** A division fractum in Breccia.
   */
-public abstract class Division extends BodyFractum {
+public abstract @DataReflector class Division extends BodyFractum {
 
 
     public Division( BrecciaCursor cursor ) { super( cursor ); }

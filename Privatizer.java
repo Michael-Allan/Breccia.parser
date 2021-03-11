@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 /** A privatizer in Breccia.
   */
-public abstract class Privatizer extends CommandPoint {
+public abstract @DataReflector class Privatizer extends CommandPoint {
 
 
     public Privatizer( BrecciaCursor cursor ) { super( cursor ); }

@@ -3,7 +3,7 @@ package Breccia.parser;
 import java.util.List;
 
 
-public class FractumIndicator implements Markup {
+public @DataReflector class FractumIndicator implements Markup {
 
 
     public FractumIndicator() {}

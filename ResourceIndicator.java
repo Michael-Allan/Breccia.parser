@@ -3,7 +3,7 @@ package Breccia.parser;
 import java.util.List;
 
 
-public class ResourceIndicator implements Markup {
+public @DataReflector class ResourceIndicator implements Markup {
 
 
     public ResourceIndicator() {}

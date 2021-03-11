@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 /** A command point of a type undefined by Breccia.
   */
-public abstract class PlainCommandPoint extends CommandPoint {
+public abstract @DataReflector class PlainCommandPoint extends CommandPoint {
 
 
     public PlainCommandPoint( BrecciaCursor cursor ) { super( cursor ); }

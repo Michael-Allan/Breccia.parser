@@ -5,7 +5,7 @@ import java.util.List;
 
 /** Markup that is anonymous in the Breccia language definition.
   */
-public abstract class GenericMarkup implements Markup {
+public abstract @DataReflector class GenericMarkup implements Markup {
 
 
     protected GenericMarkup() {}

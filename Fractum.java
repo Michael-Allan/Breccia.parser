@@ -6,10 +6,10 @@ import java.util.List;
 import static Java.CharBuffers.newDelimitableCharSequence;
 
 
-/** A fractum of Breccia modelled as a parse state.  It covers the markup of the fractal head alone,
-  * leaving the body (if any) to be covered by future states.
+/** A fractum of Breccia reflected as a parse state.  The reflection covers the markup
+  * of the fractal head alone, leaving the body (if any) to be covered by future states.
   */
-public abstract class Fractum implements Markup, ParseState {
+public abstract @DataReflector class Fractum implements Markup, ParseState {
 
 
     protected Fractum( BrecciaCursor cursor ) {
