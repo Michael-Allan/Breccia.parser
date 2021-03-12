@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** The markup cursor has halted.  This is a final state, rendering the cursor unusable
+/** The markup cursor has halted abnormally.  This is a final state, rendering the cursor unusable
   * for the present markup source.  It results from any occurence of a parse error.
   *
   *     @see ParseError
