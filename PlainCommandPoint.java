@@ -1,28 +1,26 @@
 package Breccia.parser;
 
-import java.util.Iterator;
-
 
 /** A command point of a type undefined by Breccia.
   */
-public abstract @DataReflector class PlainCommandPoint extends CommandPoint {
-
-
-    public PlainCommandPoint( BrecciaCursor cursor ) { super( cursor ); }
-
+public @DataReflector interface PlainCommandPoint extends CommandPoint {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override String tagName() { return "PlainCommandPoint"; }
+    /** The default implementation returns ‘PlainCommandPoint’.
+      */
+    public default @Override String tagName() { return "PlainCommandPoint"; }
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int typestamp() { return Typestamp.plainCommandPoint; }
+    /** The default implementation returns {@linkplain Typestamp#plainCommandPoint plainCommandPoint}.
+      */
+    public default @Override int typestamp() { return Typestamp.plainCommandPoint; }
 
 
 
@@ -31,17 +29,16 @@ public abstract @DataReflector class PlainCommandPoint extends CommandPoint {
 
     /** The end of a plain command point.
       */
-    public static class End extends CommandPoint.End {
-
-
-        public End() {}
-
+    public static interface End extends CommandPoint.End {
 
 
        // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int typestamp() { return Typestamp.plainCommandPointEnd; }}}
+        /** The default implementation returns
+          * {@linkplain Typestamp#plainCommandPointEnd plainCommandPointEnd}.
+          */
+        public default @Override int typestamp() { return Typestamp.plainCommandPointEnd; }}}
 
 
 

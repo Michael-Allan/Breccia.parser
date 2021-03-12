@@ -1,69 +1,50 @@
 package Breccia.parser;
 
-import java.util.List;
-
 
 /** An associative reference in Breccia.
   */
-public abstract @DataReflector class AssociativeReference extends CommandPoint {
+public @DataReflector interface AssociativeReference extends CommandPoint {
 
 
-    public AssociativeReference( BrecciaCursor cursor ) { super( cursor ); }
-
-
-
-    public final ImperativeClause imperativeClause = new ImperativeClause();
+    public ImperativeClause imperativeClause();
 
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override String tagName() { return "AssociativeReference"; }
+    /** The default implementation returns ‘AssociativeReference’.
+      */
+    public default @Override String tagName() { return "AssociativeReference"; }
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int typestamp() { return Typestamp.associativeReference; }
+    /** The default implementation returns
+      * {@linkplain Typestamp#associativeReference associativeReference}.
+      */
+    public default @Override int typestamp() { return Typestamp.associativeReference; }
 
 
 
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static @DataReflector class ContainmentClause implements Markup {
+    public static @DataReflector interface ContainmentClause extends Markup {
 
 
-        public ContainmentClause() {}
-
-
-
-        public final FractumIndicator fractumIndicator = new FractumIndicator();
+        public FractumIndicator fractumIndicator();
 
 
 
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int column() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override int lineNumber() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override String tagName() { return "ContainmentClause"; }
-
-
-
-        public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
+        /** The default implementation returns ‘ContainmentClause’.
+          */
+        public default @Override String tagName() { return "ContainmentClause"; }}
 
 
 
@@ -72,133 +53,77 @@ public abstract @DataReflector class AssociativeReference extends CommandPoint {
 
     /** The end of an associative reference.
       */
-    public static class End extends CommandPoint.End {
-
-
-        public End() {}
-
+    public static interface End extends CommandPoint.End {
 
 
        // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int typestamp() { return Typestamp.associativeReferenceEnd; }}
+        /** The default implementation returns
+          * {@linkplain Typestamp#associativeReferenceEnd associativeReferenceEnd}.
+          */
+        public default @Override int typestamp() { return Typestamp.associativeReferenceEnd; }}
 
 
 
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static @DataReflector class ImperativeClause implements Markup {
+    public static @DataReflector interface ImperativeClause extends Markup {
 
 
-        public ImperativeClause() {}
-
-
-
-        public ReferentClause referentClause() { throw new UnsupportedOperationException(); }
+        public ReferentClause referentClause();
 
 
 
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int column() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override int lineNumber() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override String tagName() { return "ImperativeClause"; }
-
-
-
-        public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
+        /** The default implementation returns ‘ImperativeClause’.
+          */
+        public default @Override String tagName() { return "ImperativeClause"; }}
 
 
 
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static @DataReflector class InferentialReferentIndicator implements Markup {
+    public static @DataReflector interface InferentialReferentIndicator extends Markup {
 
 
-        public InferentialReferentIndicator() {}
-
-
-
-        public ContainmentClause containmentClause() { throw new UnsupportedOperationException(); }
+        public ContainmentClause containmentClause();
 
 
 
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int column() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override int lineNumber() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override String tagName() { return "InferentialReferentIndicator"; }
-
-
-
-        public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
+        /** The default implementation returns ‘InferentialReferentIndicator’.
+          */
+        public default @Override String tagName() { return "InferentialReferentIndicator"; }}
 
 
 
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static @DataReflector class ReferentClause implements Markup {
+    public static @DataReflector interface ReferentClause extends Markup {
 
 
-        public ReferentClause() {}
-
-
-
-        public FractumIndicator fractumIndicator() { throw new UnsupportedOperationException(); }
+        public FractumIndicator fractumIndicator();
 
 
 
-        public InferentialReferentIndicator inferentialReferentIndicator() {
-            throw new UnsupportedOperationException(); }
+        public InferentialReferentIndicator inferentialReferentIndicator();
 
 
 
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int column() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override int lineNumber() { throw new UnsupportedOperationException(); }
-
-
-
-        public @Override String tagName() { return "ReferentClause"; }
-
-
-
-        public @Override CharSequence text() { throw new UnsupportedOperationException(); }}}
+        /** The default implementation returns ‘ReferentClause’.
+          */
+        public default @Override String tagName() { return "ReferentClause"; }}}
 
 
 

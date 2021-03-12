@@ -3,24 +3,24 @@ package Breccia.parser;
 
 /** A plain point in Breccia.
   */
-public abstract @DataReflector class PlainPoint extends Point {
-
-
-    public PlainPoint( BrecciaCursor cursor ) { super( cursor ); }
-
+public @DataReflector interface PlainPoint extends Point {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override String tagName() { return "PlainPoint"; }
+    /** The default implementation returns ‘PlainPoint’.
+      */
+    public default @Override String tagName() { return "PlainPoint"; }
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int typestamp() { return Typestamp.plainPoint; }
+    /** The default implementation returns {@linkplain Typestamp#plainPoint plainPoint}.
+      */
+    public default @Override int typestamp() { return Typestamp.plainPoint; }
 
 
 
@@ -29,17 +29,15 @@ public abstract @DataReflector class PlainPoint extends Point {
 
     /** The end of a plain point.
       */
-    public static class End extends Point.End {
-
-
-        public End() {}
-
+    public static interface End extends Point.End {
 
 
        // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int typestamp() { return Typestamp.plainPointEnd; }}}
+        /** The default implementation returns {@linkplain Typestamp#plainPointEnd plainPointEnd}.
+          */
+        public default @Override int typestamp() { return Typestamp.plainPointEnd; }}}
 
 
 

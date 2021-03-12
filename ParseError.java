@@ -3,7 +3,7 @@ package Breccia.parser;
 
 /** A parse error.  Any occurence puts the parser into an error state.
   *
-  *     @see Error
+  *     @see Halt
   */
 public abstract class ParseError extends Exception {
 

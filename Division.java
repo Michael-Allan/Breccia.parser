@@ -3,24 +3,24 @@ package Breccia.parser;
 
 /** A division fractum in Breccia.
   */
-public abstract @DataReflector class Division extends BodyFractum {
-
-
-    public Division( BrecciaCursor cursor ) { super( cursor ); }
-
+public @DataReflector interface Division extends BodyFractum {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override String tagName() { return "Division"; }
+    /** The default implementation returns ‘Division’.
+      */
+    public default @Override String tagName() { return "Division"; }
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int typestamp() { return Typestamp.division; }
+    /** The default implementation returns {@linkplain Typestamp#division division}.
+      */
+    public default @Override int typestamp() { return Typestamp.division; }
 
 
 
@@ -29,17 +29,15 @@ public abstract @DataReflector class Division extends BodyFractum {
 
     /** The end of a division fractum.
       */
-    public static class End extends BodyFractum.End {
-
-
-        public End() {}
-
+    public static interface End extends BodyFractum.End {
 
 
        // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int typestamp() { return Typestamp.divisionEnd; }}}
+        /** The default implementation returns {@linkplain Typestamp#divisionEnd divisionEnd}.
+          */
+        public default @Override int typestamp() { return Typestamp.divisionEnd; }}}
 
 
 

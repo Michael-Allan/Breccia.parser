@@ -3,30 +3,15 @@ package Breccia.parser;
 
 /** A body fractum in Breccia.
   */
-public abstract @DataReflector class BodyFractum extends Fractum implements Markup {
-
-
-    protected BodyFractum( BrecciaCursor cursor ) { super( cursor ); }
-
+public @DataReflector interface BodyFractum extends Fractum {
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** @return False.
+    /** Returns false.
       */
-    public final @Override boolean isInitial() { return false; }
-
-
-
-////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
-
-
-    /** Sets within the cursor the corresponding end state.
-      *
-      *     @see BrecciaCursor
-      */
-    protected abstract void commitEnd();
+    public default @Override boolean isInitial() { return false; }
 
 
 
@@ -35,19 +20,15 @@ public abstract @DataReflector class BodyFractum extends Fractum implements Mark
 
     /** The end of a body fractum.
       */
-    public static abstract class End extends Fractum.End {
-
-
-        protected End() {}
-
+    public static interface End extends Fractum.End {
 
 
        // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** @return False.
+        /** Returns false.
           */
-        public final @Override boolean isFinal() { return false; }}}
+        public default @Override boolean isFinal() { return false; }}}
 
 
 

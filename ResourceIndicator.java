@@ -1,43 +1,23 @@
 package Breccia.parser;
 
-import java.util.List;
+
+public @DataReflector interface ResourceIndicator extends Markup {
 
 
-public @DataReflector class ResourceIndicator implements Markup {
-
-
-    public ResourceIndicator() {}
-
-
-
-    public boolean isFractal() { throw new UnsupportedOperationException(); }
+    public boolean isFractal();
 
 
 
-    public final FlatMarkup reference = new FlatMarkup( "Reference" );
+    public Markup reference();
 
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int column() { throw new UnsupportedOperationException(); }
-
-
-
-    public @Override List<Markup> components() { throw new UnsupportedOperationException(); }
-
-
-
-    public @Override int lineNumber() { throw new UnsupportedOperationException(); }
-
-
-
-    public @Override String tagName() { return "ResourceIndicator"; }
-
-
-
-    public @Override CharSequence text() { throw new UnsupportedOperationException(); }}
+    /** The default implementation returns ‘ResourceIndicator’.
+      */
+    public default @Override String tagName() { return "ResourceIndicator"; }}
 
 
 

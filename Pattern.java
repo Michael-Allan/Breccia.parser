@@ -1,25 +1,15 @@
 package Breccia.parser;
 
-import java.util.List;
 
-
-public @DataReflector interface FractumIndicator extends Markup {
-
-
-    public List<Pattern> patterns();
-
-
-
-    public ResourceIndicator resourceIndicator();
-
+public @DataReflector interface Pattern extends Markup {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** The default implementation returns ‘FractumIndicator’.
+    /** The default implementation returns ‘Pattern’.
       */
-    public default @Override String tagName() { return "FractumIndicator"; }}
+    public default @Override String tagName() { return "Pattern"; }}
 
 
 

@@ -4,7 +4,7 @@ package Breccia.parser;
 /** Typestamps are ordinal numbers that uniquely identify types of parse state.  Their main purpose
   * is to support efficient conditional branching in comprehensive switch statements, those which cover
   * more-or-less all possible cases.  This class defines one typestamp for each of a) the fractal types
-  * the parser treats as concrete, b) their corresponding end states, and c) the empty and error states.
+  * the parser treats as concrete, b) their corresponding end states, and c) the empty and halt states.
   * The parser treats as concrete all types defined as such by Breccia except for jointers and pointers
   * whose parent type (associative reference) the parser treats as concrete, and they as variants of it.
   * Further it treats as concrete one type undefined by Breccia, that of a plain command point.
@@ -36,15 +36,15 @@ public class Typestamp {
 
 
 
-    /** The typestamp of `Error`.
+    /** The typestamp of `Halt`.
       */
-    public static final int error                   = 0x00; // = ↑
+    public static final int halt                    = 0x00; // = ↑
 
 
 
     /** The typestamp of `Empty`.
       */
-    public static final int empty                   = 0x01;
+    public static final int empty                   = 0x01; // ↓ contiguous with other normal states
 
 
 

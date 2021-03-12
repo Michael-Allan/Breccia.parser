@@ -1,63 +1,33 @@
 package Breccia.parser;
 
-import Java.DelimitableCharSequence;
-import java.util.List;
-
-import static Java.CharBuffers.newDelimitableCharSequence;
-
 
 /** A fractum of Breccia reflected as a parse state.  The reflection covers the markup
   * of the fractal head alone, leaving the body (if any) to be covered by future states.
   */
-public abstract @DataReflector class Fractum implements Markup, ParseState {
-
-
-    protected Fractum( BrecciaCursor cursor ) {
-        this.cursor = cursor;
-        text = newDelimitableCharSequence( cursor.buffer ); }
-
+public @DataReflector interface Fractum extends Markup, ParseState {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** @return Zero: fracta comprise whole lines.
+    /** Returns zero: fracta comprise whole lines.
       */
-    public final @Override int column() { return 0; }
-
-
-
-    public final @Override List<Markup> components() { throw new UnsupportedOperationException(); }
-
-
-
-    public final @Override int lineNumber() { return cursor.fractumLineNumber(); }
-
-
-
-    public final @Override CharSequence text() { return text; }
-
-
-
-   // ━━━  O b j e c t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-    public @Override String toString() { return Markup.toString( this ); }
+    public default @Override int column() { return 0; }
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** @return False.
+    /** Returns false.
       */
-    public final @Override boolean isFinal() { return false; }
+    public default @Override boolean isFinal() { return false; }
 
 
 
-    /** @return Fractal start.
+    /** Returns {@linkplain Symmetry#fractalStart fractalStart}.
       */
-    public final @Override Symmetry symmetry() { return Symmetry.fractalStart; }
+    public default @Override Symmetry symmetry() { return Symmetry.fractalStart; }
 
 
 
@@ -66,36 +36,21 @@ public abstract @DataReflector class Fractum implements Markup, ParseState {
 
     /** The end of a fractum.
       */
-    public static abstract class End implements ParseState {
-
-
-        protected End() {}
-
+    public static interface End extends ParseState {
 
 
        // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** @return False.
+        /** Returns false.
           */
-        public final @Override boolean isInitial() { return false; }
+        public default @Override boolean isInitial() { return false; }
 
 
 
-        /** @return Fractal end.
+        /** Returns {@linkplain Symmetry#fractalEnd fractalEnd}.
           */
-        public final @Override Symmetry symmetry() { return Symmetry.fractalEnd; }}
-
-
-
-////  P r i v a t e  ////////////////////////////////////////////////////////////////////////////////////
-
-
-    protected final BrecciaCursor cursor;
-
-
-
-    final DelimitableCharSequence text; }
+        public default @Override Symmetry symmetry() { return Symmetry.fractalEnd; }}}
 
 
 

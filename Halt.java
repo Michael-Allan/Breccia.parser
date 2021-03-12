@@ -1,10 +1,12 @@
 package Breccia.parser;
 
 
-/** Nothing, no markup to parse.  Occurs on attempting to parse an empty source of markup.
-  * This is both an initial and final state.
+/** The markup cursor has halted.  This is a final state, rendering the cursor unusable
+  * for the present markup source.  It results from any occurence of a parse error.
+  *
+  *     @see ParseError
   */
-public interface Empty extends ParseState {
+public interface Halt extends ParseState {
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -16,9 +18,9 @@ public interface Empty extends ParseState {
 
 
 
-    /** Returns true.
+    /** Returns false: error states may occur both initially and subsequently.
       */
-    public default @Override boolean isInitial() { return true; }
+    public default @Override boolean isInitial() { return false; }
 
 
 
@@ -28,9 +30,9 @@ public interface Empty extends ParseState {
 
 
 
-    /** The default implementation returns {@linkplain Typestamp#empty empty}.
+    /** The default implementation returns {@linkplain Typestamp#error error}.
       */
-    public default @Override int typestamp() { return Typestamp.empty; }}
+    public default @Override int typestamp() { return Typestamp.halt; }}
 
 
 

@@ -1,28 +1,26 @@
 package Breccia.parser;
 
-import java.util.Iterator;
-
 
 /** A privatizer in Breccia.
   */
-public abstract @DataReflector class Privatizer extends CommandPoint {
-
-
-    public Privatizer( BrecciaCursor cursor ) { super( cursor ); }
-
+public @DataReflector interface Privatizer extends CommandPoint {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override String tagName() { return "Privatizer"; }
+    /** The default implementation returns ‘Privatizer’.
+      */
+    public default @Override String tagName() { return "Privatizer"; }
 
 
 
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    public @Override int typestamp() { return Typestamp.privatizer; }
+    /** The default implementation returns {@linkplain Typestamp#privatizer privatizer}.
+      */
+    public default @Override int typestamp() { return Typestamp.privatizer; }
 
 
 
@@ -31,17 +29,15 @@ public abstract @DataReflector class Privatizer extends CommandPoint {
 
     /** The end of a privatizer.
       */
-    public static class End extends CommandPoint.End {
-
-
-        public End() {}
-
+    public static interface End extends CommandPoint.End {
 
 
        // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        public @Override int typestamp() { return Typestamp.privatizerEnd; }}}
+        /** The default implementation returns {@linkplain Typestamp#privatizerEnd privatizerEnd}.
+          */
+        public default @Override int typestamp() { return Typestamp.privatizerEnd; }}}
 
 
 
