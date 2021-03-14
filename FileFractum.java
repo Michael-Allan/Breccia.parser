@@ -3,7 +3,7 @@ package Breccia.parser;
 
 /** A file fractum in Breccia.  This is an initial state.
   */
-public interface FileFractum extends Fractum, Markup {
+public @DataReflector interface FileFractum extends Fractum, Markup {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

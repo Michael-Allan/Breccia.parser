@@ -12,7 +12,7 @@ public interface Cursor {
     /** Returns the present parse state as an `AssociativeReference`,
       * or null if the cursor is not positioned at an associative reference.
       */
-    public @DataReflector AssociativeReference asAssociativeReference();
+    public AssociativeReference asAssociativeReference();
 
 
 
@@ -26,7 +26,7 @@ public interface Cursor {
     /** Returns the present parse state as a `BodyFractum`,
       * or null if the cursor is not positioned at a body fractum.
       */
-    public @DataReflector BodyFractum asBodyFractum();
+    public BodyFractum asBodyFractum();
 
 
 
@@ -40,7 +40,7 @@ public interface Cursor {
     /** Returns the present parse state as a `CommandPoint`,
       * or null if the cursor is not positioned at a command point.
       */
-    public @DataReflector CommandPoint asCommandPoint();
+    public CommandPoint asCommandPoint();
 
 
 
@@ -54,7 +54,7 @@ public interface Cursor {
     /** Returns the present parse state as a `Division`,
       * or null if the cursor is not positioned at a division.
       */
-    public @DataReflector Division asDivision();
+    public Division asDivision();
 
 
 
@@ -74,7 +74,7 @@ public interface Cursor {
     /** Returns the present parse state as a `FileFractum`,
       * or null if the cursor is not positioned at a file fractum.
       */
-    public @DataReflector FileFractum asFileFractum();
+    public FileFractum asFileFractum();
 
 
 
@@ -88,7 +88,7 @@ public interface Cursor {
     /** Returns the present parse state as a `Fractum`,
       * or null if the cursor is not positioned at a fractum.
       */
-    public @DataReflector Fractum asFractum();
+    public Fractum asFractum();
 
 
 
@@ -109,7 +109,7 @@ public interface Cursor {
     /** Returns the present parse state as a `PlainCommandPoint`,
       * or null if the cursor is not positioned at a plain command point.
       */
-    public @DataReflector PlainCommandPoint asPlainCommandPoint();
+    public PlainCommandPoint asPlainCommandPoint();
 
 
 
@@ -123,7 +123,7 @@ public interface Cursor {
     /** Returns the present parse state as a `PlainPoint`,
       * or null if the cursor is not positioned at a plain point.
       */
-    public @DataReflector PlainPoint asPlainPoint();
+    public PlainPoint asPlainPoint();
 
 
 
@@ -137,7 +137,7 @@ public interface Cursor {
     /** Returns the present parse state as a `Point`,
       * or null if the cursor is not positioned at a point.
       */
-    public @DataReflector Point asPoint();
+    public Point asPoint();
 
 
 
@@ -151,7 +151,7 @@ public interface Cursor {
     /** Returns the present parse state as a `Privatizer`,
       * or null if the cursor is not positioned at a privatizer.
       */
-    public @DataReflector Privatizer asPrivatizer();
+    public Privatizer asPrivatizer();
 
 
 
@@ -169,7 +169,7 @@ public interface Cursor {
       *     @throws NoSuchElementException If the present state
       *       {@linkplain ParseState#isFinal() is final}.
       */
-    public @DataReflector ParseState next() throws ParseError;
+    public ParseState next() throws ParseError;
 
 
 
@@ -196,7 +196,7 @@ public interface Cursor {
       * those with {@linkplain Typestamp dedicated typestamps}.  Abstract states are present only
       * as alternative views of concrete states.  Each is got through a dedicated `as` method.
       */
-    public @DataReflector ParseState state(); }
+    public ParseState state(); }
 
 
 

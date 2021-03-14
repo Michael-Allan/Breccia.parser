@@ -27,7 +27,7 @@ public @DataReflector interface Markup {
       * in which case the markup is given only as unparsed, {@linkplain #text() flat text} (T), or the
       * listed components cover the whole markup such that their concatenation is equal in content to T.
       */
-    public List<Markup> components();
+    public @DataReflector List<Markup> components();
 
 
 
@@ -55,7 +55,7 @@ public @DataReflector interface Markup {
 
     /** The flat text of the markup.
       */
-    public CharSequence text(); }
+    public @DataReflector CharSequence text(); }
 
 
                                                         // Copyright © 2021  Michael Allan.  Licence MIT.
