@@ -10,7 +10,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
   * Their content is apt to change with each new position of the markup cursor, so that
   * generally it is incorrect to hold an instance of the type between cursor positions.
   *
-  *     @see MarkupCursor
+  *     @see Cursor
   */
 public @Documented @Retention(SOURCE) @Target(TYPE_USE) @interface DataReflector {}
 

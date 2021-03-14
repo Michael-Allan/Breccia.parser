@@ -6,10 +6,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 
-/** A reusable, pull parser of Breccian files that operates as a unidirectional cursor over a series
-  * of discrete parse states.
+/** A cursor usable for multiple sources of markup.
   */
-public interface FileCursor extends MarkupCursor {
+public interface ReusableCursor extends Cursor {
 
 
     /** Positions the cursor on a new source of markup comprising a single file.  Sets the parse state

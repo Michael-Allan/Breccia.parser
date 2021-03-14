@@ -4,10 +4,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 
-/** A pull source of parsed markup that operates as a unidirectional cursor over a series
-  * of discrete parse states.
+/** A unidirectional cursor over a series of discrete states reflecting parsed markup.
   */
-public interface MarkupCursor {
+public interface Cursor {
 
 
     /** Returns the present parse state as an `AssociativeReference`,
