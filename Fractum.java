@@ -3,6 +3,8 @@ package Breccia.parser;
 
 /** A fractum of Breccia reflected as a parse state.  The reflection covers the markup
   * of the fractal head alone, leaving the body (if any) to be covered by future states.
+  * In the case of a file fractum (the only potentially headless case), any absence of a head
+  * will be indicated not by the absence of a parse state, but by empty content.
   */
 public @DataReflector interface Fractum extends Markup, ParseState {
 
