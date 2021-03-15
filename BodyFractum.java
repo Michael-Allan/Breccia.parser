@@ -6,6 +6,10 @@ package Breccia.parser;
 public @DataReflector interface BodyFractum extends Fractum {
 
 
+    public PerfectIndent perfectIndent();
+
+
+
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -28,7 +32,28 @@ public @DataReflector interface BodyFractum extends Fractum {
 
         /** Returns false.
           */
-        public default @Override boolean isFinal() { return false; }}}
+        public default @Override boolean isFinal() { return false; }}
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    public static @DataReflector interface PerfectIndent extends Markup {
+
+
+       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** Returns zero.
+          */
+        public default @Override int column() { return 0; }
+
+
+
+        /** The default implementation returns ‘PerfectIndent’.
+          */
+        public default @Override String tagName() { return "PerfectIndent"; }}}
 
 
 
