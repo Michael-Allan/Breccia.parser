@@ -20,79 +20,76 @@ package Breccia.parser;
 public class Typestamp {
 
 
-    private Typestamp() {}
+    protected Typestamp() {}
 
     // Declarations below are ordered by category of parse state such that switch statements omitting
     // one or more categories might nevertheless avoid a speed penalty owing to numeric gaps. [ISS]
 
 
 
-   // ━━━  I n i t i a l   a n d   f i n a l  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  F r a c t a l   s t a r t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** The lowest of the typestamps defined here.
       */
-    protected static final int minimum              = 0x00; // = ↓
+    protected static final int BrecciaMinimum       = 0x00; // = ↓
 
-
-
-    /** The typestamp of `Halt`.
-      */
-    public static final int halt                    = 0x00; // = ↑
-
-
-
-    /** The typestamp of `Empty`.
-      */
-    public static final int empty                   = 0x01; // ↓ contiguous with other normal states
-
-
-
-   // ┈┈┈  f r a c t a l  ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-
-
-    /** The typestamp of `FileFractum.End`.
-      */
-    public static final int fileFractumEnd          = 0x02;
-
-
-
-    /** The typestamp of `FileFractum`.
-      */
-    public static final int fileFractum             = 0x03; // ↓ contiguous with other fractal starts
-
-
-
-   // ━━━  F r a c t a l   s t a r t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** The typestamp of `AssociativeReference`.
       */
-    public static final int associativeReference    = 0x04;
+    public static final int associativeReference    = 0x00; // = ↑
 
 
 
     /** The typestamp of `Division`.
       */
-    public static final int division                = 0x05;
+    public static final int division                = 0x01;
 
 
 
     /** The typestamp of `PlainCommandPoint`.
       */
-    public static final int plainCommandPoint       = 0x06;
+    public static final int plainCommandPoint       = 0x02;
 
 
 
     /** The typestamp of `PlainPoint`.
       */
-    public static final int plainPoint              = 0x07;
+    public static final int plainPoint              = 0x03;
 
 
 
     /** The typestamp of `Privatizer`.
       */
-    public static final int privatizer              = 0x08;
+    public static final int privatizer              = 0x04;
+
+
+
+   // ━━━  I n i t i a l   a n d   f i n a l  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    /** The typestamp of `FileFractum`.
+      */
+    public static final int fileFractum             = 0x05; // ↑ contiguous with other fractal starts
+
+
+
+    /** The typestamp of `Empty`.
+      */
+    public static final int empty                   = 0x06; // ↑ contiguous with other normal states
+
+
+
+    /** The typestamp of `Halt`.
+      */
+    public static final int halt                    = 0x07;
+
+
+
+    /** The typestamp of `FileFractum.End`.
+      */
+    public static final int fileFractumEnd          = 0x08; // ↓ contiguous with other fractal ends
 
 
 
@@ -131,7 +128,7 @@ public class Typestamp {
 
     /** The highest of the typestamps defined here.
       */
-    protected static final int maximum              = 0x0d; } // = ↑
+    protected static final int BrecciaMaximum       = 0x0d; } // = ↑
 
 
 
@@ -148,9 +145,9 @@ public class Typestamp {
 //        https://docs.oracle.com/javase/specs/jls/se15/html/jls-14.html#jls-14.11.1
 //        https://docs.oracle.com/javase/specs/jls/se15/html/jls-4.html#jls-4.12.4
 //
-//   OPE  Optimized parser extensions.  Up to two non-branching series of optimized extension are
-//        supported, one decremental and one incremental.  For these, the present class declares
-//        the precise range of its typestamps to enable runtime tests as proof against conflict.
+//   OPE  Optimized parser extensions.  A single non-branching series of optimized extensions
+//        is supported, for which the present class declares the actual range of its typestamps.
+//        The next in the series is Waybrec Parser.  http://reluk.ca/project/wayic/Waybrec/parser/
 
 
 
