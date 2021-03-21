@@ -43,7 +43,7 @@ public @DataReflector interface Markup {
 
 
 
-    /** The tag name used by X-Breccia for the markup.
+    /** The tag name to be used by X-Breccia for the markup.
       *
       *     @see <a href='https://www.w3.org/TR/xml/#sec-starttags'>
       *       Start-tags, end-tags, and empty-element tags</a>
