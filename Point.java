@@ -28,6 +28,8 @@ public @DataReflector interface Point extends BodyFractum {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
+    /** The bullet of a point.
+      */
     public static @DataReflector interface Bullet extends Markup {
 
 
@@ -43,15 +45,17 @@ public @DataReflector interface Point extends BodyFractum {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
+    /** A point descriptor.
+      */
     public static @DataReflector interface Descriptor extends Markup {
 
 
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** The default implementation returns ‘Descriptor’.
+        /** The default implementation returns ‘PointDescriptor’.
           */
-        public default @Override String tagName() { return "Descriptor"; }}}
+        public default @Override String tagName() { return "PointDescriptor"; }}}
 
 
 
