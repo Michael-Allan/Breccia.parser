@@ -27,7 +27,7 @@ public @DataReflector interface Markup {
       * in which case the markup is given only as unparsed, {@linkplain #text() flat text} (T), or the
       * listed components cover the whole markup such that their concatenation is equal in content to T.
       */
-    public @DataReflector List<Markup> components();
+    public @DataReflector List<Markup> components() throws ParseError;
 
 
 
