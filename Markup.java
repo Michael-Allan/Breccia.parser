@@ -43,7 +43,9 @@ public @DataReflector interface Markup {
 
 
 
-    /** The tag name to be used by X-Breccia for this markup.
+    /** The tag name to be used by X-Breccia for this markup.  If the tag name is the generic ‘Markup’,
+      * however, then X-Breccia will formally ignore this markup and instead use its components,
+      * if it has any, otherwise its flat text.
       *
       *     @see <a href='https://www.w3.org/TR/xml/#sec-starttags'>
       *       Start-tags, end-tags, and empty-element tags</a>
