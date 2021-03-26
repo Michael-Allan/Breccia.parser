@@ -8,7 +8,7 @@ import java.util.List;
 public @DataReflector interface Markup {
 
 
-    /** Resolves the columnar offset at which the markup starts.  Columnar offsets are zero based
+    /** Resolves the columnar offset at which this markup starts.  Columnar offsets are zero based
       * and measured in terms of grapheme clusters, beginning with the first cluster of the line
       * at offset zero.
       *
@@ -23,7 +23,7 @@ public @DataReflector interface Markup {
 
 
 
-    /** A list in linear order of the parsed components of the markup.  Either the list is empty,
+    /** A list in linear order of the parsed components of this markup.  Either the list is empty,
       * in which case the markup is given only as unparsed, {@linkplain #text() flat text} (T), or the
       * listed components cover the whole markup such that their concatenation is equal in content to T.
       */
@@ -31,7 +31,7 @@ public @DataReflector interface Markup {
 
 
 
-    /** Resolves the ordinal number of the line in which the markup occurs, or starts.
+    /** Resolves the ordinal number of the line in which this markup occurs, or starts.
       * Lines are numbered beginning at one.
       *
       * <p>The return value of this method is considered adjunct state;
@@ -43,7 +43,7 @@ public @DataReflector interface Markup {
 
 
 
-    /** The tag name to be used by X-Breccia for the markup.
+    /** The tag name to be used by X-Breccia for this markup.
       *
       *     @see <a href='https://www.w3.org/TR/xml/#sec-starttags'>
       *       Start-tags, end-tags, and empty-element tags</a>
@@ -53,7 +53,7 @@ public @DataReflector interface Markup {
 
 
 
-    /** The flat text of the markup.
+    /** The flat text of this markup.
       */
     public @DataReflector CharSequence text(); }
 
