@@ -24,8 +24,9 @@ public @DataReflector interface Markup {
 
 
     /** A list in linear order of the parsed components of this markup.  Either the list is empty,
-      * in which case the markup is given only as unparsed, {@linkplain #text() flat text} (T), or the
-      * listed components cover the whole markup such that their concatenation is equal in content to T.
+      * in which case the markup is given only as unparsed, {@linkplain #text() flat text} (T),
+      * or the listed components cover the whole of the markup such that the concatenation
+      * of their own flat text is equal in content to T.
       */
     public @DataReflector List<Markup> components() throws ParseError;
 
@@ -43,9 +44,9 @@ public @DataReflector interface Markup {
 
 
 
-    /** The tag name to be used by X-Breccia for this markup.  If the tag name is the generic ‘Markup’,
-      * however, then X-Breccia will formally ignore this markup and instead use its components,
-      * if it has any, otherwise its flat text.
+    /** The tag name to be used by X-Breccia for encapsulating this markup as an XML element.  If the tag
+      * name is the generic ‘Markup’, however, then X-Breccia will not encapsulate this markup, but use
+      * instead the unencapsulated sequence of its components, if it has any, otherwise of its flat text.
       *
       *     @see <a href='https://www.w3.org/TR/xml/#sec-starttags'>
       *       Start-tags, end-tags, and empty-element tags</a>
