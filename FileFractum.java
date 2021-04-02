@@ -9,7 +9,7 @@ package Breccia.parser;
 public @DataReflector interface FileFractum extends Fractum, Markup {
 
 
-    /** @return The file descriptor, or null if there is none.
+    /** The file descriptor, or null if there is none.
       */
     public FileDescriptor descriptor();
 

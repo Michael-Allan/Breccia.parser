@@ -10,7 +10,7 @@ public @DataReflector interface Point extends BodyFractum {
 
 
 
-    /** @return The point descriptor, or null if there is none.
+    /** The point descriptor, or null if there is none.
       */
     public Descriptor descriptor();
 
