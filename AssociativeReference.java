@@ -2,8 +2,9 @@ package Breccia.parser;
 
 
 /** An associative reference in Breccia.
-  */
-public @DataReflector interface AssociativeReference extends CommandPoint {
+  *
+  */   @TagName("AssociativeReference") @DataReflector
+public interface AssociativeReference extends CommandPoint {
 
 
     public ImperativeClause imperativeClause();
@@ -32,25 +33,6 @@ public @DataReflector interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static @DataReflector interface ContainmentClause extends Markup {
-
-
-        public FractumIndicator fractumIndicator();
-
-
-
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-        /** The default implementation returns ‘ContainmentClause’.
-          */
-        public default @Override String tagName() { return "ContainmentClause"; }}
-
-
-
-   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-
-
     /** The end of an associative reference.
       */
     public static interface End extends CommandPoint.End {
@@ -69,7 +51,8 @@ public @DataReflector interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static @DataReflector interface ImperativeClause extends Markup {
+      @DataReflector @TagName("ImperativeClause")
+    public static interface ImperativeClause extends Markup {
 
 
         public ReferentClause referentClause();
@@ -88,10 +71,13 @@ public @DataReflector interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static @DataReflector interface InferentialReferentIndicator extends Markup {
+      @DataReflector @TagName("InferentialReferentIndicator")
+    public static interface InferentialReferentIndicator extends Markup {
 
 
-        public ContainmentClause containmentClause();
+        /** The fractum indicator of the containment clause, or null if no containment clause occurs.
+          */
+        public FractumIndicator fractumIndicator();
 
 
 
@@ -107,7 +93,8 @@ public @DataReflector interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    public static @DataReflector interface ReferentClause extends Markup {
+      @DataReflector @TagName("ReferentClause")
+    public static interface ReferentClause extends Markup {
 
 
         public FractumIndicator fractumIndicator();

@@ -2,8 +2,9 @@ package Breccia.parser;
 
 
 /** A privatizer in Breccia.
-  */
-public @DataReflector interface Privatizer extends CommandPoint {
+  *
+  */   @TagName("Privatizer") @DataReflector
+public interface Privatizer extends CommandPoint {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

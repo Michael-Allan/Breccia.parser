@@ -2,8 +2,17 @@ package Breccia.parser;
 
 
 /** An comment appender in Breccia.
-  */
-public @DataReflector interface CommentAppender extends CommentaryHolder {}
+  *
+  */   @TagName("CommentAppender") @DataReflector
+public interface CommentAppender extends CommentaryHolder {
+
+
+   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    /** The default implementation returns ‘CommentAppender’.
+      */
+    public default @Override String tagName() { return "CommentAppender"; }}
 
 
 

@@ -3,10 +3,11 @@ package Breccia.parser;
 import java.util.List;
 
 
-public @DataReflector interface FractumIndicator extends Markup {
+       @TagName("FractumIndicator") @DataReflector
+public interface FractumIndicator extends Markup {
 
 
-    public List<Pattern> patterns();
+    public List<@TagName("Pattern") Markup> patterns();
 
 
 

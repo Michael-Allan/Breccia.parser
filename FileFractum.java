@@ -5,13 +5,14 @@ package Breccia.parser;
   *
   * <p>In the case of a headless file fractum, the text and component list will be empty
   * and the line number will reflect the position of the body alone.</p>
-  */
-public @DataReflector interface FileFractum extends Fractum, Markup {
+  *
+  */   @TagName("FileFractum") @DataReflector
+public interface FileFractum extends Fractum, Markup {
 
 
     /** The file descriptor, or null if there is none.
       */
-    public FileDescriptor descriptor();
+    public @TagName("FileDescriptor") Markup descriptor();
 
 
 
@@ -58,24 +59,7 @@ public @DataReflector interface FileFractum extends Fractum, Markup {
 
         /** The default implementation returns {@linkplain Typestamp#fileFractumEnd fileFractumEnd}.
           */
-        public default @Override int typestamp() { return Typestamp.fileFractumEnd; }}
-
-
-
-   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-
-
-    /** A file descriptor.
-      */
-    public static @DataReflector interface FileDescriptor extends Markup {
-
-
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-        /** The default implementation returns ‘FileDescriptor’.
-          */
-        public default @Override String tagName() { return "FileDescriptor"; }}}
+        public default @Override int typestamp() { return Typestamp.fileFractumEnd; }}}
 
 
 

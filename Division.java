@@ -2,8 +2,9 @@ package Breccia.parser;
 
 
 /** A division fractum in Breccia.
-  */
-public @DataReflector interface Division extends BodyFractum {
+  *
+  */   @TagName("Division") @DataReflector
+public interface Division extends BodyFractum {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

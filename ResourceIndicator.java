@@ -1,7 +1,8 @@
 package Breccia.parser;
 
 
-public @DataReflector interface ResourceIndicator extends Markup {
+       @TagName("ResourceIndicator") @DataReflector
+public interface ResourceIndicator extends Markup {
 
 
     public boolean isFractal();

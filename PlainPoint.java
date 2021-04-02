@@ -2,8 +2,9 @@ package Breccia.parser;
 
 
 /** A plain point in Breccia.
-  */
-public @DataReflector interface PlainPoint extends Point {
+  *
+  */   @TagName("PlainPoint") @DataReflector
+public interface PlainPoint extends Point {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

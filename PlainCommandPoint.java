@@ -2,8 +2,9 @@ package Breccia.parser;
 
 
 /** A command point of a type undefined by Breccia.
-  */
-public @DataReflector interface PlainCommandPoint extends CommandPoint {
+  *
+  */   @TagName("PlainCommandPoint") @DataReflector
+public interface PlainCommandPoint extends CommandPoint {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -51,6 +51,7 @@ public @DataReflector interface Markup {
       *     @see <a href='https://www.w3.org/TR/xml/#sec-starttags'>
       *       Start-tags, end-tags, and empty-element tags</a>
       *     @see <a href='http://reluk.ca/project/Breccia/XML/'>X-Breccia</a>
+      *     @see TagName
       */
     public String tagName();
 
