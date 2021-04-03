@@ -24,11 +24,11 @@ public @DataReflector interface Markup {
 
 
     /** A list in linear order of the parsed components of this markup.  Either the list is empty,
-      * in which case the markup is given only as unparsed, {@linkplain #text() flat text} (T),
+      * in which case the markup is given only as its unparsed, {@linkplain #text() flat text} (T),
       * or the listed components cover the whole of the markup such that the concatenation
-      * of their own flat text is equal in content to T.
+      * of their *own* flat text is equal in content to T.
       */
-    public @DataReflector List<Markup> components() throws ParseError;
+    public @DataReflector List<? extends Markup> components() throws ParseError;
 
 
 

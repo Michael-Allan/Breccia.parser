@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** An comment appender in Breccia.
+/** A comment appender in Breccia.
   *
   */   @TagName("CommentAppender") @DataReflector
 public interface CommentAppender extends CommentaryHolder {
