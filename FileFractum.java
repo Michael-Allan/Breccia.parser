@@ -19,6 +19,12 @@ public interface FileFractum extends Fractum, Markup {
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
+    /** Returns 1: a file fractum begins with the first line of its files.
+      */
+    public @Override int lineNumber();
+
+
+
     /** The default implementation returns ‘FileFractum’.
       */
     public default @Override String tagName() { return "FileFractum"; }
