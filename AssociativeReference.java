@@ -71,22 +71,22 @@ public interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-      @DataReflector @TagName("InferentialReferentIndicator")
-    public static interface InferentialReferentIndicator extends Markup {
+      @DataReflector @TagName("InferentialReferentIndicant")
+    public static interface InferentialReferentIndicant extends Markup {
 
 
-        /** The fractum indicator of the containment clause, or null if no containment clause occurs.
+        /** The fractum indicant of the containment clause, or null if no containment clause occurs.
           */
-        public FractumIndicator fractumIndicator();
+        public FractumIndicant fractumIndicant();
 
 
 
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** The default implementation returns ‘InferentialReferentIndicator’.
+        /** The default implementation returns ‘InferentialReferentIndicant’.
           */
-        public default @Override String tagName() { return "InferentialReferentIndicator"; }}
+        public default @Override String tagName() { return "InferentialReferentIndicant"; }}
 
 
 
@@ -97,11 +97,11 @@ public interface AssociativeReference extends CommandPoint {
     public static interface ReferentClause extends Markup {
 
 
-        public FractumIndicator fractumIndicator();
+        public FractumIndicant fractumIndicant();
 
 
 
-        public InferentialReferentIndicator inferentialReferentIndicator();
+        public InferentialReferentIndicant inferentialReferentIndicant();
 
 
 

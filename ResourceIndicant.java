@@ -1,8 +1,8 @@
 package Breccia.parser;
 
 
-       @TagName("ResourceIndicator") @DataReflector
-public interface ResourceIndicator extends Markup {
+       @TagName("ResourceIndicant") @DataReflector
+public interface ResourceIndicant extends Markup {
 
 
     public boolean isFractal();
@@ -16,9 +16,9 @@ public interface ResourceIndicator extends Markup {
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** The default implementation returns ‘ResourceIndicator’.
+    /** The default implementation returns ‘ResourceIndicant’.
       */
-    public default @Override String tagName() { return "ResourceIndicator"; }}
+    public default @Override String tagName() { return "ResourceIndicant"; }}
 
 
 
