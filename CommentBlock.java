@@ -40,6 +40,16 @@ public interface CommentBlock extends Markup {
     public static interface Line extends CommentaryHolder {
 
 
+       // ━━━  C o m m e n t a r y   H o l d e r  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** {@inheritDoc}
+          * Its tag name in case of a comment-block label is ‘Label’, otherwise it is ‘Commentary’.
+          */
+        public @Override @TagName("Commentary or Label") Markup commentary();
+
+
+
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
