@@ -11,7 +11,6 @@ public @DataReflector interface Point extends BodyFractum {
 
 
     /** The point descriptor, or null if there is none.
-      *
       */
     public @TagName("Descriptor") Markup descriptor();
 
