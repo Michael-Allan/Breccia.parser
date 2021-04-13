@@ -36,33 +36,51 @@ public class Typestamp {
 
 
 
+    /** The typestamp of `AlarmPoint`.
+      */
+    public static final int alarmPoint              = 0x00; // = ↑
+
+
+
+    /** The typestamp of `AsidePoint`.
+      */
+    public static final int asidePoint              = 0x01;
+
+
+
     /** The typestamp of `AssociativeReference`.
       */
-    public static final int associativeReference    = 0x00; // = ↑
+    public static final int associativeReference    = 0x02;
 
 
 
     /** The typestamp of `Division`.
       */
-    public static final int division                = 0x01;
+    public static final int division                = 0x03;
 
 
 
     /** The typestamp of `PlainCommandPoint`.
       */
-    public static final int plainCommandPoint       = 0x02;
+    public static final int plainCommandPoint       = 0x04;
 
 
 
     /** The typestamp of `PlainPoint`.
       */
-    public static final int plainPoint              = 0x03;
+    public static final int plainPoint              = 0x05;
 
 
 
     /** The typestamp of `Privatizer`.
       */
-    public static final int privatizer              = 0x04;
+    public static final int privatizer              = 0x06;
+
+
+
+    /** The typestamp of `TaskPoint`.
+      */
+    public static final int taskPoint               = 0x07;
 
 
 
@@ -71,64 +89,82 @@ public class Typestamp {
 
     /** The typestamp of `FileFractum`.
       */
-    public static final int fileFractum             = 0x05; // ↑ contiguous with other fractal starts
+    public static final int fileFractum             = 0x08; // ↑ contiguous with other fractal starts
 
 
 
     /** The typestamp of `Empty`.
       */
-    public static final int empty                   = 0x06; // ↑ contiguous with other normal states
+    public static final int empty                   = 0x09; // ↑ contiguous with other normal states
 
 
 
     /** The typestamp of `Halt`.
       */
-    public static final int halt                    = 0x07;
+    public static final int halt                    = 0x0a;
 
 
 
     /** The typestamp of `FileFractum.End`.
       */
-    public static final int fileFractumEnd          = 0x08; // ↓ contiguous with other fractal ends
+    public static final int fileFractumEnd          = 0x0b; // ↓ contiguous with other fractal ends
 
 
 
    // ━━━  F r a c t a l   e n d  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
+    /** The typestamp of `AlarmPoint.End`.
+      */
+    public static final int alarmPointEnd           = 0x0c;
+
+
+
+    /** The typestamp of `AsidePoint.End`.
+      */
+    public static final int asidePointEnd           = 0x0d;
+
+
+
     /** The typestamp of `AssociativeReference.End`.
       */
-    public static final int associativeReferenceEnd = 0x09;
+    public static final int associativeReferenceEnd = 0x0e;
 
 
 
     /** The typestamp of `Division.End`.
       */
-    public static final int divisionEnd             = 0x0a;
+    public static final int divisionEnd             = 0x0f;
 
 
 
     /** The typestamp of `PlainCommandPoint.End`.
       */
-    public static final int plainCommandPointEnd    = 0x0b;
+    public static final int plainCommandPointEnd    = 0x10;
 
 
 
     /** The typestamp of `PlainPoint.End`.
       */
-    public static final int plainPointEnd           = 0x0c;
+    public static final int plainPointEnd           = 0x11;
 
 
 
     /** The typestamp of `Privatizer.End`.
       */
-    public static final int privatizerEnd           = 0x0d;   // = ↓
+    public static final int privatizerEnd           = 0x12;
+
+
+
+    /** The typestamp of `TaskPoint.End`.
+      */
+    public static final int taskPointEnd            = 0x13;   // = ↓
 
 
 
     /** The highest of the typestamps defined here.
       */
-    protected static final int BrecciaMaximum       = 0x0d; } // = ↑
+    protected static final int BrecciaMaximum       = 0x13; } // = ↑
 
 
 

@@ -13,6 +13,34 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 public interface Cursor {
 
 
+    /** Returns the present parse state as a `AlarmPoint`,
+      * or null if the cursor is not positioned at an alarm point.
+      */
+    public @NarrowNot AlarmPoint asAlarmPoint();
+
+
+
+    /** Returns the present parse state as a `AlarmPoint.End`,
+      * or null if the cursor is not positioned at the end of an alarm point.
+      */
+    public @NarrowNot AlarmPoint.End asAlarmPointEnd();
+
+
+
+    /** Returns the present parse state as a `AsidePoint`,
+      * or null if the cursor is not positioned at an aside point.
+      */
+    public @NarrowNot AsidePoint asAsidePoint();
+
+
+
+    /** Returns the present parse state as a `AsidePoint.End`,
+      * or null if the cursor is not positioned at the end of an aside point.
+      */
+    public @NarrowNot AsidePoint.End asAsidePointEnd();
+
+
+
     /** Returns the present parse state as an `AssociativeReference`,
       * or null if the cursor is not positioned at an associative reference.
       */
@@ -163,6 +191,20 @@ public interface Cursor {
       * or null if the cursor is not positioned at the end of a privatizer.
       */
     public @NarrowNot Privatizer.End asPrivatizerEnd();
+
+
+
+    /** Returns the present parse state as a `TaskPoint`,
+      * or null if the cursor is not positioned at a task point.
+      */
+    public @NarrowNot TaskPoint asTaskPoint();
+
+
+
+    /** Returns the present parse state as a `TaskPoint.End`,
+      * or null if the cursor is not positioned at the end of a task point.
+      */
+    public @NarrowNot TaskPoint.End asTaskPointEnd();
 
 
 
