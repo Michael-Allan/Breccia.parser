@@ -7,7 +7,19 @@ package Breccia.parser;
 public interface AssociativeReference extends CommandPoint {
 
 
-    public ImperativeClause imperativeClause();
+    /** The referent clause, or null if there is none.
+      */
+    public ReferentClause referentClause();
+
+
+
+    public @TagName("ReferentialCommand") Markup referentialCommand();
+
+
+
+    /** The referrer clause, or null if there is none.
+      */
+    public ReferrerClause referrerClause();
 
 
 
@@ -45,26 +57,6 @@ public interface AssociativeReference extends CommandPoint {
           * {@linkplain Typestamp#associativeReferenceEnd associativeReferenceEnd}.
           */
         public default @Override int typestamp() { return Typestamp.associativeReferenceEnd; }}
-
-
-
-   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-
-
-      @DataReflector @TagName("ImperativeClause")
-    public static interface ImperativeClause extends Markup {
-
-
-        public ReferentClause referentClause();
-
-
-
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-        /** The default implementation returns ‘ImperativeClause’.
-          */
-        public default @Override String tagName() { return "ImperativeClause"; }}
 
 
 
@@ -110,7 +102,27 @@ public interface AssociativeReference extends CommandPoint {
 
         /** The default implementation returns ‘ReferentClause’.
           */
-        public default @Override String tagName() { return "ReferentClause"; }}}
+        public default @Override String tagName() { return "ReferentClause"; }}
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+      @DataReflector @TagName("ReferrerClause")
+    public static interface ReferrerClause extends Markup {
+
+
+        public @TagName("Pattern") Markup pattern();
+
+
+
+       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** The default implementation returns ‘ReferrerClause’.
+          */
+        public default @Override String tagName() { return "ReferrerClause"; }}}
 
 
 
