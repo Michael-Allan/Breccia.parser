@@ -44,7 +44,7 @@ public interface Cursor {
     /** Returns the present parse state as an `AssociativeReference`,
       * or null if the cursor is not positioned at an associative reference.
       */
-    public @NarrowNot AssociativeReference asAssociativeReference();
+    public @NarrowNot AssociativeReference asAssociativeReference() throws ParseError;
 
 
 
