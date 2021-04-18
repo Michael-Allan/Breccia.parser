@@ -73,6 +73,18 @@ public interface AssociativeReference extends CommandPoint {
 
 
 
+        /** The referential form, or null if none is declared.
+          */
+        public @TagName("ReferentialForm") Markup referentialForm();
+
+
+
+        /** The referrer similarity, or null if none is declared.
+          */
+        public @TagName("ReferrerSimilarity") Markup referrerSimilarity();
+
+
+
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -89,10 +101,18 @@ public interface AssociativeReference extends CommandPoint {
     public static interface ReferentClause extends Markup {
 
 
+        /** The fractum indicant, or null if instead an inferential referent indicant is present.
+          *
+          *     @see #inferentialReferentIndicant()
+          */
         public FractumIndicant fractumIndicant();
 
 
 
+        /** The inferential referent indicant, or null if instead a fractum indicant is present.
+          *
+          *     @see #fractumIndicant()
+          */
         public InferentialReferentIndicant inferentialReferentIndicant();
 
 

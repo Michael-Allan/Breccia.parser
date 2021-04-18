@@ -7,10 +7,18 @@ import java.util.List;
 public interface FractumIndicant extends Markup {
 
 
+    /** The pattern list, or null if alone a resource indicant is present.
+      *
+      *     @see #resourceIndicant()
+      */
     public List<@TagName("Pattern") Markup> patterns();
 
 
 
+    /** The resourceIndicant, or null if one or more patterns alone are present.
+      *
+      *     @see #patterns()
+      */
     public ResourceIndicant resourceIndicant();
 
 
