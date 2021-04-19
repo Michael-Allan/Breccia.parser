@@ -9,7 +9,7 @@ public interface ResourceIndicant extends Markup {
 
 
 
-    public Markup reference();
+    public @TagName("Reference") Markup reference();
 
 
 
