@@ -5,11 +5,15 @@ package Breccia.parser;
   * is to support efficient conditional branching in comprehensive switch statements, those which cover
   * more-or-less all possible cases.  This class defines one typestamp for each of a) the fractal types
   * the parser treats as concrete, b) their corresponding end states, and c) the empty and halt states.
-  * The parser treats as concrete all types defined as such by Breccia except for jointers and pointers
-  * whose parent type (associative reference) the parser treats as concrete, and they as variants of it.
+  * The parser treats as concrete all types so defined by Breccia except for jointers and pointers, whose
+  * parent type (associative reference) the parser instead treats as concrete and they as variants of it.
   * Further it treats as concrete one type undefined by Breccia, that of a plain command point.
   *
   * <p>Parser extensions may define their own typestamps outside the range of 0 to 65,535.</p>
+  *
+  * <p>Speed is the reason for treating associative references as concrete.  Doing so allows resolution
+  *  of jointers and pointers, which may entail elaborate postgap parsing (e.g. between `re` and `join`),
+  *  to be deferred pending user demand (as opposed to being an drag on initial reification).</p>
   *
   *     @see ParseState#typestamp() *//*
   *
