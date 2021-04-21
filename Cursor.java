@@ -8,7 +8,12 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 
-/** A unidirectional cursor over a series of discrete states reflecting parsed markup.
+/** A unidirectional cursor over a series of discrete states reflecting parsed markup.  It affords two
+  * methods of type testing the present parse state.  One is offered through the various `as` getters,
+  * which present rich, DOM-like reflections of state composition for both abstract and concrete types.
+  * The other method is a simple test of `{@linkplain #state() state}.typestamp`, which covers concrete
+  * types alone.  Where speed matters, the latter will in some cases be faster, as it omits any deferred
+  * parsing of state components.
   */
 public interface Cursor {
 
@@ -240,7 +245,7 @@ public interface Cursor {
 
     /** The concrete parse state at the current position in the markup.  Concrete states alone occur,
       * those with {@linkplain Typestamp dedicated typestamps}.  Abstract states are present only
-      * as alternative views of concrete states.  Each is got through a dedicated `as` method.
+      * as alternative views of concrete states.  Each is got through a dedicated `as` getter.
       */
     public @NarrowNot ParseState state();
 
