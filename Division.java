@@ -1,5 +1,7 @@
 package Breccia.parser;
 
+import java.util.List;
+
 
 /** A division fractum in Breccia.
   *
@@ -8,6 +10,10 @@ public interface Division extends BodyFractum {
 
 
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+    public @Override List<? extends DividerSegment> components() throws ParseError;
+
 
 
     /** The default implementation returns ‘Division’.
