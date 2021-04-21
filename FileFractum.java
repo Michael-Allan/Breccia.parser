@@ -10,16 +10,10 @@ package Breccia.parser;
 public interface FileFractum extends Fractum, Markup {
 
 
-    /** The file descriptor, or null if there is none.
-      */
-    public @TagName("FileDescriptor") Markup descriptor();
-
-
-
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** Returns 1: a file fractum begins with the first line of its files.
+    /** Returns 1: a file fractum begins with the first line of its file.
       */
     public @Override int lineNumber();
 
