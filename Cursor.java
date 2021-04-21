@@ -13,28 +13,28 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 public interface Cursor {
 
 
-    /** Returns the present parse state as a `AlarmPoint`,
+    /** Returns the present parse state as an `AlarmPoint`,
       * or null if the cursor is not positioned at an alarm point.
       */
     public @NarrowNot AlarmPoint asAlarmPoint();
 
 
 
-    /** Returns the present parse state as a `AlarmPoint.End`,
+    /** Returns the present parse state as an `AlarmPoint.End`,
       * or null if the cursor is not positioned at the end of an alarm point.
       */
     public @NarrowNot AlarmPoint.End asAlarmPointEnd();
 
 
 
-    /** Returns the present parse state as a `AsidePoint`,
+    /** Returns the present parse state as an `AsidePoint`,
       * or null if the cursor is not positioned at an aside point.
       */
     public @NarrowNot AsidePoint asAsidePoint();
 
 
 
-    /** Returns the present parse state as a `AsidePoint.End`,
+    /** Returns the present parse state as an `AsidePoint.End`,
       * or null if the cursor is not positioned at the end of an aside point.
       */
     public @NarrowNot AsidePoint.End asAsidePointEnd();
