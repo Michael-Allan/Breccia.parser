@@ -11,6 +11,7 @@ public @DataReflector interface CommandPoint extends Point {
     /** The set of command modifiers.
       */
     public @DataReflector Set<Modifier> modifierSet();
+      // Cf. `ResourceIndicant.qualifiers`, whose form enables easier extension.
 
 
 

@@ -1,15 +1,19 @@
 package Breccia.parser;
 
+import java.util.List;
+
 
        @TagName("ResourceIndicant") @DataReflector
 public interface ResourceIndicant extends Markup {
 
 
-    public boolean isFractal();
-
-
-
     public @TagName("Reference") Markup reference();
+
+
+
+    /** A list of the qualifiers of this indicant.
+      */
+    public @DataReflector List<String> qualifiers();
 
 
 
