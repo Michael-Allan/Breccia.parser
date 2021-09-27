@@ -8,6 +8,12 @@ import java.util.Set;
 public @DataReflector interface CommandPoint extends Point {
 
 
+    /** The appendage clause, or null if there is none.
+      */
+    public AppendageClause appendageClause() throws ParseError;
+
+
+
     /** The set of command modifiers.
       */
     public @DataReflector Set<Modifier> modifierSet();
@@ -15,12 +21,31 @@ public @DataReflector interface CommandPoint extends Point {
 
 
 
-   // ━━━  P o i n t  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** The point descriptor.
-      */
-    public @Override Markup descriptor();
+      @DataReflector @TagName("AppendageClause")
+    public static interface AppendageClause extends Markup {
+
+
+        /** The appendage itself.
+          */
+        public @TagName("Appendage") Markup appendage();
+
+
+
+        /** The colon ‘:’ that delimits the appendage.
+          */
+        public @TagName("Delimiter") Markup delimiter();
+
+
+
+       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** The default implementation returns ‘AppendageClause’.
+          */
+        public default @Override String tagName() { return "AppendageClause"; }}
 
 
 
