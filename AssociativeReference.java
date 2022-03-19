@@ -133,7 +133,7 @@ public interface AssociativeReference extends CommandPoint {
     public static interface ReferrerClause extends Markup {
 
 
-        public @TagName("Pattern") Markup pattern();
+        public PatternMatcher patternMatcher();
 
 
 
@@ -146,4 +146,4 @@ public interface AssociativeReference extends CommandPoint {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.

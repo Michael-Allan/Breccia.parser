@@ -7,17 +7,17 @@ import java.util.List;
 public interface FractumIndicant extends Markup {
 
 
-    /** The pattern series, or null if alone a resource indicant is present.
+    /** The pattern-matcher series, or null if a resource indicant alone is present.
       *
       *     @see #resourceIndicant()
       */
-    public List<@TagName("Pattern") ? extends Markup> patterns();
+    public List<? extends PatternMatcher> patternMatchers();
 
 
 
-    /** The resourceIndicant, or null if a pattern series alone is present.
+    /** The resourceIndicant, or null if a pattern-matcher series alone is present.
       *
-      *     @see #patterns()
+      *     @see #patternMatchers()
       */
     public ResourceIndicant resourceIndicant();
 
@@ -32,4 +32,4 @@ public interface FractumIndicant extends Markup {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
