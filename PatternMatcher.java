@@ -5,6 +5,12 @@ package Breccia.parser;
 public interface PatternMatcher extends Markup {
 
 
+    /** The series of match modifiers, or null if none is present.
+      */
+    public @TagName("MatchModifiers") Markup matchModifiers();
+
+
+
     public @TagName("Pattern") Markup pattern();
 
 
