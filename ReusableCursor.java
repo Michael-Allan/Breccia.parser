@@ -18,8 +18,8 @@ public interface ReusableCursor extends Cursor {
 
 
 
-    /** Parses the markup of the given source file, feeding each parse state to `sink`
-      * till all are exhausted.  Calling this method will abort any parse already in progress.
+    /** Parses the markup of the given source file, feeding each parse state to `sink` till all are
+      * exhausted.  Calling this method will start a new parse, aborting any already in progress.
       */
     public void perState( Path sourceFile, Consumer<ParseState> sink ) throws ParseError;
 
@@ -27,10 +27,10 @@ public interface ReusableCursor extends Cursor {
 
     /** Parses the markup of the given source file, feeding each parse state to `sink`
       * till either all are exhausted or `sink` returns false.  Calling this method
-      * will abort any parse already in progress.
+      * will start a new parse, aborting any already in progress.
       */
     public void perStateConditionally( Path sourceFile, Predicate<ParseState> sink ) throws ParseError; }
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
