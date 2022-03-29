@@ -12,8 +12,8 @@ package Breccia.parser;
   * <p>Parser extensions may define their own typestamps outside the range of 0 to 65,535.</p>
   *
   * <p>Speed is the reason for treating associative references as concrete.  Doing so allows resolution
-  *  of jointers and pointers, which may entail elaborate postgap parsing (e.g. between `re` and `join`),
-  *  to be deferred pending user demand (as opposed to being an drag on initial reification).</p>
+  *  of jointers and pointers (which may entail elaborate postgap parsing, e.g. between `re` and `join`)
+  *  to be deferred pending user demand, rather than being a drag on initial reification.</p>
   *
   *     @see ParseState#typestamp() *//*
   *
