@@ -63,7 +63,7 @@ public @DataReflector interface CommandPoint extends Point {
 
     /** A command modifier.
       */
-    public static enum Modifier { privately; }}
+    public static enum Modifier { privately }}
 
 
 

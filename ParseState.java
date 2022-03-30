@@ -45,7 +45,7 @@ public interface ParseState {
 
 
 
-        fractalEnd; }}
+        fractalEnd }}
 
 
 
