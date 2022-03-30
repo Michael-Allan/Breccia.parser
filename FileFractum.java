@@ -3,7 +3,7 @@ package Breccia.parser;
 
 /** A file fractum in Breccia.  This is an initial state.
   *
-  * <p>In the case of a headless file fractum, the text and component list will be empty
+  * <p>In the case of a headless file fractum, both the component list and text will be empty
   * and the line number will reflect the position of the body alone.</p>
   *
   */   @TagName("FileFractum") @DataReflector
@@ -63,4 +63,4 @@ public interface FileFractum extends Fractum, Markup {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
