@@ -8,12 +8,10 @@ import java.util.List;
 public @DataReflector interface Markup {
 
 
-    /** Resolves the columnar offset at which this markup starts.  Columnar offsets are zero based
-      * and measured in terms of grapheme clusters, beginning with the first cluster of the line
-      * at offset zero.
+    /** Resolves the {@linkplain Java.CharacterPointer#column columnar offset}
+      * at which this markup starts.
       *
-      * <p>The return value of this method is considered adjunct state;
-      * implementations need not cache it, but may redetermine it anew on each call.</p>
+      * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
       *
       *     @see #lineNumber()
       *     @see <a href='https://unicode.org/reports/tr29/'>
@@ -35,8 +33,7 @@ public @DataReflector interface Markup {
     /** Resolves the ordinal number of the line in which this markup occurs, or starts.
       * Lines are numbered beginning at one.
       *
-      * <p>The return value of this method is considered adjunct state;
-      * implementations need not cache it, but may redetermine it anew on each call.</p>
+      * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
       *
       *     @see #column()
       */
@@ -60,4 +57,4 @@ public @DataReflector interface Markup {
     public @DataReflector CharSequence text(); }
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
