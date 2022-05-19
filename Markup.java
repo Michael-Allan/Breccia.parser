@@ -54,7 +54,14 @@ public @DataReflector interface Markup {
 
     /** The flat text of this markup.
       */
-    public @DataReflector CharSequence text(); }
+    public @DataReflector CharSequence text();
+
+
+
+    /** The offset in UTF-16 code units from the start of the markup source.
+      */
+    public int xunc(); }
+
 
 
                                                    // Copyright © 2021-2022  Michael Allan.  Licence MIT.

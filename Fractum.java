@@ -9,6 +9,23 @@ package Breccia.parser;
 public @DataReflector interface Fractum extends Markup, ParseState {
 
 
+    /** The number of text lines in the fractal head.
+      */
+    public int lineCount();
+
+
+
+    /** The offset of the end boundary of the given line of the fractal head as measured in UTF-16
+      * code units from the start of the markup source.  This is either the offset of the first
+      * character of the succeeding line, or that of the end boundary of the markup source.
+      *
+      *     @throws IndexOutOfBoundsException Unless `index` is greater than or equal to zero
+      *       and less than `{@linkplain #lineCount() lineCount}`.
+      */
+    public int xuncLineEnd( int index );
+
+
+
    // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -56,4 +73,4 @@ public @DataReflector interface Fractum extends Markup, ParseState {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
