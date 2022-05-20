@@ -14,8 +14,6 @@ public @DataReflector interface Markup {
       * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
       *
       *     @see #lineNumber()
-      *     @see <a href='https://unicode.org/reports/tr29/'>
-      *       Grapheme clusters in Unicode text segmentation</a>
       */
     public int column();
 
@@ -60,7 +58,7 @@ public @DataReflector interface Markup {
 
     /** The offset in UTF-16 code units from the start of the markup source.
       */
-    public int xunc(); }
+    public int xunc(); } // Whereby the coinage ‘bunc’ for UTF-8, and ‘unc’ for full characters.
 
 
 
