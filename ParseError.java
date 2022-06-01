@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** A parse error.  Any occurence puts the parser into an error state.
+/** A parse error.  Any occurrence puts the parser into an error state.
   *
   *     @see Halt
   */
