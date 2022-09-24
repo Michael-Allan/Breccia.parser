@@ -5,7 +5,7 @@ package Breccia.parser;
 public interface DividerSegment extends Markup {
 
 
-    public Markup perfectIndent();
+    public @TagName("PerfectIndent") Markup perfectIndent();
 
 
 
@@ -24,4 +24,4 @@ public interface DividerSegment extends Markup {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.

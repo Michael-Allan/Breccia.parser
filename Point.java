@@ -16,7 +16,7 @@ public @DataReflector interface Point extends BodyFractum {
 
 
 
-    public Markup perfectIndent();
+    public @TagName("PerfectIndent") Markup perfectIndent();
 
 
 
