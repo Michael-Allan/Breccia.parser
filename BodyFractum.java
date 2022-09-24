@@ -6,10 +6,6 @@ package Breccia.parser;
 public @DataReflector interface BodyFractum extends Fractum {
 
 
-    public Markup perfectIndent();
-
-
-
    // ━━━  P a r s e   S t a t e  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -36,4 +32,4 @@ public @DataReflector interface BodyFractum extends Fractum {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
