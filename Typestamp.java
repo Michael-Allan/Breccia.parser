@@ -88,7 +88,7 @@ public class Typestamp {
 
 
 
-   // ━━━  I n i t i a l   a n d   f i n a l  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  I n i t i a l   o r   f i n a l  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** The typestamp of `FileFractum`.
@@ -191,4 +191,4 @@ public class Typestamp {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
