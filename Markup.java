@@ -1,11 +1,32 @@
 package Breccia.parser;
 
+import Java.CharacterPointer;
 import java.util.List;
 
 
 /** A reflector of parsed markup.
   */
 public @DataReflector interface Markup {
+
+
+    /** Makes a pointer to the first character of this markup.
+      *
+      * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
+      *
+      *     @param c The offset in the {@linkplain #text() text} of the character to point to.
+      */
+    public default CharacterPointer characterPointer() { return characterPointer( 0 ); }
+
+
+
+    /** Makes a pointer to a character of this markup.
+      *
+      * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
+      *
+      *     @param c The offset of the character in the {@linkplain #text() text}.
+      */
+    public CharacterPointer characterPointer( int c );
+
 
 
     /** Resolves the {@linkplain Java.CharacterPointer#column columnar offset}
@@ -58,7 +79,7 @@ public @DataReflector interface Markup {
 
     /** The offset in UTF-16 code units from the start of the markup source.
       */
-    public int xunc(); } // Whereby the coinage ‘bunc’ for UTF-8, and ‘unc’ for full characters.
+    public int xunc(); } // Implying the coinage of ‘bunc’ for UTF-8, and ‘unc’ for full characters.
 
 
 
