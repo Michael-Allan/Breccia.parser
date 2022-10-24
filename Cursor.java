@@ -136,8 +136,7 @@ public interface Cursor {
 
 
 
-    /** Returns the present parse state as `Halt`,
-      * or null if this cursor is not halted.
+    /** Returns the present parse state as `Halt`, or null if this cursor is not halted.
       */
     public @NarrowNot Halt asHalt();
 
