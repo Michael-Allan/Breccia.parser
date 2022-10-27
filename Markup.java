@@ -79,7 +79,8 @@ public @DataReflector interface Markup {
 
     /** The offset in UTF-16 code units from the start of the markup source.
       */
-    public int xunc(); } // Implying the coinage of ‘bunc’ for UTF-8, and ‘unc’ for full characters.
+    public int xunc(); } /* Here ‘x’ stands for hexadecimal, which suggests the coinage
+      of ‘bunc’ for UTF-8 and ‘unc’ for full characters. */
 
 
 

@@ -19,6 +19,7 @@ public @DataReflector interface Fractum extends Markup, ParseState {
       * code units from the start of the markup source.  This is either the offset of the first
       * character of the succeeding line, or that of the end boundary of the markup source.
       *
+      *     @param index The zero-based index of the line within the fractal head.
       *     @throws IndexOutOfBoundsException Unless `index` is greater than or equal to zero
       *       and less than `{@linkplain #lineCount() lineCount}`.
       */
