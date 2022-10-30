@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** A parse error.  Any occurrence puts the parser into an error state.
+/** A parse error.  Any occurrence puts the parser into a halt state.
   *
   *     @see Halt
   */
@@ -24,4 +24,4 @@ public abstract class ParseError extends Exception {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.

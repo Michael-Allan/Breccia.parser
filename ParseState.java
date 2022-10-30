@@ -1,10 +1,10 @@
 package Breccia.parser;
 
 
-/** A discrete state of a Breccian pull parser.
-  * The initial state for each markup source is either `{@linkplain FileFractum FileFractum}`,
-  * for which the final state is `{@linkplain FileFractum.End FileFractum.End}`;
-  * or `{@linkplain Empty Empty}`, which is both initial and final state.
+/** A discrete state of a Breccian pull parser.  The initial state for each markup source is either
+  * `{@linkplain Empty Empty}` (which is also its final state) or `{@linkplain FileFractum FileFractum}`.
+  * The final state is one of `{@linkplain Empty Empty}`, `{@linkplain FileFractum.End FileFractum.End}`
+  * or `{@linkplain Halt Halt}`.
   */
 public interface ParseState {
 
