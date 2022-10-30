@@ -15,7 +15,7 @@ public interface FileFractum extends Fractum, Markup {
 
     /** Returns 1: a file fractum begins with the first line of its file.
       */
-    public @Override int lineNumber();
+    public default @Override int lineNumber() { return 1; }
 
 
 

@@ -53,9 +53,9 @@ public interface CommentBlock extends Markup {
        // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** Returns zero.
+        /** Returns zero: each line of a comment block comprises a whole line.
           */
-        public @Override int column();
+        public default @Override int column() { return 0; }
 
 
 
@@ -65,4 +65,4 @@ public interface CommentBlock extends Markup {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
