@@ -212,6 +212,31 @@ public interface Cursor {
 
 
 
+    /** Returns true if markup of the given descent is privatized, whether directly or indirectly;
+      * false otherwise.
+      *
+      *     @see Markup#xuncFractalDescent()
+      *     @see xuncPrivatized()
+      */
+    public static boolean isPrivatized( final int[] xuncFractalDescent, final int[] xuncPrivatized ) {
+        if( xuncPrivatized.length == 0 ) return false; // No fractum is privatized, so nothing is.
+        if( xuncPrivatized[0] == -1 ) return true; // The file fractum is privatized, so everything is.
+        int pStart = 0;
+        final int pEnd = xuncPrivatized.length;
+        for( final int xD: xuncFractalDescent ) {
+            for( int p = pStart; p < pEnd; ++p ) {
+                final int xP = xuncPrivatized[p];
+                if( xP == xD) return true; /* A fractum in the markup’s line of descent is privatized
+                  (either an ancestor or the markup itself) whereby the markup too is privatized. */
+                if( xP > xD ) { // Then the remaining `xP` will also be greater, none matching.
+                    pStart = p; /* Start here for the next `xD` because none of the preceding `xP`
+                      will be able to match it, because it will be larger than the present `xD`. */
+                    break; }}}
+        return false; } /* No fractum in the markup’s line of descent is privatized (neither an ancestor
+          nor the markup itself) so the markup is not privatized. */
+
+
+
     /** Advances this cursor to the next position in the markup.
       *
       *     @return The new parse state, an instance neither of `{@linkplain Empty Empty}`
@@ -244,9 +269,24 @@ public interface Cursor {
 
     /** The concrete parse state at the current position in the markup.  Concrete states alone occur,
       * those with {@linkplain Typestamp dedicated typestamps}.  Abstract states are present only
-      * as alternative views of concrete states.  Each is got through a dedicated `as` getter.
+      * as alternative views of concrete states, each got through a dedicated `as` getter.
       */
     public @NarrowNot ParseState state();
+
+
+
+    /** An array containing the xunc offsets of all directly privatized body fracta in linear order.
+      * If the first element of the array is -1, then the file fractum too is directly privatized.
+      * The array may contain duplicates.
+      *
+      * <p>Call this method only from a final parse state, one other than `Halt`.</p>
+      *
+      *     @see Markup#xunc()
+      *     @see #state()
+      *     @see Halt
+      *     @throws IllegalStateException If called before a final parse state, or during a halt.
+      */
+    public @AdjunctSlow int[] xuncPrivatized();
 
 
 
@@ -256,10 +296,9 @@ public interface Cursor {
     /** A warning not to cast the returned parse state to a subtype, or put it through
       * any other narrowing conversion, as its narrower state may yet be unparsed.
       * Always use the given `as` methods in lieu of narrowing conversions.
-      *
-      */ @Documented @Retention(SOURCE) @Target(METHOD)
-    public static @interface NarrowNot {}}
+      */
+    public static @Documented @Retention(SOURCE) @Target(METHOD) @interface NarrowNot {}}
 
 
 
-                                                   // Copyright © 2020-2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2020-2022  Michael Allan.  Licence MIT.

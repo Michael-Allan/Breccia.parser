@@ -11,32 +11,26 @@ public @DataReflector interface Markup {
 
     /** Makes a pointer to the first character of this markup.
       *
-      * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
-      *
       *     @param c The offset in the {@linkplain #text() text} of the character to point to.
       */
-    public default CharacterPointer characterPointer() { return characterPointer( 0 ); }
+    public default @AdjunctSlow CharacterPointer characterPointer() { return characterPointer( 0 ); }
 
 
 
     /** Makes a pointer to a character of this markup.
       *
-      * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
-      *
       *     @param c The offset of the character in the {@linkplain #text() text}.
       */
-    public CharacterPointer characterPointer( int c );
+    public @AdjunctSlow CharacterPointer characterPointer( int c );
 
 
 
     /** Resolves the {@linkplain Java.CharacterPointer#column columnar offset}
       * at which this markup starts.
       *
-      * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
-      *
       *     @see #lineNumber()
       */
-    public int column();
+    public @AdjunctSlow int column();
 
 
 
@@ -52,11 +46,9 @@ public @DataReflector interface Markup {
     /** Resolves the ordinal number of the line in which this markup occurs, or starts.
       * Lines are numbered beginning at one.
       *
-      * <p>The return value is considered adjunct state, implementation of this method may be slow.</p>
-      *
       *     @see #column()
       */
-    public int lineNumber();
+    public @AdjunctSlow int lineNumber();
 
 
 
@@ -79,8 +71,16 @@ public @DataReflector interface Markup {
 
     /** The offset in UTF-16 code units from the start of the markup source.
       */
-    public int xunc(); } /* Here ‘x’ stands for hexadecimal, which suggests the coinage
+    public int xunc(); /* Here ‘x’ stands for hexadecimal, which suggests the coinage
       of ‘bunc’ for UTF-8 and ‘unc’ for full characters. */
+
+
+
+    /** The markup’s line of fractal descent in xunc, beginning with the xunc of the top body fractum
+      * (least descended) at index zero, and ending with the fractum nearest the markup (most descended,
+      * which may be the markup itself).
+      */
+    public @AdjunctSlow int[] xuncFractalDescent(); }
 
 
 
