@@ -13,7 +13,7 @@ public interface AssociativeReference extends CommandPoint {
 
 
 
-    public @TagName("ReferentialCommand") Markup referentialCommand();
+    public @TagName("ReferentialCommand") Granum referentialCommand();
 
 
 
@@ -23,7 +23,7 @@ public interface AssociativeReference extends CommandPoint {
 
 
 
-   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** The default implementation returns ‘AssociativeReference’.
@@ -64,7 +64,7 @@ public interface AssociativeReference extends CommandPoint {
 
 
       @DataReflector @TagName("InferentialReferentIndicant")
-    public static interface InferentialReferentIndicant extends Markup {
+    public static interface InferentialReferentIndicant extends Granum {
 
 
         /** The fractum indicant of the containment clause, or null if no containment clause occurs.
@@ -75,17 +75,17 @@ public interface AssociativeReference extends CommandPoint {
 
         /** The referential form, or null if none is declared.
           */
-        public @TagName("ReferentialForm") Markup referentialForm();
+        public @TagName("ReferentialForm") Granum referentialForm();
 
 
 
         /** The referrer similarity, or null if none is declared.
           */
-        public @TagName("ReferrerSimilarity") Markup referrerSimilarity();
+        public @TagName("ReferrerSimilarity") Granum referrerSimilarity();
 
 
 
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         /** The default implementation returns ‘InferentialReferentIndicant’.
@@ -98,7 +98,7 @@ public interface AssociativeReference extends CommandPoint {
 
 
       @DataReflector @TagName("ReferentClause")
-    public static interface ReferentClause extends Markup {
+    public static interface ReferentClause extends Granum {
 
 
         /** The fractum indicant, or null if instead an inferential referent indicant is present.
@@ -117,7 +117,7 @@ public interface AssociativeReference extends CommandPoint {
 
 
 
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         /** The default implementation returns ‘ReferentClause’.
@@ -130,14 +130,14 @@ public interface AssociativeReference extends CommandPoint {
 
 
       @DataReflector @TagName("ReferrerClause")
-    public static interface ReferrerClause extends Markup {
+    public static interface ReferrerClause extends Granum {
 
 
         public PatternMatcher patternMatcher();
 
 
 
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         /** The default implementation returns ‘ReferrerClause’.

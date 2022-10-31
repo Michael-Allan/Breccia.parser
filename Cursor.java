@@ -8,7 +8,7 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 
-/** A unidirectional cursor over a series of discrete states reflecting parsed markup.  It affords two
+/** A unidirectional cursor over a series of discrete states reflecting parsed text.  It affords two
   * methods of type testing the present parse state.  One is offered through the various `as` getters,
   * which present rich, DOM-like reflections of state composition for both abstract and concrete types.
   * The other method is a simple test of `{@linkplain #state() state}.typestamp`, which covers concrete
@@ -102,7 +102,7 @@ public interface Cursor {
 
 
 
-    /** Returns the present parse state as `Empty`, or null if the markup source is not empty.
+    /** Returns the present parse state as `Empty`, or null if the text source is not empty.
       */
     public @NarrowNot Empty asEmpty();
 
@@ -212,10 +212,10 @@ public interface Cursor {
 
 
 
-    /** Returns true if markup of the given descent is privatized, whether directly or indirectly;
-      * false otherwise.
+    /** Returns true if a granum of the given descent is marked as private (whether directly
+      * or indirectly) by the use of a privatizer; false otherwise.
       *
-      *     @see Markup#xuncFractalDescent()
+      *     @see Granum#xuncFractalDescent()
       *     @see xuncPrivatized()
       */
     public static boolean isPrivatized( final int[] xuncFractalDescent, final int[] xuncPrivatized ) {
@@ -226,18 +226,18 @@ public interface Cursor {
         for( final int xD: xuncFractalDescent ) {
             for( int p = pStart; p < pEnd; ++p ) {
                 final int xP = xuncPrivatized[p];
-                if( xP == xD) return true; /* A fractum in the markup’s line of descent is privatized
-                  (either an ancestor or the markup itself) whereby the markup too is privatized. */
+                if( xP == xD) return true; /* A fractum in the granum’s line of descent is privatized
+                  (either an ancestor or the granum itself) whereby the granum too is privatized. */
                 if( xP > xD ) { // Then the remaining `xP` will also be greater, none matching.
                     pStart = p; /* Start here for the next `xD` because none of the preceding `xP`
                       will be able to match it, because it will be larger than the present `xD`. */
                     break; }}}
-        return false; } /* No fractum in the markup’s line of descent is privatized (neither an ancestor
-          nor the markup itself) so the markup is not privatized. */
+        return false; } /* No fractum in the granum’s line of descent is privatized (neither an ancestor
+          nor the granum itself) so the granum is not privatized. */
 
 
 
-    /** Advances this cursor to the next position in the markup.
+    /** Advances this cursor to the next position in the text.
       *
       *     @return The new parse state, an instance neither of `{@linkplain Empty Empty}`
       *       nor `{@linkplain Halt Halt}`.
@@ -248,7 +248,7 @@ public interface Cursor {
 
 
 
-    /** Parses the markup, feeding the present and remaining parse states to `sink`
+    /** Parses the text, feeding the present and remaining parse states to `sink`
       * till all are exhausted.
       */
     public default void perState( final Consumer<ParseState> sink ) throws ParseError {
@@ -259,7 +259,7 @@ public interface Cursor {
 
 
 
-    /** Parses the markup, feeding the present and remaining parse states to `sink`
+    /** Parses the text, feeding the present and remaining parse states to `sink`
       * till either all are exhausted or `sink` returns false.
       */
     public default void perStateConditionally( final Predicate<ParseState> sink ) throws ParseError {
@@ -267,7 +267,7 @@ public interface Cursor {
 
 
 
-    /** The concrete parse state at the current position in the markup.  Concrete states alone occur,
+    /** The concrete parse state at the current position in the text.  Concrete states alone occur,
       * those with {@linkplain Typestamp dedicated typestamps}.  Abstract states are present only
       * as alternative views of concrete states, each got through a dedicated `as` getter.
       */
@@ -281,7 +281,7 @@ public interface Cursor {
       *
       * <p>Call this method only from a final parse state, one other than `Halt`.</p>
       *
-      *     @see Markup#xunc()
+      *     @see Granum#xunc()
       *     @see #state()
       *     @see Halt
       *     @throws IllegalStateException If called before a final parse state, or during a halt.

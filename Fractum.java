@@ -1,12 +1,12 @@
 package Breccia.parser;
 
 
-/** A fractum of Breccia reflected as a parse state.  The reflection covers the markup
+/** A fractum of Breccia reflected as a parse state.  The reflection covers the text
   * of the fractal head alone, leaving the body (if any) to be covered by future states.
   * In the case of a file fractum (the only potentially headless case), any absence of a head
   * will be indicated not by the absence of a parse state, but by empty content.
   */
-public @DataReflector interface Fractum extends Markup, ParseState {
+public @DataReflector interface Fractum extends Granum, ParseState {
 
 
     /** The number of text lines in the fractal head.
@@ -16,8 +16,8 @@ public @DataReflector interface Fractum extends Markup, ParseState {
 
 
     /** The offset of the end boundary of the given line of the fractal head as measured in UTF-16
-      * code units from the start of the markup source.  This is either the offset of the first
-      * character of the succeeding line, or that of the end boundary of the markup source.
+      * code units from the start of the text source.  This is either the offset of the first
+      * character of the succeeding line, or that of the end boundary of the text source.
       *
       *     @param index The zero-based index of the line within the fractal head.
       *     @throws IndexOutOfBoundsException Unless `index` is greater than or equal to zero
@@ -27,7 +27,7 @@ public @DataReflector interface Fractum extends Markup, ParseState {
 
 
 
-   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** Returns zero: fracta comprise whole lines.

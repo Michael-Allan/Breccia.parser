@@ -2,14 +2,14 @@ package Breccia.parser;
 
 
        @TagName("DividerSegment") @DataReflector
-public interface DividerSegment extends Markup {
+public interface DividerSegment extends Granum {
 
 
-    public @TagName("PerfectIndent") Markup perfectIndent();
+    public @TagName("PerfectIndent") Granum perfectIndent();
 
 
 
-   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** Returns zero: divider segments comprise whole lines.

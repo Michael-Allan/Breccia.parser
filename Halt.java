@@ -1,8 +1,8 @@
 package Breccia.parser;
 
 
-/** The parser has halted abnormally.  This is a final state, rendering the markup cursor unusable
-  * for the present markup source.  It results from any occurrence of a parse error.
+/** The parser has halted abnormally.  This is a final state, rendering the text cursor unusable
+  * for the present text source.  It results from any occurrence of a parse error.
   *
   *     @see ParseError
   */

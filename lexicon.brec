@@ -1,4 +1,4 @@
-Definition of terms for project Breccia Parser
+Definition of terms for Breccia Parser
 
     : see also http://reluk.ca/project/way/index.brec
 
@@ -8,6 +8,15 @@ Definition of terms for project Breccia Parser
     fractal segment
         ─ noun
             - One of a file head, point head or divider segment.
+    grana
+        ─ plural noun
+            : see `^^granum$`
+    granal
+        ─ adjective
+            : see `^^granum$`
+    granum
+        ─ noun
+            - A unit of parsed text.
 
 
-                                                         \ Copyright © 2021  Michael Allan.  Licence MIT.
+                                                    \ Copyright © 2021-2022  Michael Allan.  Licence MIT.

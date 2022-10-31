@@ -6,10 +6,10 @@ import java.util.List;
 /** An indent blind in Breccia.
   *
   */   @TagName("IndentBlind") @DataReflector
-public interface IndentBlind extends Markup {
+public interface IndentBlind extends Granum {
 
 
-   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** Returns zero: indent blinds comprise whole lines.
@@ -37,23 +37,23 @@ public interface IndentBlind extends Markup {
     /** A line of a indent blind.
       *
       */          @TagName("Line") @DataReflector
-    public static interface Line extends Markup {
+    public static interface Line extends Granum {
 
 
         /** The no-break space that delimits any subsequent content.
           */
-        public @TagName("Delimiter") Markup delimiter();
+        public @TagName("Delimiter") Granum delimiter();
 
 
 
         /** The content subsequent to the delimiter, exclusive of any comment appender,
           * or null if there is none.
           */
-        public Markup substance();
+        public Granum substance();
 
 
 
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         /** Returns zero.

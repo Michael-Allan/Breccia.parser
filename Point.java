@@ -6,17 +6,17 @@ package Breccia.parser;
 public @DataReflector interface Point extends BodyFractum {
 
 
-    public @TagName("Bullet") Markup bullet();
+    public @TagName("Bullet") Granum bullet();
 
 
 
     /** The point descriptor, or null if there is none.
       */
-    public @TagName("Descriptor") Markup descriptor();
+    public @TagName("Descriptor") Granum descriptor();
 
 
 
-    public @TagName("PerfectIndent") Markup perfectIndent();
+    public @TagName("PerfectIndent") Granum perfectIndent();
 
 
 

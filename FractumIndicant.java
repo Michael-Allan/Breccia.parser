@@ -4,7 +4,7 @@ import java.util.List;
 
 
        @TagName("FractumIndicant") @DataReflector
-public interface FractumIndicant extends Markup {
+public interface FractumIndicant extends Granum {
 
 
     /** The pattern-matcher series, or null if a resource indicant alone is present.
@@ -23,7 +23,7 @@ public interface FractumIndicant extends Markup {
 
 
 
-   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** The default implementation returns ‘FractumIndicant’.

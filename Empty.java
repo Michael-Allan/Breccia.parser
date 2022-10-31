@@ -1,7 +1,7 @@
 package Breccia.parser;
 
 
-/** Nothing, no markup to parse.  Occurs on attempting to parse an empty source of markup.
+/** Nothing, no text to parse.  Occurs on attempting to parse an empty source of text.
   * This is both an initial and final state.
   */
 public interface Empty extends ParseState {

@@ -4,12 +4,12 @@ import Java.CharacterPointer;
 import java.util.List;
 
 
-/** A reflector of parsed markup.
+/** A unit of parsed text.
   */
-public @DataReflector interface Markup {
+public @DataReflector interface Granum {
 
 
-    /** Makes a pointer to the first character of this markup.
+    /** Makes a pointer to the first character of this granum.
       *
       *     @param c The offset in the {@linkplain #text() text} of the character to point to.
       */
@@ -17,7 +17,7 @@ public @DataReflector interface Markup {
 
 
 
-    /** Makes a pointer to a character of this markup.
+    /** Makes a pointer to a character of this granum.
       *
       *     @param c The offset of the character in the {@linkplain #text() text}.
       */
@@ -26,7 +26,7 @@ public @DataReflector interface Markup {
 
 
     /** Resolves the {@linkplain Java.CharacterPointer#column columnar offset}
-      * at which this markup starts.
+      * at which this granum starts.
       *
       *     @see #lineNumber()
       */
@@ -34,16 +34,16 @@ public @DataReflector interface Markup {
 
 
 
-    /** A list in linear order of the parsed components of this markup.  Either the list is empty,
-      * in which case the markup is given only as its unparsed, {@linkplain #text() flat text} (T),
-      * or the listed components cover the whole of the markup such that the concatenation
+    /** A list in linear order of the parsed components of this granum.  Either the list is empty,
+      * in which case the granum is given only as its unparsed, {@linkplain #text() flat text} (T),
+      * or the listed components cover the whole of the granum such that the concatenation
       * of their *own* flat text is equal in content to T.
       */
-    public @DataReflector List<? extends Markup> components() throws ParseError;
+    public @DataReflector List<? extends Granum> components() throws ParseError;
 
 
 
-    /** Resolves the ordinal number of the line in which this markup occurs, or starts.
+    /** Resolves the ordinal number of the line in which this granum occurs, or starts.
       * Lines are numbered beginning at one.
       *
       *     @see #column()
@@ -52,7 +52,7 @@ public @DataReflector interface Markup {
 
 
 
-    /** The tag name to be used by X-Breccia for encapsulating this markup as an XML element.
+    /** The tag name to be used by X-Breccia for encapsulating this granum as an XML element.
       *
       *     @see <a href='https://www.w3.org/TR/xml/#sec-starttags'>
       *       Start-tags, end-tags, and empty-element tags</a>
@@ -63,22 +63,22 @@ public @DataReflector interface Markup {
 
 
 
-    /** The flat text of this markup.
+    /** The flat text of this granum.
       */
     public @DataReflector CharSequence text();
 
 
 
-    /** The offset in UTF-16 code units from the start of the markup source.
+    /** The offset in UTF-16 code units from the start of the text source.
       */
     public int xunc(); /* Here ‘x’ stands for hexadecimal, which suggests the coinage
       of ‘bunc’ for UTF-8 and ‘unc’ for full characters. */
 
 
 
-    /** The markup’s line of fractal descent in xunc, beginning with the xunc of the top body fractum
-      * (least descended) at index zero, and ending with the fractum nearest the markup (most descended,
-      * which may be the markup itself).
+    /** This granum’s line of fractal descent in xunc, beginning with the xunc of the top body fractum
+      * (least descended) at index zero, and ending with the fractum nearest the granum (most descended,
+      * which may be the granum itself).
       */
     public @AdjunctSlow int[] xuncFractalDescent(); }
 

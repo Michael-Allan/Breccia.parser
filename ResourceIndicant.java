@@ -4,10 +4,10 @@ import java.util.List;
 
 
        @TagName("ResourceIndicant") @DataReflector
-public interface ResourceIndicant extends Markup {
+public interface ResourceIndicant extends Granum {
 
 
-    public @TagName("Reference") Markup reference();
+    public @TagName("Reference") Granum reference();
 
 
 
@@ -17,7 +17,7 @@ public interface ResourceIndicant extends Markup {
 
 
 
-   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** The default implementation returns ‘ResourceIndicant’.

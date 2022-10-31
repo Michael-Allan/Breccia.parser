@@ -6,10 +6,10 @@ import java.util.List;
 /** A comment block in Breccia.
   *
   */   @TagName("CommentBlock") @DataReflector
-public interface CommentBlock extends Markup {
+public interface CommentBlock extends Granum {
 
 
-   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** Returns zero: comment blocks comprise whole lines.
@@ -46,11 +46,11 @@ public interface CommentBlock extends Markup {
         /** {@inheritDoc}
           * Its tag name in case of a comment-block label is ‘Label’, otherwise it is ‘Commentary’.
           */
-        public @Override @TagName("Commentary or Label") Markup commentary();
+        public @Override @TagName("Commentary or Label") Granum commentary();
 
 
 
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         /** Returns zero: each line of a comment block comprises a whole line.

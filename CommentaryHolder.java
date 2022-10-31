@@ -1,18 +1,18 @@
 package Breccia.parser;
 
 
-public @DataReflector interface CommentaryHolder extends Markup {
+public @DataReflector interface CommentaryHolder extends Granum {
 
 
     /** The commentary held, or null if there is none.
       */
-    public @TagName("Commentary") Markup commentary();
+    public @TagName("Commentary") Granum commentary();
 
 
 
     /** The backslash ‘\’ sequence that delimits any held commentary.
       */
-    public @TagName("Delimiter") Markup delimiter(); }
+    public @TagName("Delimiter") Granum delimiter(); }
 
 
 

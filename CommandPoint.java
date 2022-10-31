@@ -25,22 +25,22 @@ public @DataReflector interface CommandPoint extends Point {
 
 
       @DataReflector @TagName("AppendageClause")
-    public static interface AppendageClause extends Markup {
+    public static interface AppendageClause extends Granum {
 
 
         /** The appendage itself.
           */
-        public @TagName("Appendage") Markup appendage();
+        public @TagName("Appendage") Granum appendage();
 
 
 
         /** The colon ‘:’ that delimits the appendage.
           */
-        public @TagName("Delimiter") Markup delimiter();
+        public @TagName("Delimiter") Granum delimiter();
 
 
 
-       // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
         /** The default implementation returns ‘AppendageClause’.

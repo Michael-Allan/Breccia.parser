@@ -7,10 +7,10 @@ package Breccia.parser;
   * and the line number will reflect the position of the body alone.</p>
   *
   */   @TagName("FileFractum") @DataReflector
-public interface FileFractum extends Fractum, Markup {
+public interface FileFractum extends Fractum {
 
 
-   // ━━━  M a r k u p  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
     /** Returns 1: a file fractum begins with the first line of its file.
