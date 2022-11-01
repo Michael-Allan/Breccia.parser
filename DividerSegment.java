@@ -5,7 +5,7 @@ package Breccia.parser;
 public interface DividerSegment extends Granum {
 
 
-    public @TagName("PerfectIndent") Granum perfectIndent();
+    public PerfectIndent perfectIndent();
 
 
 

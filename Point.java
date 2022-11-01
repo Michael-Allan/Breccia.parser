@@ -16,7 +16,7 @@ public @DataReflector interface Point extends BodyFractum {
 
 
 
-    public @TagName("PerfectIndent") Granum perfectIndent();
+    public PerfectIndent perfectIndent();
 
 
 
