@@ -3,7 +3,12 @@ package Breccia.parser;
 import java.util.List;
 
 
-       @TagName("FractumIndicant") @DataReflector
+/** Any occurence of a containment operator ‘@’ among the components of a fractum indicant
+  * will be tag named ‘ContainmentOperator’.
+  *
+  *     @see Breccia.parser.Granum#tagName()
+  *
+  */   @TagName("FractumIndicant") @DataReflector
 public interface FractumIndicant extends Granum {
 
 

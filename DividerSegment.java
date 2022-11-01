@@ -1,7 +1,14 @@
 package Breccia.parser;
 
+import java.util.List;
 
-       @TagName("DividerSegment") @DataReflector
+
+/** Any occurence of a division label among the components of a divider segment
+  * will be tag named ‘DivisionLabel’.
+  *
+  *     @see Breccia.parser.Granum#tagName()
+  *
+  */   @TagName("DividerSegment") @DataReflector
 public interface DividerSegment extends Granum {
 
 

@@ -63,7 +63,12 @@ public interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-      @DataReflector @TagName("InferentialReferentIndicant")
+    /** Any occurence of a containment operator ‘@’ among the components of an inferential referent
+      * indicant will be tag named ‘ContainmentOperator’.
+      *
+      *     @see Breccia.parser.Granum#tagName()
+      *
+      */          @TagName("InferentialReferentIndicant") @DataReflector
     public static interface InferentialReferentIndicant extends Granum {
 
 
