@@ -212,28 +212,17 @@ public interface Cursor {
 
 
 
-    /** Returns true if a granum of the given descent is marked as private (whether directly
+    /** Returns true if the granum of the given descent is marked as private (whether directly
       * or indirectly) by the use of a privatizer; false otherwise.
       *
+      * <p>Call this method only from a final parse state, one other than `Halt`.</p>
+      *
       *     @see Granum#xuncFractalDescent()
-      *     @see xuncPrivatized()
+      *     @see #state()
+      *     @see Halt
+      *     @throws IllegalStateException If called before a final parse state, or during a halt.
       */
-    public static boolean isPrivatized( final int[] xuncFractalDescent, final int[] xuncPrivatized ) {
-        if( xuncPrivatized.length == 0 ) return false; // No fractum is privatized, so nothing is.
-        if( xuncPrivatized[0] == -1 ) return true; // The file fractum is privatized, so everything is.
-        int pStart = 0;
-        final int pEnd = xuncPrivatized.length;
-        for( final int xD: xuncFractalDescent ) {
-            for( int p = pStart; p < pEnd; ++p ) {
-                final int xP = xuncPrivatized[p];
-                if( xP == xD) return true; /* A fractum in the granum’s line of descent is privatized
-                  (either an ancestor or the granum itself) whereby the granum too is privatized. */
-                if( xP > xD ) { // Then the remaining `xP` will also be greater, none matching.
-                    pStart = p; /* Start here for the next `xD` because none of the preceding `xP`
-                      will be able to match it, because it will be larger than the present `xD`. */
-                    break; }}}
-        return false; } /* No fractum in the granum’s line of descent is privatized (neither an ancestor
-          nor the granum itself) so the granum is not privatized. */
+    public boolean isPrivatized( final int[] xuncFractalDescent );
 
 
 
@@ -272,21 +261,6 @@ public interface Cursor {
       * as alternative views of concrete states, each got through a dedicated `as` getter.
       */
     public @NarrowNot ParseState state();
-
-
-
-    /** An array containing the xunc offsets of all directly privatized body fracta in linear order.
-      * If the first element of the array is -1, then the file fractum too is directly privatized.
-      * The array may contain duplicates.
-      *
-      * <p>Call this method only from a final parse state, one other than `Halt`.</p>
-      *
-      *     @see Granum#xunc()
-      *     @see #state()
-      *     @see Halt
-      *     @throws IllegalStateException If called before a final parse state, or during a halt.
-      */
-    public @AdjunctSlow int[] xuncPrivatized();
 
 
 
