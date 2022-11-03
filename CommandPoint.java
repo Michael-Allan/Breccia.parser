@@ -1,6 +1,6 @@
 package Breccia.parser;
 
-import java.util.Set;
+import java.util.List;
 
 
 /** A command point in Breccia.
@@ -14,10 +14,9 @@ public @DataReflector interface CommandPoint extends Point {
 
 
 
-    /** The set of command modifiers.
+    /** A list of the command modifiers.
       */
-    public @DataReflector Set<Modifier> modifierSet();
-      // Cf. `ResourceIndicant.qualifiers`, whose form enables easier extension.
+    public @DataReflector List<String> modifiers(); // `String` vs. `Enum` for sake of extensibility.
 
 
 
@@ -54,17 +53,8 @@ public @DataReflector interface CommandPoint extends Point {
 
     /** The end of a command point.
       */
-    public static interface End extends Point.End {}
+    public static interface End extends Point.End {}}
 
 
 
-   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-
-
-    /** A command modifier.
-      */
-    public static enum Modifier { privately }}
-
-
-
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.

@@ -13,7 +13,7 @@ public interface ResourceIndicant extends Granum {
 
     /** A list of the qualifiers of this indicant.
       */
-    public @DataReflector List<String> qualifiers();
+    public @DataReflector List<String> qualifiers(); // `String` vs. `Enum` for sake of extensibility.
 
 
 
@@ -26,4 +26,4 @@ public interface ResourceIndicant extends Granum {
 
 
 
-                                                        // Copyright © 2021  Michael Allan.  Licence MIT.
+                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
