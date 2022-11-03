@@ -222,7 +222,7 @@ public interface Cursor {
       *     @see Halt
       *     @throws IllegalStateException If called before a final parse state, or during a halt.
       */
-    public boolean isPrivatized( final int[] xuncFractalDescent );
+    public boolean isPrivatized( int[] xuncFractalDescent );
 
 
 
