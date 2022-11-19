@@ -25,7 +25,7 @@ public @DataReflector interface Granum {
 
 
 
-    /** Resolves the {@linkplain Java.CharacterPointer#column columnar offset}
+    /** Resolves the {@linkplain Java.IntralineCharacterPointer#column columnar offset}
       * at which this granum starts.
       *
       *     @see #lineNumber()
