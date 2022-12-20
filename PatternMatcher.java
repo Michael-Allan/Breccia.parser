@@ -13,11 +13,11 @@ public interface PatternMatcher extends Granum {
 
     /** Among the potential components of the pattern are the following.<ul>
       *
+      *     <li>`{@linkplain AnchoredPrefix      AnchoredPrefix}`</li>
       *     <li>`{@linkplain BackslashedSpecial  BackslashedSpecial}`</li>
       *     <li>`{@linkplain GroupDelimiter      GroupDelimiter}`</li>
       *     <li>`{@linkplain Literalizer         Literalizer}`</li>
-      *     <li>`{@linkplain Metacharacter       Metacharacter}`</li>
-      *     <li>`{@linkplain PerfectIndentMarker PerfectIndentMarker}`</li></ul>
+      *     <li>`{@linkplain Metacharacter       Metacharacter}`</li></ul>
       */
     public @TagName("Pattern") Granum pattern();
 
@@ -29,6 +29,24 @@ public interface PatternMatcher extends Granum {
     /** The default implementation returns ‘PatternMatcher’.
       */
     public default @Override String tagName() { return "PatternMatcher"; }
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    /** An achored prefix within a regular-expression pattern, one of ‘^*’,  ‘^+’ or  ‘^^’.
+      *
+      */          @TagName("AnchoredPrefix") @DataReflector
+    public static interface AnchoredPrefix extends Granum {
+
+
+       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** The default implementation returns ‘AnchoredPrefix’.
+          */
+        public default @Override String tagName() { return "AnchoredPrefix"; }}
 
 
 
@@ -110,25 +128,7 @@ public interface PatternMatcher extends Granum {
 
         /** The default implementation returns ‘Metacharacter’.
           */
-        public default @Override String tagName() { return "Metacharacter"; }}
-
-
-
-   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-
-
-    /** A perfect indent ‘^^’ within a regular-expression pattern.
-      *
-      */          @TagName("PerfectIndentMarker") @DataReflector
-    public static interface PerfectIndentMarker extends Granum {
-
-
-       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-        /** The default implementation returns ‘PerfectIndentMarker’.
-          */
-        public default @Override String tagName() { return "PerfectIndentMarker"; }}}
+        public default @Override String tagName() { return "Metacharacter"; }}}
 
 
 

@@ -10,10 +10,10 @@ Definition of terms for Breccia Parser
             - One of a file head, point head or divider segment.
     grana
         ─ plural noun
-            : see `^^granum$`
+            : see `^*granum$`
     granal
         ─ adjective
-            : see `^^granum$`
+            : see `^*granum$`
     granum
         ─ noun
             - A unit of parsed text.
