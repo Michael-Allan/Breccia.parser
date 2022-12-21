@@ -128,7 +128,25 @@ public interface PatternMatcher extends Granum {
 
         /** The default implementation returns ‘Metacharacter’.
           */
-        public default @Override String tagName() { return "Metacharacter"; }}}
+        public default @Override String tagName() { return "Metacharacter"; }}
+
+
+
+   // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+
+    /** A variable interpolation `${⋯}` within a regular-expression pattern.
+      *
+      */          @TagName("Variable") @DataReflector
+    public static interface Variable extends Granum {
+
+
+       // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+        /** The default implementation returns ‘Variable’.
+          */
+        public default @Override String tagName() { return "Variable"; }}}
 
 
 
