@@ -135,7 +135,7 @@ public interface PatternMatcher extends Granum {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** A variable interpolation `${⋯}` within a regular-expression pattern.
+    /** A variable interpolator `${⋯}` within a regular-expression pattern.
       *
       */          @TagName("Variable") @DataReflector
     public static interface Variable extends Granum {
