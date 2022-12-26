@@ -63,8 +63,8 @@ public interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** Any occurence of a containment operator ‘@’ among the components of an inferential referent
-      * indicant will be tag named ‘ContainmentOperator’.
+    /** The containment operator ‘@’ in the components of an inferential referent indicant
+      * will be tag named ‘ContainmentOperator’.
       *
       *     @see Breccia.parser.Granum#tagName()
       *
@@ -72,21 +72,9 @@ public interface AssociativeReference extends CommandPoint {
     public static interface InferentialReferentIndicant extends Granum {
 
 
-        /** The fractum indicant of the containment clause, or null if no containment clause occurs.
+        /** The fractum indicant.
           */
         public FractumIndicant fractumIndicant();
-
-
-
-        /** The referential form, or null if none is declared.
-          */
-        public @TagName("ReferentialForm") Granum referentialForm();
-
-
-
-        /** The referrer similarity, or null if none is declared.
-          */
-        public @TagName("ReferrerSimilarity") Granum referrerSimilarity();
 
 
 
