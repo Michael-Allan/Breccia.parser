@@ -142,6 +142,20 @@ public interface Cursor {
 
 
 
+    /** Returns the present parse state as a `NoteCarrier`,
+      * or null if the cursor is not positioned at a note carrier.
+      */
+    public @NarrowNot NoteCarrier asNoteCarrier() throws ParseError;
+
+
+
+    /** Returns the present parse state as an `NoteCarrier.End`,
+      * or null if the cursor is not positioned at the end of a note carrier.
+      */
+    public @NarrowNot NoteCarrier.End asNoteCarrierEnd();
+
+
+
     /** Returns the present parse state as a `PlainCommandPoint`,
       * or null if the cursor is not positioned at a plain command point.
       */
