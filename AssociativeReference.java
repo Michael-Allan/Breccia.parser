@@ -63,27 +63,27 @@ public interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** The containment operator ‘@’ in the components of an inferential referent indicant
-      * will be tag named ‘ContainmentOperator’.
+    /** The context operator ‘@’ in the components of an inferential fractum locant
+      * will be tag named ‘ContextOperator’.
       *
       *     @see Breccia.parser.Granum#tagName()
       *
-      */          @TagName("InferentialReferentIndicant") @DataReflector
-    public static interface InferentialReferentIndicant extends Granum {
+      */          @TagName("InferentialFractumLocant") @DataReflector
+    public static interface InferentialFractumLocant extends Granum {
 
 
-        /** The fractum indicant.
+        /** The fractum locant.
           */
-        public FractumIndicant fractumIndicant();
+        public FractumLocant fractumLocant();
 
 
 
        // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** The default implementation returns ‘InferentialReferentIndicant’.
+        /** The default implementation returns ‘InferentialFractumLocant’.
           */
-        public default @Override String tagName() { return "InferentialReferentIndicant"; }}
+        public default @Override String tagName() { return "InferentialFractumLocant"; }}
 
 
 
@@ -94,19 +94,19 @@ public interface AssociativeReference extends CommandPoint {
     public static interface ReferentClause extends Granum {
 
 
-        /** The fractum indicant, or null if instead an inferential referent indicant is present.
+        /** The fractum locant, or null if instead an inferential fractum locant is present.
           *
-          *     @see #inferentialReferentIndicant()
+          *     @see #inferentialFractumLocant()
           */
-        public FractumIndicant fractumIndicant();
+        public FractumLocant fractumLocant();
 
 
 
-        /** The inferential referent indicant, or null if instead a fractum indicant is present.
+        /** The inferential fractum locant, or null if instead a fractum locant is present.
           *
-          *     @see #fractumIndicant()
+          *     @see #fractumLocant()
           */
-        public InferentialReferentIndicant inferentialReferentIndicant();
+        public InferentialFractumLocant inferentialFractumLocant();
 
 
 
@@ -139,4 +139,4 @@ public interface AssociativeReference extends CommandPoint {
 
 
 
-                                                   // Copyright © 2021-2022  Michael Allan.  Licence MIT.
+                                             // Copyright © 2021-2022, 2024  Michael Allan.  Licence MIT.
