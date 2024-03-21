@@ -63,13 +63,13 @@ public interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** The context operator ‘@’ in the components of an inferential fractum locant
+    /** The context operator ‘@’ in the components of a fractal context locant
       * will be tag named ‘ContextOperator’.
       *
       *     @see Breccia.parser.Granum#tagName()
       *
-      */          @TagName("InferentialFractumLocant") @DataReflector
-    public static interface InferentialFractumLocant extends Granum {
+      */          @TagName("FractalContextLocant") @DataReflector
+    public static interface FractalContextLocant extends Granum {
 
 
         /** The fractum locant.
@@ -81,9 +81,9 @@ public interface AssociativeReference extends CommandPoint {
        // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** The default implementation returns ‘InferentialFractumLocant’.
+        /** The default implementation returns ‘FractalContextLocant’.
           */
-        public default @Override String tagName() { return "InferentialFractumLocant"; }}
+        public default @Override String tagName() { return "FractalContextLocant"; }}
 
 
 
@@ -94,19 +94,19 @@ public interface AssociativeReference extends CommandPoint {
     public static interface ReferentClause extends Granum {
 
 
-        /** The fractum locant, or null if instead an inferential fractum locant is present.
-          *
-          *     @see #inferentialFractumLocant()
-          */
-        public FractumLocant fractumLocant();
-
-
-
-        /** The inferential fractum locant, or null if instead a fractum locant is present.
+        /** The fractal context locant, or null if instead a fractum locant is present.
           *
           *     @see #fractumLocant()
           */
-        public InferentialFractumLocant inferentialFractumLocant();
+        public FractalContextLocant fractalContextLocant();
+
+
+
+        /** The fractum locant, or null if instead a fractal context locant is present.
+          *
+          *     @see #fractalContextLocant()
+          */
+        public FractumLocant fractumLocant();
 
 
 
