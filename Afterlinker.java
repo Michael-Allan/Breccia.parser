@@ -1,15 +1,15 @@
 package Breccia.parser;
 
 
-/** An associative reference in Breccia.
+/** An afterlinker in Breccia.
   *
-  */   @TagName("AssociativeReference") @DataReflector
-public interface AssociativeReference extends CommandPoint {
+  */   @TagName("Afterlinker") @DataReflector
+public interface Afterlinker extends CommandPoint {
 
 
-    /** The referent clause, or null if there is none.
+    /** The object clause, or null if there is none.
       */
-    public ReferentClause referentClause();
+    public ObjectClause objectClause();
 
 
 
@@ -17,18 +17,18 @@ public interface AssociativeReference extends CommandPoint {
 
 
 
-    /** The referrer clause, or null if there is none.
+    /** The subject clause, or null if there is none.
       */
-    public ReferrerClause referrerClause();
+    public SubjectClause subjectClause();
 
 
 
    // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-    /** The default implementation returns ‘AssociativeReference’.
+    /** The default implementation returns ‘Afterlinker’.
       */
-    public default @Override String tagName() { return "AssociativeReference"; }
+    public default @Override String tagName() { return "Afterlinker"; }
 
 
 
@@ -36,16 +36,16 @@ public interface AssociativeReference extends CommandPoint {
 
 
     /** The default implementation returns
-      * {@linkplain Typestamp#associativeReference associativeReference}.
+      * {@linkplain Typestamp#afterlinker afterlinker}.
       */
-    public default @Override int typestamp() { return Typestamp.associativeReference; }
+    public default @Override int typestamp() { return Typestamp.afterlinker; }
 
 
 
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-    /** The end of an associative reference.
+    /** The end of an afterlinker.
       */
     public static interface End extends CommandPoint.End {
 
@@ -54,9 +54,9 @@ public interface AssociativeReference extends CommandPoint {
 
 
         /** The default implementation returns
-          * {@linkplain Typestamp#associativeReferenceEnd associativeReferenceEnd}.
+          * {@linkplain Typestamp#afterlinkerEnd afterlinkerEnd}.
           */
-        public default @Override int typestamp() { return Typestamp.associativeReferenceEnd; }}
+        public default @Override int typestamp() { return Typestamp.afterlinkerEnd; }}
 
 
 
@@ -90,8 +90,8 @@ public interface AssociativeReference extends CommandPoint {
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-      @DataReflector @TagName("ReferentClause")
-    public static interface ReferentClause extends Granum {
+      @DataReflector @TagName("ObjectClause")
+    public static interface ObjectClause extends Granum {
 
 
         /** The fractal context locant, or null if instead a fractum locant is present.
@@ -113,17 +113,17 @@ public interface AssociativeReference extends CommandPoint {
        // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** The default implementation returns ‘ReferentClause’.
+        /** The default implementation returns ‘ObjectClause’.
           */
-        public default @Override String tagName() { return "ReferentClause"; }}
+        public default @Override String tagName() { return "ObjectClause"; }}
 
 
 
    // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-      @DataReflector @TagName("ReferrerClause")
-    public static interface ReferrerClause extends Granum {
+      @DataReflector @TagName("SubjectClause")
+    public static interface SubjectClause extends Granum {
 
 
         public PatternMatcher patternMatcher();
@@ -133,9 +133,9 @@ public interface AssociativeReference extends CommandPoint {
        // ━━━  G r a n u m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-        /** The default implementation returns ‘ReferrerClause’.
+        /** The default implementation returns ‘SubjectClause’.
           */
-        public default @Override String tagName() { return "ReferrerClause"; }}}
+        public default @Override String tagName() { return "SubjectClause"; }}}
 
 
 

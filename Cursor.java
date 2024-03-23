@@ -18,6 +18,20 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 public interface Cursor {
 
 
+    /** Returns the present parse state as an `Afterlinker`,
+      * or null if the cursor is not positioned at an afterlinker.
+      */
+    public @NarrowNot Afterlinker asAfterlinker() throws ParseError;
+
+
+
+    /** Returns the present parse state as an `Afterlinker.End`,
+      * or null if the cursor is not positioned at the end of an afterlinker.
+      */
+    public @NarrowNot Afterlinker.End asAfterlinkerEnd();
+
+
+
     /** Returns the present parse state as an `AlarmPoint`,
       * or null if the cursor is not positioned at an alarm point.
       */
@@ -43,20 +57,6 @@ public interface Cursor {
       * or null if the cursor is not positioned at the end of an aside point.
       */
     public @NarrowNot AsidePoint.End asAsidePointEnd();
-
-
-
-    /** Returns the present parse state as an `AssociativeReference`,
-      * or null if the cursor is not positioned at an associative reference.
-      */
-    public @NarrowNot AssociativeReference asAssociativeReference() throws ParseError;
-
-
-
-    /** Returns the present parse state as an `AssociativeReference.End`,
-      * or null if the cursor is not positioned at the end of an associative reference.
-      */
-    public @NarrowNot AssociativeReference.End asAssociativeReferenceEnd();
 
 
 
