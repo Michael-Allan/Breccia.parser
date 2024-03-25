@@ -4,7 +4,7 @@ Definition of terms for Breccia Parser
 
     body segment
         ─ noun
-            - One of a point head or divider segment.
+            - A fractal segment other than a file head.
     fractal segment
         ─ noun
             - One of a file head, point head or divider segment.
@@ -19,4 +19,4 @@ Definition of terms for Breccia Parser
             - A unit of parsed text.
 
 
-                                                    \ Copyright © 2021-2022  Michael Allan.  Licence MIT.
+                                              \ Copyright © 2021-2022, 2024  Michael Allan.  Licence MIT.
