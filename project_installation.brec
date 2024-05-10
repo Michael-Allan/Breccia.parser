@@ -3,7 +3,7 @@ Installation instructions for Breccia Parser
     initial set-up
         1+ Ensure the following projects are installed.
             • Makeshift
-                : see http://reluk.ca/project/building/Makeshift/
+                : see http://reluk.ca/project/Makeshift/
             • The Java programming project
                 : see http://reluk.ca/project/Java/
         2+ Install the files of the present project.
@@ -14,7 +14,7 @@ Installation instructions for Breccia Parser
                     : see `^*command directory$` @ http://reluk.ca/project/glossary.brec
             >+ git clone http://reluk.ca/var/repo/git/Breccia.parser.git Breccia/parser
         + Build the software.
-            : see http://reluk.ca/project/building/Makeshift/bin/build.brec
+            : see http://reluk.ca/project/Makeshift/bin/build.brec
             >+ build Breccia/parser class-files
 
     Web publication
